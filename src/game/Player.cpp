@@ -436,7 +436,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
     m_lastPotionId = 0;
 
     m_activeSpec = 0;
-    m_specsCount = 0;
+    m_specsCount = 1;
 
     for (uint8 i = 0; i < MAX_TALENT_SPECS; ++i)
     {
@@ -2857,6 +2857,7 @@ bool Player::AddTalent(uint32 spell_id, uint8 spec, bool learning)
         newtalent->spec = spec;
 
         (*m_talents[spec])[spell_id] = newtalent;
+
         return true;
     }
     return false;
@@ -14551,15 +14552,16 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
     }
 
 	_LoadTalents(holder->GetResult(PLAYER_LOGIN_QUERY_LOADTALENTS));
-	_LoadSpells(holder->GetResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
-
 	_LoadGlyphs(holder->GetResult(PLAYER_LOGIN_QUERY_LOADGLYPHS));
+
     _LoadAuras(holder->GetResult(PLAYER_LOGIN_QUERY_LOADAURAS), time_diff);
     _LoadGlyphAuras();
 
     // add ghost flag (must be after aura load: PLAYER_FLAGS_GHOST set in aura)
     if( HasFlag(PLAYER_FLAGS, PLAYER_FLAGS_GHOST) )
         m_deathState = DEAD;
+
+    _LoadSpells(holder->GetResult(PLAYER_LOGIN_QUERY_LOADSPELLS));
 
     // after spell load, learn rewarded spell if need also
     _LoadQuestStatus(holder->GetResult(PLAYER_LOGIN_QUERY_LOADQUESTSTATUS));
@@ -20869,7 +20871,7 @@ void Player::ActivateSpec(uint8 spec)
             {
                 if(talentInfo->RankID[rank] != 0 && HasTalent(talentInfo->RankID[rank], m_activeSpec))
                 {
-                    removeSpell(talentInfo->RankID[rank],true);
+                    removeSpell(talentInfo->RankID[rank],true,false);
                 }
             }
         }
