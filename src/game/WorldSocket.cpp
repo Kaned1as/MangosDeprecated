@@ -883,7 +883,7 @@ int WorldSocket::HandleAuthSession (WorldPacket& recvPacket)
     // Check locked state for server
     AccountTypes allowedAccountType = sWorld.GetPlayerSecurityLimit ();
 
-    if (allowedAccountType > SEC_PLAYER && (security & SEC_DEFTYPE) < allowedAccountType)
+    if ((allowedAccountType > SEC_PLAYER) && (security < allowedAccountType))
     {
         WorldPacket Packet (SMSG_AUTH_RESPONSE, 1);
         Packet << uint8 (AUTH_UNAVAILABLE);
