@@ -11813,6 +11813,13 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
     if(!pEnchant)
         return;
 
+    if( pEnchant->requiredSkill && pEnchant->requiredSkillValue )
+        if( !HasSkill(pEnchant->requiredSkill) || ( HasSkill(pEnchant->requiredSkill) && GetSkillValue(pEnchant->requiredSkill) < pEnchant->requiredSkillValue ) )
+            return;
+
+    if( pEnchant->requiredLevel && ( getLevel() < pEnchant->requiredLevel ) )
+        return;
+
     if(!ignore_condition && pEnchant->EnchantmentCondition && !((Player*)this)->EnchantmentFitsRequirements(pEnchant->EnchantmentCondition, -1))
         return;
 

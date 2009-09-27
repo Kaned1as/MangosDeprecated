@@ -110,7 +110,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "dist",           SEC_ADMINISTRATOR,  false, &ChatHandler::HandleCastDistCommand,            "", NULL, SEC_FLAG_SPELLCAST },
         { "self",           SEC_ADMINISTRATOR,  false, &ChatHandler::HandleCastSelfCommand,            "", NULL, SEC_FLAG_SPELLCAST },
         { "target",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleCastTargetCommand,          "", NULL, SEC_FLAG_SPELLCAST },
-        { "",               SEC_ADMINISTRATOR,  false, &ChatHandler::HandleCastCommand,                "", NULL, SEC_FLAG_SPELLCAST },
+        { "do",               SEC_ADMINISTRATOR,  false, &ChatHandler::HandleCastCommand,                "", NULL, SEC_FLAG_SPELLCAST },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
@@ -175,7 +175,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "activelist",     SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventActiveListCommand,     "", NULL, SEC_FLAG_EVENTMNG },
         { "start",          SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventStartCommand,          "", NULL, SEC_FLAG_EVENTMNG },
         { "stop",           SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventStopCommand,           "", NULL, SEC_FLAG_EVENTMNG },
-        { "",               SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventInfoCommand,           "", NULL, SEC_FLAG_EVENTMNG },
+        { "info",           SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventInfoCommand,           "", NULL, SEC_FLAG_EVENTMNG },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
@@ -186,7 +186,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "ingame",         SEC_PLAYER,         true,  &ChatHandler::HandleGMListIngameCommand,        "", NULL, 0 },
         { "list",           SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleGMListFullCommand,          "", NULL, SEC_FLAG_ADMIN },
         { "visible",        SEC_MODERATOR,      false, &ChatHandler::HandleGMVisibleCommand,           "", NULL, SEC_FLAG_GM },
-        { "",               SEC_MODERATOR,      false, &ChatHandler::HandleGMCommand,                  "", NULL, SEC_FLAG_GM },
+        { "flag",             SEC_MODERATOR,      false, &ChatHandler::HandleGMCommand,                  "", NULL, SEC_FLAG_GM },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
@@ -256,7 +256,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "all_myspells",   SEC_ADMINISTRATOR,  false, &ChatHandler::HandleLearnAllMySpellsCommand,    "", NULL, SEC_FLAG_LEARNING },
         { "all_mytalents",  SEC_ADMINISTRATOR,  false, &ChatHandler::HandleLearnAllMyTalentsCommand,   "", NULL, SEC_FLAG_LEARNING },
         { "all_recipes",    SEC_GAMEMASTER,     false, &ChatHandler::HandleLearnAllRecipesCommand,     "", NULL, SEC_FLAG_LEARNING },
-        { "",               SEC_ADMINISTRATOR,  false, &ChatHandler::HandleLearnCommand,               "", NULL, SEC_FLAG_LEARNING },
+        { "spell",          SEC_ADMINISTRATOR,  false, &ChatHandler::HandleLearnCommand,               "", NULL, SEC_FLAG_LEARNING },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
@@ -490,28 +490,28 @@ ChatCommand * ChatHandler::getCommandTable()
     static ChatCommand serverIdleRestartCommandTable[] =
     {
         { "cancel",         SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerShutDownCancelCommand,"", NULL, SEC_FLAG_SERVER_CONTROL },
-        { ""   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerIdleRestartCommand,   "", NULL, SEC_FLAG_SERVER_CONTROL },
+        { "do"   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerIdleRestartCommand,   "", NULL, SEC_FLAG_SERVER_CONTROL },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
     static ChatCommand serverIdleShutdownCommandTable[] =
     {
         { "cancel",         SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerShutDownCancelCommand,"", NULL, SEC_FLAG_SERVER_CONTROL },
-        { ""   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerIdleShutDownCommand,  "", NULL, SEC_FLAG_SERVER_CONTROL },
+        { "do"   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerIdleShutDownCommand,  "", NULL, SEC_FLAG_SERVER_CONTROL },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
     static ChatCommand serverRestartCommandTable[] =
     {
         { "cancel",         SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerShutDownCancelCommand,"", NULL, SEC_FLAG_SERVER_CONTROL },
-        { ""   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerRestartCommand,       "", NULL, SEC_FLAG_SERVER_CONTROL },
+        { "do"   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerRestartCommand,       "", NULL, SEC_FLAG_SERVER_CONTROL },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
     static ChatCommand serverShutdownCommandTable[] =
     {
         { "cancel",         SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerShutDownCancelCommand,"", NULL, SEC_FLAG_SERVER_CONTROL },
-        { ""   ,            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerShutDownCommand,      "", NULL, SEC_FLAG_SERVER_CONTROL },
+        { "do"   ,          SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleServerShutDownCommand,      "", NULL, SEC_FLAG_SERVER_CONTROL },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
@@ -543,7 +543,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "del",            SEC_ADMINISTRATOR,  true,  &ChatHandler::HandleTeleDelCommand,             "", NULL, SEC_FLAG_TELEPORT },
         { "name",           SEC_MODERATOR,      true,  &ChatHandler::HandleTeleNameCommand,            "", NULL, SEC_FLAG_TELEPORT },
         { "group",          SEC_MODERATOR,      false, &ChatHandler::HandleTeleGroupCommand,           "", NULL, SEC_FLAG_TELEPORT },
-        { "",               SEC_MODERATOR,      false, &ChatHandler::HandleTeleCommand,                "", NULL, SEC_FLAG_TELEPORT },
+        { "tele",           SEC_MODERATOR,      false, &ChatHandler::HandleTeleCommand,                "", NULL, SEC_FLAG_TELEPORT },
         { NULL,             0,                  false, NULL,                                           "", NULL, 0 }
     };
 
@@ -666,7 +666,7 @@ ChatCommand * ChatHandler::getCommandTable()
                 Field *fields = result->Fetch();
                 std::string name = fields[0].GetCppString();
 
-                SetDataForCommandInTable(commandTable, name.c_str(), fields[1].GetUInt32(), fields[2].GetCppString(), name);
+                SetDataForCommandInTable(commandTable, name.c_str(), fields[1].GetUInt16(), fields[2].GetCppString(), name);
 
             } while(result->NextRow());
             delete result;
