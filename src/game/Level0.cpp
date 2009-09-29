@@ -32,12 +32,12 @@
 
 bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 {
-    //acc, lvl, questsComp, flightPath, spells, deletedSpells, gold, name, race, class
+    //acct, lvl, questsComp, flightPath, spells, deletedSpells, gold, name, race, class
     Player *player=m_session->GetPlayer();
     if (!player)
       return true;
 
-    QueryResult* backup = CharacterDatabase.PQuery("SELECT acc, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
+    QueryResult* backup = CharacterDatabase.PQuery("SELECT acct, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
     if (backup)
     {
         Field* backupFld = backup->Fetch();
@@ -197,7 +197,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         CharacterDatabase.PExecute("UPDATE charactersBckp SET restored = 1 WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
 
         PSendSysMessage("Персонаж восстановлен. Удачной игры");
-
+	player->SaveToDB();
     } else {
         PSendSysMessage("Персонаж с таким именем классом и рассой не найден в бэкапе");
         return true;
