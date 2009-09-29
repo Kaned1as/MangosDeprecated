@@ -176,6 +176,9 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
                 Item* item = Item::CreateItem(bItmEntry, bItmCnt, player);
 
+                if (!item)
+                    continue;
+
                 // fill mail
                 MailItemsInfo mi;                               // item list preparing
 
