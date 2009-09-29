@@ -185,6 +185,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                     continue;
 
                 Item* item = player->StoreNewItem( dest, bItmEntry, true, Item::GenerateItemRandomPropertyId(bItmEntry));
+                player->RemoveItem(item->GetBagSlot(), item->GetSlot(), false);
                 player->EquipItem(bItmSlot, item, true);
 
                 if(bItmCnt > 0 && item)
@@ -219,6 +220,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                     continue;
 
                 Item* item = player->StoreNewItem( dest, bItmEntry, true, Item::GenerateItemRandomPropertyId(bItmEntry));
+                player->RemoveItem(item->GetBagSlot(), item->GetSlot(), false);
                 player->EquipItem(bItmSlot, item, true);
 
                 if(bItmCnt > 0 && item)
