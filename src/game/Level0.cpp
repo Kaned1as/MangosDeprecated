@@ -29,6 +29,7 @@
 #include "revision.h"
 #include "revision_nr.h"
 #include "Util.h"
+#include "Mail.h"
 
 bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 {
@@ -169,7 +170,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
             }
             do
             {
-
+                Field* itemsFld = bItems->Fetch();
                 uint32 bItmEntry = itemsFld[0].GetUInt32();
                 uint32 bItmCnt = itemsFld[1].GetUInt32();
 
@@ -180,9 +181,9 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
                 mi.AddItem(item->GetGUIDLow(), item->GetEntry(), item);
 
-                std::string subject = GetSession()->GetMangosString(LANG_NOT_EQUIPPED_ITEM);
+                std::string subject = player->GetSession()->GetMangosString(LANG_NOT_EQUIPPED_ITEM);
 
-                WorldSession::SendMailTo(player, MAIL_NORMAL, MAIL_STATIONERY_GM, GetGUIDLow(), GetGUIDLow(), subject, 0, &mi, 0, 0, MAIL_CHECK_MASK_NONE);
+                WorldSession::SendMailTo(player, MAIL_NORMAL, MAIL_STATIONERY_GM, player->GetGUIDLow(), player->GetGUIDLow(), subject, 0, &mi, 0, 0, MAIL_CHECK_MASK_NONE);
 
             } while( bItems->NextRow());
 
