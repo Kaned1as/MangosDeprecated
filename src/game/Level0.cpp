@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -37,7 +37,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
     if (!player)
       return true;
 
-    QueryResult* backup = CharacterDatabase.PQuery("SELECT acct, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
+    QueryResult* backup = CharacterDatabase.PQuery("SELECT acct, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore, skills FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
     if (backup)
     {
         Field* backupFld = backup->Fetch();
@@ -51,6 +51,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         uint8 bRestored = backupFld[7].GetUInt8();
         uint8 bBanned = backupFld[8].GetUInt8();
         uint8 bReady = backupFld[9].GetUInt8();
+        std::string bSkills = backupFld[10].GetCppString();
 
         if (bRestored)
         {
@@ -86,7 +87,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         char* end;
         char* start = (char*)bFinQuests.c_str();
 
-        while(true) {
+      /*  while(true) {
             end = strchr(start,',');
             if(!end)
                 break;
@@ -95,7 +96,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
             player->SetQuestStatus(atol(start), QUEST_STATUS_COMPLETE);
 
             start = end + 1;
-        }
+        }*/
 
         start = (char*)bSpells.c_str();
 
@@ -121,6 +122,40 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
             player->removeSpell(atol(start), false, false);
 
             start = end + 1;
+        }
+
+        start = (char*)bSkills.c_str();
+        uint32 skillLine, skillCurrVal, skillMaxVal;
+
+        while(true) {
+            end = strchr(start,';');
+            if(!end)
+                break;
+            *end=0;
+
+            skillLine = atol(start);
+
+            start = end + 1;
+
+            end = strchr(start,';');
+            if(!end)
+                break;
+            *end=0;
+
+            skillCurrVal = atol(start);
+
+            start = end + 1;
+
+            end = strchr(start,';');
+            if(!end)
+                break;
+            *end=0;
+
+            skillMaxVal = atol(start);
+
+            start = end + 1;
+
+            player->SetSkill(skillLine, skillCurrVal, skillMaxVal);
         }
 
         player->SetMoney(bGold);
@@ -150,6 +185,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                     continue;
 
                 Item* item = player->StoreNewItem( dest, bItmEntry, true, Item::GenerateItemRandomPropertyId(bItmEntry));
+                player->EquipItem(bItmSlot, item, true);
 
                 if(bItmCnt > 0 && item)
                     player->SendNewItem(item,bItmCnt,false,true);
@@ -183,6 +219,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                     continue;
 
                 Item* item = player->StoreNewItem( dest, bItmEntry, true, Item::GenerateItemRandomPropertyId(bItmEntry));
+                player->EquipItem(bItmSlot, item, true);
 
                 if(bItmCnt > 0 && item)
                     player->SendNewItem(item,bItmCnt,false,true);
