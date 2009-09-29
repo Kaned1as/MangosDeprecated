@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -32,12 +32,12 @@
 
 bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 {
-    //accid, lvl, questsComp, flightPath, spells, deletedSpells, gold, name, race, class
+    //acc, lvl, questsComp, flightPath, spells, deletedSpells, gold, name, race, class
     Player *player=m_session->GetPlayer();
     if (!player)
       return true;
 
-    QueryResult* backup = CharacterDatabase.PQuery("SELECT accid, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
+    QueryResult* backup = CharacterDatabase.PQuery("SELECT acc, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
     if (backup)
     {
         Field* backupFld = backup->Fetch();
