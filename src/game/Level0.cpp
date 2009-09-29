@@ -160,7 +160,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
         player->SetMoney(bGold);
 
-        QueryResult* bItems = CharacterDatabase.PQuery("SELECT entry, slot, count from backupPlrItems where containerslot = '-1' and ownerguid = '%u'", bGuid);
+        QueryResult* bItems = CharacterDatabase.PQuery("SELECT entry, count FROM backupPlrItems where ownerguid = '%u'", bGuid);
         if (bItems)
         {
             for (uint32 i = 0;i<65535;++i)
@@ -169,62 +169,20 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
             }
             do
             {
-                Field* itemsFld = bItems->Fetch();
+
                 uint32 bItmEntry = itemsFld[0].GetUInt32();
-                uint32 bItmSlot = itemsFld[1].GetUInt32();
-                uint32 bItmCnt = itemsFld[2].GetUInt32();
+                uint32 bItmCnt = itemsFld[1].GetUInt32();
 
-                //Adding items
-                uint32 noSpaceForCount = 0;
+                Item* item = Item::CreateItem(bItmEntry, bItmCnt, player);
 
-                // check space and find places
-                ItemPosCountVec dest;
-                uint8 msg = player->CanStoreNewItem( NULL_BAG, bItmSlot, dest, bItmEntry, bItmCnt, &noSpaceForCount );
-                if( msg != EQUIP_ERR_OK )                               // convert to possible store amount
-                    bItmCnt -= noSpaceForCount;
+                // fill mail
+                MailItemsInfo mi;                               // item list preparing
 
-                if( bItmCnt == 0 || dest.empty())                         // can't add any
-                    continue;
+                mi.AddItem(item->GetGUIDLow(), item->GetEntry(), item);
 
-                Item* item = player->StoreNewItem( dest, bItmEntry, true, Item::GenerateItemRandomPropertyId(bItmEntry));
-                player->RemoveItem(item->GetBagSlot(), item->GetSlot(), false);
-                player->EquipItem(bItmSlot, item, true);
+                std::string subject = GetSession()->GetMangosString(LANG_NOT_EQUIPPED_ITEM);
 
-                if(bItmCnt > 0 && item)
-                    player->SendNewItem(item,bItmCnt,false,true);
-
-            } while( bItems->NextRow());
-
-            delete bItems;
-        }
-
-        bItems = CharacterDatabase.PQuery("SELECT entry, slot, containerslot, count from backupPlrItems where containerslot > '-1' and ownerguid = '%u'", bGuid);
-        if (bItems)
-        {
-            do
-            {
-                Field* itemsFld = bItems->Fetch();
-                uint32 bItmEntry = itemsFld[0].GetUInt32();
-                uint32 bItmSlot = itemsFld[1].GetUInt32();
-                uint32 bItmContSlot = itemsFld[2].GetUInt32();
-                uint32 bItmCnt = itemsFld[3].GetUInt32();
-
-                //Adding items
-                uint32 noSpaceForCount = 0;
-
-                // check space and find places
-                ItemPosCountVec dest;
-                uint8 msg = player->CanStoreNewItem( bItmSlot, bItmContSlot, dest, bItmEntry, bItmCnt, &noSpaceForCount );
-                if( msg != EQUIP_ERR_OK )                               // convert to possible store amount
-                    bItmCnt -= noSpaceForCount;
-
-                if( bItmCnt == 0 || dest.empty())                         // can't add any
-                    continue;
-
-                Item* item = player->StoreNewItem( dest, bItmEntry, true, Item::GenerateItemRandomPropertyId(bItmEntry));
-
-                if(bItmCnt > 0 && item)
-                    player->SendNewItem(item,bItmCnt,false,true);
+                WorldSession::SendMailTo(player, MAIL_NORMAL, MAIL_STATIONERY_GM, GetGUIDLow(), GetGUIDLow(), subject, 0, &mi, 0, 0, MAIL_CHECK_MASK_NONE);
 
             } while( bItems->NextRow());
 
