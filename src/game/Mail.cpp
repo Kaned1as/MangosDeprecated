@@ -667,6 +667,10 @@ void WorldSession::HandleGetMailList(WorldPacket & recv_data )
         }
 
         mails_count += 1;
+
+        //megai2: prevent 132error
+        if (mails_count = 25)
+            break;
     }
 
     data.put<uint8>(0, mails_count);                        // set real send mails to client
