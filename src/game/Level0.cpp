@@ -233,6 +233,9 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
         delete backup;
 
+        player->resetTalents(true);
+        player->SendTalentsInfoData(false);
+
         CharacterDatabase.PExecute("UPDATE charactersBckp SET restored = 1 WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
 
         PSendSysMessage("Персонаж восстановлен. Удачной игры");
