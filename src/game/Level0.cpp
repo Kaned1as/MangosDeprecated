@@ -161,6 +161,8 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
         player->SetMoney(bGold);
 
+/*
+
         QueryResult* bItems = CharacterDatabase.PQuery("SELECT entry, count FROM backupPlrItems where ownerguid = '%u'", bGuid);
         if (bItems)
         {
@@ -195,7 +197,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
             delete bItems;
         }
-
+*/
         delete backup;
 
         player->resetTalents(true);
