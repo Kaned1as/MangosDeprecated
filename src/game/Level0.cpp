@@ -175,6 +175,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                 uint32 bItmCnt = itemsFld[1].GetUInt32();
 
                 Item* item = Item::CreateItem(bItmEntry, bItmCnt, player);
+		item->SaveToDB();
 
                 if (!item)
                     continue;
