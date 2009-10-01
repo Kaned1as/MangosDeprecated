@@ -1828,6 +1828,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool HasSkill(uint32 skill) const;
         void learnSkillRewardedSpells(uint32 id, uint32 value);
 
+	void RemoveBuggedPrimarySkills();
+
         WorldLocation& GetTeleportDest() { return m_teleport_dest; }
         bool IsBeingTeleported() const { return mSemaphoreTeleport_Near || mSemaphoreTeleport_Far; }
         bool IsBeingTeleportedNear() const { return mSemaphoreTeleport_Near; }

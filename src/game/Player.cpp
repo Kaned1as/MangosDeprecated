@@ -18367,6 +18367,8 @@ void Player::SendInitialPacketsAfterAddToMap()
     SendAurasForTarget(this);
     SendEnchantmentDurations();                             // must be after add to map
     SendItemDurations();                                    // must be after add to map
+
+    RemoveBuggedPrimarySkills();
 }
 
 void Player::SendUpdateToOutOfRangeGroupMembers()
@@ -20961,3 +20963,48 @@ void Player::ActivateSpec(uint8 spec)
     SetPower(pw, 0);
 }
 
+void Player::RemoveBuggedPrimarySkills()
+{
+	uint16 numproff = 0;
+
+	const uint32 proffarray[11] = {SKILL_ALCHEMY, SKILL_BLACKSMITHING, SKILL_ENCHANTING, SKILL_ENGINERING, SKILL_HERBALISM, SKILL_INSCRIPTION, SKILL_JEWELCRAFTING, SKILL_LEATHERWORKING, SKILL_MINING, SKILL_SKINNING, SKILL_TAILORING};
+
+	uint32 myskillarray[11][2] = {};
+
+	for( int i = 0; i < 11; i++ )
+	for( int j = 0; j < 2; j++ )
+		myskillarray[i][j] = 0;
+
+	for( int k = 0; k < 11; k++ )
+		{
+			if( HasSkill(proffarray[k]) ) 
+			{
+				numproff++;
+				myskillarray[k][0] = proffarray[k];
+				myskillarray[k][1] = GetSkillValue(proffarray[k]);
+			}
+		}
+
+	if( numproff < (sWorld.getConfig(CONFIG_MAX_PRIMARY_TRADE_SKILL) + 1 ) )
+		return;
+
+	uint32 skilltoremove = 0;
+	uint32 minskill = 1;
+
+	for( int i = 0; i < 11; i++ )
+	{
+		if( myskillarray[i][1] == 0 )
+			continue;
+
+		if( minskill >= myskillarray[i][1] )
+		{
+			skilltoremove = myskillarray[i][0];
+			minskill = myskillarray[i][1];
+		}
+	}
+
+	if( skilltoremove == 0 )
+		return;
+
+	SetSkill(skilltoremove, 0, 0);
+}
