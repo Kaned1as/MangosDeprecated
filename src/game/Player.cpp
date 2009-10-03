@@ -20989,12 +20989,15 @@ void Player::RemoveBuggedPrimarySkills()
 		return;
 
 	uint32 skilltoremove = 0;
-	uint32 minskill = 1;
+	uint32 minskill = 0;
 
 	for( int i = 0; i < 11; i++ )
 	{
 		if( myskillarray[i][1] == 0 )
 			continue;
+
+		if( minskill == 0 )
+			minskill = myskillarray[i][1];
 
 		if( minskill >= myskillarray[i][1] )
 		{
