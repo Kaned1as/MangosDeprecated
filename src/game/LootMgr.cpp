@@ -858,9 +858,18 @@ bool LootTemplate::LootGroup::HasQuestDropForPlayer(Player const * player) const
 // Rolls an item from the group (if any takes its chance) and adds the item to the loot
 void LootTemplate::LootGroup::Process(Loot& loot) const
 {
-    LootStoreItem const * item = Roll();
-    if (item != NULL)
-        loot.AddItem(*item);
+	for(uint32 k=0; k < sWorld.getRate(RATE_DROP_MONEY); k++) //повторяем поиск в группе. грубо, но действенно.
+	{
+		LootStoreItem const * item = Roll();
+		if (item != NULL)
+		{
+			bool has_this_item = false;
+			for (std::vector<LootItem>::iterator i=loot.items.begin(); i != loot.items.end(); ++i)
+				if(i->itemid == item->itemid) has_this_item = true;
+			if(!has_this_item) // повторяется?
+				loot.AddItem(*item);
+		}
+	}
 }
 
 // Overall chance for the group without equal chanced items
