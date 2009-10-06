@@ -8342,7 +8342,7 @@ int32 Unit::SpellBaseDamageBonus(SpellSchoolMask schoolMask)
                 DoneAdvertisedBenefit += int32(GetTotalAttackPowerValue(BASE_ATTACK) * (*i)->GetModifier()->m_amount / 100.0f);
 
     }
-    return DoneAdvertisedBenefit;
+    return DoneAdvertisedBenefit > 0 ? DoneAdvertisedBenefit : 0;
 }
 
 int32 Unit::SpellBaseDamageBonusForVictim(SpellSchoolMask schoolMask, Unit *pVictim)
