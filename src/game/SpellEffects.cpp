@@ -6053,9 +6053,22 @@ void Spell::EffectBlock(uint32 /*i*/)
 
 void Spell::EffectLeapForward(uint32 i)
 {
-    if(unitTarget->isInFlight())
-        return;
+	if(unitTarget->isInFlight())
+       return;
 
+	if(unitTarget->GetTypeId() == TYPEID_PLAYER)
+	{
+		float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+
+		WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+		data.appendPackGUID(unitTarget->GetGUID());
+		data << getMSTime();
+		data << cosf(((Player*)unitTarget)->GetOrientation()) << sinf(((Player*)unitTarget)->GetOrientation());
+		data << radius;
+		data << float(-10.0f);
+		((Player*)unitTarget)->GetSession()->SendPacket(&data);
+	}
+	else
     if( m_spellInfo->rangeIndex == 1)                       //self range
     {
         float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
