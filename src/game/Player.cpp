@@ -17685,8 +17685,15 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
         if(catrec > 0)
             ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, catrec, spell);
 
-        // replace negative cooldowns by 0
-        if (rec < 0) rec = 0;
+	// GCD - Global CoolDown - based on www.wowwiki.com/Cooldown
+	int32 GCD = 0;
+	if( getClass() == CLASS_ROGUE || ( getClass() == CLASS_DRUID && m_form == FORM_CAT ) )
+		GCD = 1000;
+	else
+		GCD = 1500;
+
+        // replace negative or 0 cooldowns by GCD
+        if (rec < 0 || rec == 0) rec = GCD;
         if (catrec < 0) catrec = 0;
 
         // no cooldown after applying spell mods
