@@ -2653,7 +2653,8 @@ void Spell::EffectHealPct( uint32 /*i*/ )
 
         int32 gain = caster->DealHeal(unitTarget, addhealth, m_spellInfo);
 
-	//Ranger: no aggro. This a TEMP check.
+	//Ranger: no aggro
+	//This a TEMP check
 	if( m_caster && m_caster->GetTypeId() == TYPEID_UNIT )
 	{
 		Creature* mcastertarget = (Creature*) m_caster;
