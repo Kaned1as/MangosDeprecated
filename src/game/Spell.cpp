@@ -3918,6 +3918,10 @@ SpellCastResult Spell::CheckCast(bool strict)
                     else
                         return SPELL_FAILED_BAD_TARGETS;
                 }
+
+		//Ranger: anti WPE self-resurrect
+		if(m_spellInfo->Effect[0] == SPELL_EFFECT_RESURRECT_NEW && m_caster->isDead())
+			return SPELL_FAILED_CASTER_DEAD;
             }
 
             // Some special spells with non-caster only mode
@@ -4703,6 +4707,13 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if(m_targets.getUnitTarget()->getPowerType() != POWER_MANA)
                     return SPELL_FAILED_BAD_TARGETS;
 
+                break;
+            }
+            case SPELL_AURA_MOD_INCREASE_SPEED:
+            {
+		// Ranger: Dash hackfix
+		if(m_spellInfo->SpellIconID == 959 && m_caster->m_form != FORM_CAT)
+			return SPELL_FAILED_ONLY_SHAPESHIFT;
                 break;
             }
             default:

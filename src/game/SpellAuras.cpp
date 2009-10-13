@@ -2999,9 +2999,22 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
             case FORM_BEAR:
             case FORM_DIREBEAR:
             case FORM_CAT:
+            {
                 if(Aura* dummy = m_target->GetDummyAura(37315) )
                     m_target->CastSpell(m_target, 37316, true, NULL, dummy);
-                break;
+
+		//Ranger: hackfix for Dash
+		if(form == FORM_CAT)
+		{
+			if(m_target->HasAura(1850))
+				m_target->RemoveAurasDueToSpell(1850);//Dash rank1
+			if(m_target->HasAura(9821))
+				m_target->RemoveAurasDueToSpell(9821);//Dash rank2
+			if(m_target->HasAura(33357))
+				m_target->RemoveAurasDueToSpell(33357);//Dash rank3
+		}
+		break;
+            }
             // Nordrassil Regalia - bonus
             case FORM_MOONKIN:
                 if(Aura* dummy = m_target->GetDummyAura(37324) )
