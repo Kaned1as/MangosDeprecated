@@ -3780,6 +3780,10 @@ SpellCastResult Spell::CheckCast(bool strict)
             return SPELL_FAILED_NOT_READY;
     }
 
+    // Ranger: WPE safe-check
+    if(m_caster->isInCombat() && IsNonCombatSpell(m_spellInfo))
+        return SPELL_FAILED_AFFECTING_COMBAT;
+
     // only allow triggered spells if at an ended battleground
     if( !m_IsTriggeredSpell && m_caster->GetTypeId() == TYPEID_PLAYER)
         if(BattleGround * bg = ((Player*)m_caster)->GetBattleGround())
@@ -4712,8 +4716,8 @@ SpellCastResult Spell::CheckCast(bool strict)
             case SPELL_AURA_MOD_INCREASE_SPEED:
             {
 		// Ranger: Dash hackfix
-		if(m_spellInfo->SpellIconID == 959 && m_caster->m_form != FORM_CAT)
-			return SPELL_FAILED_ONLY_SHAPESHIFT;
+		if(m_spellInfo->SpellIconID == 959 && m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_caster->m_form != FORM_CAT)
+			return SPELL_FAILED_CASTER_AURASTATE;
                 break;
             }
             default:
