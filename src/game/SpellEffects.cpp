@@ -3141,6 +3141,25 @@ void Spell::EffectOpenLock(uint32 effIndex)
                 return;
             }
         }
+        //Ranger: WEH safe check!
+        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
+        {
+            uint32 gofact = goInfo->faction;
+            if( gofact && player )
+            {
+                FactionTemplateEntry const* gobfaction = sFactionTemplateStore.LookupEntry(gofact);
+                FactionTemplateEntry const* playerfaction = player->getFactionTemplateEntry();
+
+                if( playerfaction && gobfaction && !player->isGameMaster() && player->GetName() )
+                    if( playerfaction->IsHostileTo(*gobfaction) || gobfaction->faction == 77 )
+                    {
+                        std::stringstream goid;
+                        goid << "Faction hack (info: " << goInfo->id << ")";
+                        sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d",goid.str().c_str(),"Anticheat");
+                        return;
+                    }
+            }
+        }
         lockId = goInfo->GetLockId();
         guid = gameObjTarget->GetGUID();
     }

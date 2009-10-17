@@ -854,6 +854,29 @@ void GameObject::Use(Unit* user)
     uint32 spellId = 0;
     bool triggered = false;
 
+    //Ranger: WEH safe check!
+    GameObjectInfo const * mygoinfo = GetGOInfo();
+    if( user && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
+    {
+        Player* plr = (Player*)user;
+        uint32 gofact = mygoinfo->faction;
+
+        if( gofact && plr )
+        {
+            FactionTemplateEntry const* gofaction = sFactionTemplateStore.LookupEntry(gofact);
+            FactionTemplateEntry const* plrfaction = plr->getFactionTemplateEntry();
+
+            if( plrfaction && gofaction && !plr->isGameMaster() && plr->GetName() )
+                if( plrfaction->IsHostileTo(*gofaction) || gofaction->faction == 77 )
+                {
+                    std::stringstream gobid;
+                    gobid << "Faction hack (INFO: " << mygoinfo->id << ")";
+                    sWorld.BanAccount(BAN_CHARACTER,plr->GetName(),"-1d",gobid.str().c_str(),"Anticheat");
+                    return;
+                }
+        }
+    }
+
     switch(GetGoType())
     {
         case GAMEOBJECT_TYPE_DOOR:                          //0
