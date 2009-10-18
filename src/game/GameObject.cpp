@@ -855,27 +855,38 @@ void GameObject::Use(Unit* user)
     bool triggered = false;
 
     //Ranger: WEH safe check!
-    /*GameObjectInfo const * mygoinfo = GetGOInfo();
+    GameObjectInfo const * mygoinfo = GetGOInfo();
     if( user && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
     {
         Player* plr = (Player*)user;
         uint32 gofact = mygoinfo->faction;
 
-        if( gofact && plr )
+        if( gofact && plr && plr->GetName() )
         {
             FactionTemplateEntry const* gofaction = sFactionTemplateStore.LookupEntry(gofact);
             FactionTemplateEntry const* plrfaction = plr->getFactionTemplateEntry();
 
-            if( plrfaction && gofaction && !plr->isGameMaster() && plr->GetName() )
-                if( plrfaction->IsHostileTo(*gofaction) || gofaction->faction == 77 )
+            if( plrfaction && gofaction && !plr->isGameMaster() )
+                if( (gofaction->IsHostileTo(*plrfaction) ) )
                 {
                     std::stringstream gobid;
-                    gobid << "Faction hack (INFO: " << mygoinfo->id << ")";
-                    sWorld.BanAccount(BAN_CHARACTER,plr->GetName(),"-1d",gobid.str().c_str(),"Anticheat");
+                    gobid << "Faction hack (INFO: " << mygoinfo->id << "; Player: " << plr->GetName() << ")";
+
+                    std::stringstream Position;
+                    Position << "Player Position: " << plr->GetPositionX() << " " << plr->GetPositionY() << " "
+                        << plr->GetPositionZ();
+
+                    //sWorld.BanAccount(BAN_CHARACTER,plr->GetName(),"-1d",gobid.str().c_str(),"Anticheat");
+                    CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
+                                               "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
+                                               plr->GetName(),plr->GetSession()->GetAccountId(),gobid.str().c_str(),"detected in GameObject::Use",plr->GetMapId(),
+                                               Position.str().c_str(),plr->getLevel());
+
+                    plr->GetSession()->KickPlayer();
                     return;
                 }
         }
-    }*/
+    }
 
     switch(GetGoType())
     {

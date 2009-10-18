@@ -3142,24 +3142,35 @@ void Spell::EffectOpenLock(uint32 effIndex)
             }
         }
         //Ranger: WEH safe check!
-/*        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
+        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
         {
             uint32 gofact = goInfo->faction;
-            if( gofact && player )
+            if( gofact && player && player->GetName() )
             {
                 FactionTemplateEntry const* gobfaction = sFactionTemplateStore.LookupEntry(gofact);
                 FactionTemplateEntry const* playerfaction = player->getFactionTemplateEntry();
 
-                if( playerfaction && gobfaction && !player->isGameMaster() && player->GetName() )
-                    if( playerfaction->IsHostileTo(*gobfaction) || gobfaction->faction == 77 )
+                if( playerfaction && gobfaction && !player->isGameMaster() )
+                    if( (gobfaction->IsHostileTo(*playerfaction) ) )
                     {
                         std::stringstream goid;
-                        goid << "Faction hack (info: " << goInfo->id << ")";
-                        sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d",goid.str().c_str(),"Anticheat");
+                        goid << "Faction hack (info: " << goInfo->id << "; Player: " << player->GetName() << ")";
+
+                        std::stringstream Position;
+                        Position << "Player Position: " << player->GetPositionX() << " " << player->GetPositionY() << " "
+                            << player->GetPositionZ();
+
+                        //sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d",goid.str().c_str(),"Anticheat");
+                        CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
+                                                   "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
+                                                   player->GetName(),player->GetSession()->GetAccountId(),goid.str().c_str(),"detected in Spell::EffectOpenLock",player->GetMapId(),
+                                                   Position.str().c_str(),player->getLevel());
+
+                        player->GetSession()->KickPlayer();
                         return;
                     }
             }
-        }*/
+        }
         lockId = goInfo->GetLockId();
         guid = gameObjTarget->GetGUID();
     }
