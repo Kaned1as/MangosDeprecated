@@ -870,19 +870,19 @@ void GameObject::Use(Unit* user)
                 if( (gofaction->IsHostileTo(*plrfaction) ) )
                 {
                     std::stringstream gobid;
-                    gobid << "Faction hack (INFO: " << mygoinfo->id << "; Player: " << plr->GetName() << ")";
+                    gobid << "Faction hack (GO entry: " << mygoinfo->id << ", GO faction: " << gofact << "; Player race: " << plr->getRace() << ")";
 
                     std::stringstream Position;
                     Position << "Player Position: " << plr->GetPositionX() << " " << plr->GetPositionY() << " "
                         << plr->GetPositionZ();
 
-                    //sWorld.BanAccount(BAN_CHARACTER,plr->GetName(),"-1d",gobid.str().c_str(),"Anticheat");
                     CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
                                                "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
                                                plr->GetName(),plr->GetSession()->GetAccountId(),gobid.str().c_str(),"detected in GameObject::Use",plr->GetMapId(),
                                                Position.str().c_str(),plr->getLevel());
 
-                    plr->GetSession()->KickPlayer();
+                    sWorld.BanAccount(BAN_CHARACTER,plr->GetName(),"-1d","Faction hack #1","Anticheat");
+
                     return;
                 }
         }

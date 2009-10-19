@@ -3154,17 +3154,18 @@ void Spell::EffectOpenLock(uint32 effIndex)
                     if( (gobfaction->IsHostileTo(*playerfaction) ) )
                     {
                         std::stringstream goid;
-                        goid << "Faction hack (info: " << goInfo->id << "; Player: " << player->GetName() << ")";
+                        goid << "Faction hack (GO entry: " << goInfo->id << ", GO faction: " << gofact << "; Player race: " << player->getRace() << ")";
 
                         std::stringstream Position;
                         Position << "Player Position: " << player->GetPositionX() << " " << player->GetPositionY() << " "
                             << player->GetPositionZ();
 
-                        //sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d",goid.str().c_str(),"Anticheat");
                         CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
                                                    "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
                                                    player->GetName(),player->GetSession()->GetAccountId(),goid.str().c_str(),"detected in Spell::EffectOpenLock",player->GetMapId(),
                                                    Position.str().c_str(),player->getLevel());
+
+                        //sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d","Faction hack #2","Anticheat");
 
                         player->GetSession()->KickPlayer();
                         return;
