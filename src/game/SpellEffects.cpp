@@ -6099,10 +6099,33 @@ void Spell::EffectLeapForward(uint32 i)
 	if(unitTarget->isInFlight())
        return;
 
-	if(unitTarget->GetTypeId() == TYPEID_PLAYER)
+	bool fall = false;
+	// Cast checks from spell.cpp
+	float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+	float fx = m_caster->GetPositionX() + dis * cos(m_caster->GetOrientation());
+	float fy = m_caster->GetPositionY() + dis * sin(m_caster->GetOrientation());
+	// teleport a bit above terrain level to avoid falling below it
+	float fz = m_caster->GetBaseMap()->GetHeight(fx,fy,m_caster->GetPositionZ(),true);
+	if(fz <= INVALID_HEIGHT)                    // note: this also will prevent use effect in instances without vmaps height enabled
+		fall = true;
+
+	float caster_pos_z = m_caster->GetPositionZ();
+	// Control the caster to not climb or drop when +-fz > 8
+	if(!(fz <= caster_pos_z + 8 && fz >= caster_pos_z - 8))
+		fall = true;
+
+	// not allow use this effect at battleground until battleground start
+	if(m_caster->GetTypeId() == TYPEID_PLAYER)
+		if(BattleGround const *bg = ((Player*)m_caster)->GetBattleGround())
+			if(bg->GetStatus() != STATUS_IN_PROGRESS)
+				fall = true;
+     
+
+	if(fall && unitTarget->GetTypeId() == TYPEID_PLAYER)
 	{
 		float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
 
+		((Player*)unitTarget)->SetMovement(MOVE_UNROOT);
 		WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
 		data.appendPackGUID(unitTarget->GetGUID());
 		data << getMSTime();

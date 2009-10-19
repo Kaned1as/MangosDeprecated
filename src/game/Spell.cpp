@@ -4528,7 +4528,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                 }
                 break;
             }
-            //case SPELL_EFFECT_LEAP:
             case SPELL_EFFECT_TELEPORT_UNITS_FACE_CASTER:
             {
                 float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
