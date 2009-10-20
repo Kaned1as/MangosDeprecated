@@ -2199,7 +2199,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                 }
                 return;
             case 47977: //Magic Broom
-                    if(caster->GetTypeId() == TYPEID_PLAYER)
+                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
                     {
                             caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
                             switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
@@ -2224,7 +2224,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     }
                     return;
             case 48025: //Headless Horseman's Mount
-                    if(caster->GetTypeId() == TYPEID_PLAYER)
+                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
                     {
                             caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
                             switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
@@ -2249,7 +2249,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     } 
                     return;
             case 58983: //Big Blizzard Bear
-                    if(caster->GetTypeId() == TYPEID_PLAYER)
+                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
                     {
                             caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
                             switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
