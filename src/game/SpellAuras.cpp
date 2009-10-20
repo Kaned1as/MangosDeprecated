@@ -2137,7 +2137,6 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
         return;
 
     Unit* caster = GetCaster();
-    uint32 v_map = GetVirtualMapForMapAndZone(caster->GetMapId(), caster->GetZoneId());
 
     // AT APPLY
     if(apply)
@@ -2198,73 +2197,6 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     m_target->hauntedSId = GetId();
                 }
                 return;
-            case 47977: //Magic Broom
-                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
-                    {
-                            caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
-                            switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
-                            {
-                                    case 75:
-                                            caster->CastSpell(caster,42681,true,NULL,this);
-                                            break;
-                                    case 150:
-                                            caster->CastSpell(caster,42684,true,NULL,this);
-                                            break;
-                                    case 225:
-                                            caster->CastSpell(caster,42673,true,NULL,this);
-                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
-                                                    caster->CastSpell(caster,42683,true,NULL,this);
-                                            break;
-                                    case 300:
-                                            caster->CastSpell(caster,42679,true,NULL,this);
-                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
-                                                    caster->CastSpell(caster,42683,true,NULL,this);
-                                            break;
-                            }
-                    }
-                    return;
-            case 48025: //Headless Horseman's Mount
-                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
-                    {
-                            caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
-                            switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
-                            {
-                                    case 75:
-                                            caster->CastSpell(caster,51621,true,NULL,this);
-                                            break;
-                                    case 150:
-                                            caster->CastSpell(caster,48024,true,NULL,this);
-                                            break;
-                                    case 225:
-                                            caster->CastSpell(caster,51617,true,NULL,this);
-                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
-                                                    caster->CastSpell(caster,48024,true,NULL,this);
-                                            break;
-                                    case 300:
-                                            caster->CastSpell(caster,48023,true,NULL,this);
-                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
-                                                    caster->CastSpell(caster,48024,true,NULL,this);
-                                            break;
-                            }
-                    } 
-                    return;
-            case 58983: //Big Blizzard Bear
-                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
-                    {
-                            caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
-                            switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
-                            {
-                                    case 75:
-                                            caster->CastSpell(caster,58997,true,NULL,this);
-                                            break;
-                                    case 150:
-                                    case 225:
-                                    case 300:
-                                            caster->CastSpell(caster,58999,true,NULL,this);
-                                            break;
-                            }
-                    }
-                    return;
         }
 
         // Earth Shield
@@ -2322,14 +2254,6 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
 
         switch(GetId())
         {
-			case 44457: 
-			case 55359: 
-			case 55360:
-			{ 
-				m_target->CastSpell(m_target, 46419, false); // Let it BOOM firstly... 
-				caster->CastSpell(m_target, m_modifier.m_amount, true, NULL, this);
-			}
-
             case 2584:                                      // Waiting to Resurrect
             {
                 // Waiting to resurrect spell cancel, we must remove player from resurrect queue

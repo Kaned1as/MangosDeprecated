@@ -17687,7 +17687,7 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
 
 	// GCD - Global CoolDown - based on www.wowwiki.com/Cooldown
 	int32 GCD = 0;
-	if( spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM && !IsChanneledSpell(spellInfo) )
+	if( spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM )
 	{
 		if( getClass() == CLASS_ROGUE || ( getClass() == CLASS_DRUID && m_form == FORM_CAT ) )
 			GCD = 1000;
