@@ -2254,6 +2254,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
 
         switch(GetId())
         {
+			case 44457: 
+			case 55359: 
+			case 55360:
+			{ 
+				m_target->CastSpell(m_target, 46419, false); // Let it BOOM firstly... 
+				caster->CastSpell(m_target, m_modifier.m_amount, true, NULL, this);
+			}
+
             case 2584:                                      // Waiting to Resurrect
             {
                 // Waiting to resurrect spell cancel, we must remove player from resurrect queue
