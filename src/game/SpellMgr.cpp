@@ -1377,6 +1377,7 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
 				// Åìàíûå õàêôèêñû. Íàñ îò îäíèõ ñïåëëèêîíîê â Unit::HandleProc òîøíèëî, à òóò ÂÑ¨ ÒÀÊÎÅ!!! ÀÀÀÀÀÀÀÀÀÀÀÀ!!!!!!
                 if( (spellInfo_1->SpellIconID == 3000) && (spellInfo_2->SpellIconID == 937) ||
                     (spellInfo_2->SpellIconID == 3000) && (spellInfo_1->SpellIconID == 937) )
+					return false;
             }
             // Detect Invisibility and Mana Shield (multi-family check)
             if( spellInfo_2->Id == 132 && spellInfo_1->SpellIconID == 209 && spellInfo_1->SpellVisual[0] == 968 )
