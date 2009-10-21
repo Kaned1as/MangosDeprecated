@@ -3154,7 +3154,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
                     if( (gobfaction->IsHostileTo(*playerfaction) ) )
                     {
                         std::stringstream goid;
-                        goid << "Faction hack (GO entry: " << goInfo->id << ", GO faction: " << gofact << "; Player race: " << uint32(player->getRace()) << ")";
+                        goid << "Faction hack (GO entry: " << goInfo->id << ", GO faction: " << gofact << ")";
 
                         std::stringstream Position;
                         Position << "Player Position: " << player->GetPositionX() << " " << player->GetPositionY() << " "
