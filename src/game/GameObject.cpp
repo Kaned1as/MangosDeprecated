@@ -870,7 +870,7 @@ void GameObject::Use(Unit* user)
                 if( (gofaction->IsHostileTo(*plrfaction) ) )
                 {
                     std::stringstream gobid;
-                    gobid << "Faction hack (GO entry: " << mygoinfo->id << ", GO faction: " << gofact << "; Player race: " << plr->getRace() << ")";
+                    gobid << "Faction hack (GO entry: " << mygoinfo->id << ", GO faction: " << gofact << "; Player race: " << uint32(plr->getRace()) << ")";
 
                     std::stringstream Position;
                     Position << "Player Position: " << plr->GetPositionX() << " " << plr->GetPositionY() << " "
