@@ -1386,6 +1386,17 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
             if( spellInfo_1->SpellIconID == 125 && spellInfo_2->Id == 18820 )
                 return false;
 
+            // Arcane Intellect and Dalaran Intellect and Dalaran Brilliance
+            if( spellInfo_1->Id == 61024 && spellInfo_2->SpellIconID == 125 ||
+                spellInfo_2->Id == 61024 && spellInfo_1->SpellIconID == 125 ||
+                spellInfo_1->Id == 61024 && spellInfo_2->SpellIconID == 1694 ||
+                spellInfo_2->Id == 61024 && spellInfo_1->SpellIconID == 1694 ||
+                spellInfo_1->Id == 61316 && spellInfo_2->SpellIconID == 125 ||
+                spellInfo_2->Id == 61316 && spellInfo_1->SpellIconID == 125 ||
+                spellInfo_1->Id == 61316 && spellInfo_2->SpellIconID == 1694 ||
+                spellInfo_2->Id == 61316 && spellInfo_1->SpellIconID == 1694 )
+                return true; // can't be stacked
+
             break;
         case SPELLFAMILY_WARLOCK:
             if( spellInfo_2->SpellFamilyName == SPELLFAMILY_WARLOCK )
