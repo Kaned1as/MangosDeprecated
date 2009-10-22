@@ -2686,7 +2686,7 @@ void Spell::SendSpellCooldown()
     if(m_spellInfo->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
         return;
 
-    _player->AddSpellAndCategoryCooldowns(m_spellInfo,m_CastItem ? m_CastItem->GetEntry() : 0, this);
+    _player->AddSpellAndCategoryCooldowns(m_spellInfo,m_CastItem ? m_CastItem->GetEntry() : 0, this, false, m_IsTriggeredSpell);
 }
 
 void Spell::update(uint32 difftime)

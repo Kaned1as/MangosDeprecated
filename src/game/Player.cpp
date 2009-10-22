@@ -17622,7 +17622,7 @@ void Player::UpdatePvP(bool state, bool ovrride)
     }
 }
 
-void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 itemId, Spell* spell, bool infinityCooldown)
+void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 itemId, Spell* spell, bool infinityCooldown, bool IsTrigSpell)
 {
     // init cooldown values
     uint32 cat   = 0;
@@ -17685,11 +17685,12 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
         if(catrec > 0)
             ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, catrec, spell);
 
-	// GCD - Global CoolDown - based on www.wowwiki.com/Cooldown
+	// Ranger: GCD - Global CoolDown - based on www.wowwiki.com/Cooldown
+	// not affected on: professions (create item), channeled spells, triggered spells, familyname is SPELLFAMILY_GENERIC, ...
 	int32 GCD = 0;
-	if( spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM )
+	if( spellInfo && (spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM || spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC) && !IsChanneledSpell(spellInfo) && !IsTrigSpell )
 	{
-		if( getClass() == CLASS_ROGUE || ( getClass() == CLASS_DRUID && m_form == FORM_CAT ) )
+		if( getClass() == CLASS_ROGUE || ( getClass() == CLASS_DRUID && m_form && m_form == FORM_CAT ) )
 			GCD = 1000;
 		else
 			GCD = 1500;
