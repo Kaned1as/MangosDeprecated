@@ -855,13 +855,13 @@ void GameObject::Use(Unit* user)
     bool triggered = false;
 
     //Ranger: WEH safe check!
-    /*GameObjectInfo const * mygoinfo = GetGOInfo();
+    GameObjectInfo const * mygoinfo = GetGOInfo();
     if( user && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
     {
         Player* plr = (Player*)user;
         uint32 gofact = mygoinfo->faction;
 
-        if( gofact && plr && plr->GetName() )
+        if( gofact && plr && plr->GetName() && plr->GetSession() )
         {
             FactionTemplateEntry const* gofaction = sFactionTemplateStore.LookupEntry(gofact);
             FactionTemplateEntry const* plrfaction = plr->getFactionTemplateEntry();
@@ -870,7 +870,7 @@ void GameObject::Use(Unit* user)
                 if( (gofaction->IsHostileTo(*plrfaction) ) )
                 {
                     std::stringstream gobid;
-                    gobid << "Faction hack (GO entry: " << mygoinfo->id << ", GO faction: " << gofact << ")";
+                    gobid << "Faction hack (GO entry: " << mygoinfo->id << ", GO faction: " << gofact << "; Player race: " << uint32(plr->getRace()) << ")";
 
                     std::stringstream Position;
                     Position << "Player Position: " << plr->GetPositionX() << " " << plr->GetPositionY() << " "
@@ -886,7 +886,7 @@ void GameObject::Use(Unit* user)
                     return;
                 }
         }
-    }*/
+    }
 
     switch(GetGoType())
     {

@@ -6097,8 +6097,11 @@ void Spell::EffectBlock(uint32 /*i*/)
 
 void Spell::EffectLeapForward(uint32 i)
 {
-	if(unitTarget->isInFlight())
-       return;
+        if( !unitTarget || !m_caster )
+            return;
+
+        if( unitTarget->isInFlight() || !unitTarget->isAlive() )
+            return;
 
 	bool fall = false;
 	// Cast checks from spell.cpp
