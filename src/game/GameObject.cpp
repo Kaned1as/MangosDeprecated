@@ -855,7 +855,7 @@ void GameObject::Use(Unit* user)
     bool triggered = false;
 
     //Ranger: WEH safe check!
-    GameObjectInfo const * mygoinfo = GetGOInfo();
+    /*GameObjectInfo const * mygoinfo = GetGOInfo();
     if( user && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
     {
         Player* plr = (Player*)user;
@@ -886,7 +886,7 @@ void GameObject::Use(Unit* user)
                     return;
                 }
         }
-    }
+    }*/
 
     switch(GetGoType())
     {

@@ -3142,7 +3142,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
             }
         }
         //Ranger: WEH safe check!
-        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
+        /*else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
         {
             uint32 gofact = goInfo->faction;
             if( gofact && player && player->GetName() )
@@ -3171,7 +3171,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
                         return;
                     }
             }
-        }
+        }*/
         lockId = goInfo->GetLockId();
         guid = gameObjTarget->GetGUID();
     }
