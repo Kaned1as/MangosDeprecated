@@ -2143,6 +2143,75 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
     {
         switch(GetId())
         {
+
+			case 47977: //Magic Broom
+                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
+                    {
+							uint32 v_map = GetVirtualMapForMapAndZone(caster->GetMapId(), caster->GetZoneId());
+                            caster->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+                            switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
+                            {
+                                    case 75:
+                                            caster->CastSpell(caster,42681,true,NULL,this);
+                                            break;
+                                    case 150:
+                                            caster->CastSpell(caster,42684,true,NULL,this);
+                                            break;
+                                    case 225:
+                                            caster->CastSpell(caster,42673,true,NULL,this);
+                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
+                                                    caster->CastSpell(caster,42683,true,NULL,this);
+                                            break;
+                                    case 300:
+                                            caster->CastSpell(caster,42679,true,NULL,this);
+                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
+                                                    caster->CastSpell(caster,42683,true,NULL,this);
+                                            break;
+                            }
+                    }
+                    return;
+            case 48025: //Headless Horseman's Mount
+                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
+                    {
+                            uint32 v_map = GetVirtualMapForMapAndZone(caster->GetMapId(), caster->GetZoneId());
+                            switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
+                            {
+                                    case 75:
+                                            caster->CastSpell(caster,51621,true,NULL,this);
+                                            break;
+                                    case 150:
+                                            caster->CastSpell(caster,48024,true,NULL,this);
+                                            break;
+                                    case 225:
+                                            caster->CastSpell(caster,51617,true,NULL,this);
+                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
+                                                    caster->CastSpell(caster,48024,true,NULL,this);
+                                            break;
+                                    case 300:
+                                            caster->CastSpell(caster,48023,true,NULL,this);
+                                            if( !((Player*)caster)->isGameMaster() && v_map != 530 && !(v_map == 571 && ((Player*)caster)->HasSpell(54197)))
+                                                    caster->CastSpell(caster,48024,true,NULL,this);
+                                            break;
+                            }
+                    } 
+                    return;
+            case 58983: //Big Blizzard Bear
+                    if(caster && caster->GetTypeId() == TYPEID_PLAYER)
+                    {
+                            switch(((Player*)caster)->GetSkillValue(SKILL_RIDING))
+                            {
+                                    case 75:
+                                            caster->CastSpell(caster,58997,true,NULL,this);
+                                            break;
+                                    case 150:
+                                    case 225:
+                                    case 300:
+                                            caster->CastSpell(caster,58999,true,NULL,this);
+                                            break;
+                            }
+                    }
+                    return;
+
             case 1515:                                      // Tame beast
                 // FIX_ME: this is 2.0.12 threat effect replaced in 2.1.x by dummy aura, must be checked for correctness
                 if( caster && m_target->CanHaveThreatList())
