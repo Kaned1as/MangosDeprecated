@@ -6528,8 +6528,7 @@ void Player::DuelComplete(DuelCompleteType type)
     //Remove Duel Flag object
     GameObject* obj = GetMap()->GetGameObject(GetUInt64Value(PLAYER_DUEL_ARBITER));
     if(obj)
-		obj->GetOwner()->RemoveGameObject(obj,true);
-	    //duel->initiator->RemoveGameObject(obj,true);
+       duel->initiator->RemoveGameObject(obj,true);
 
     /* remove auras */
     std::vector<uint32> auras2remove;
