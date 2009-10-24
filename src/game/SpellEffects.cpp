@@ -3142,10 +3142,10 @@ void Spell::EffectOpenLock(uint32 effIndex)
             }
         }
         //Ranger: WEH safe check!
-        /*else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
+        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
         {
             uint32 gofact = goInfo->faction;
-            if( gofact && player && player->GetName() )
+            if( gofact && player && player->GetName() && player->GetSession() )
             {
                 FactionTemplateEntry const* gobfaction = sFactionTemplateStore.LookupEntry(gofact);
                 FactionTemplateEntry const* playerfaction = player->getFactionTemplateEntry();
@@ -3154,7 +3154,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
                     if( (gobfaction->IsHostileTo(*playerfaction) ) )
                     {
                         std::stringstream goid;
-                        goid << "Faction hack (GO entry: " << goInfo->id << ", GO faction: " << gofact << ")";
+                        goid << "Faction hack (GO entry: " << goInfo->id << ", GO faction: " << gofact << "; Player race: " << uint32(player->getRace()) << ")";
 
                         std::stringstream Position;
                         Position << "Player Position: " << player->GetPositionX() << " " << player->GetPositionY() << " "
@@ -3165,13 +3165,13 @@ void Spell::EffectOpenLock(uint32 effIndex)
                                                    player->GetName(),player->GetSession()->GetAccountId(),goid.str().c_str(),"detected in Spell::EffectOpenLock",player->GetMapId(),
                                                    Position.str().c_str(),player->getLevel());
 
-                        //sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d","Faction hack #2","Anticheat");
+                        sWorld.BanAccount(BAN_CHARACTER,player->GetName(),"-1d","Faction hack #2","Anticheat");
 
-                        player->GetSession()->KickPlayer();
+                        //player->GetSession()->KickPlayer();
                         return;
                     }
             }
-        }*/
+        }
         lockId = goInfo->GetLockId();
         guid = gameObjTarget->GetGUID();
     }
