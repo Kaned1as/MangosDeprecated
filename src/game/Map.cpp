@@ -714,10 +714,9 @@ void Map::Remove(Player *player, bool remove)
     {
         if(remove)
             player->CleanupsBeforeDelete();
-        else
-            player->RemoveFromWorld();
 
         // invalid coordinates
+        player->RemoveFromWorld();
         player->ResetMap();
 
         if( remove )
@@ -740,9 +739,8 @@ void Map::Remove(Player *player, bool remove)
 
     if(remove)
         player->CleanupsBeforeDelete();
-    else
-        player->RemoveFromWorld();
 
+    player->RemoveFromWorld();
     RemoveFromGrid(player,grid,cell);
 
     SendRemoveTransports(player);
@@ -788,10 +786,8 @@ Map::Remove(T *obj, bool remove)
     if(obj->isActiveObject())
         RemoveFromActive(obj);
 
-    if(remove)
-        obj->CleanupsBeforeDelete();
-    else
-        obj->RemoveFromWorld();
+    obj->RemoveFromWorld();
+    RemoveFromGrid(obj,grid,cell);
 
     UpdateObjectVisibility(obj,cell,p);
 
@@ -2119,6 +2115,9 @@ void Map::RemoveAllObjectsInRemoveList()
             Remove((GameObject*)obj,true);
             break;
         case TYPEID_UNIT:
+            // in case triggered sequence some spell can continue casting after prev CleanupsBeforeDelete call
+            // make sure that like sources auras/etc removed before destructor start
+            ((Creature*)obj)->CleanupsBeforeDelete ();
             Remove((Creature*)obj,true);
             break;
         default:
