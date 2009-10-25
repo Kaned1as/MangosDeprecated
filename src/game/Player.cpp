@@ -539,7 +539,8 @@ void Player::CleanupsBeforeDelete()
     if(m_uint32Values)                                      // only for fully created Object
     {
         TradeCancel(false);
-        DuelComplete(DUEL_INTERUPTED);
+        if(duel)
+            DuelComplete(DUEL_INTERUPTED);
     }
     Unit::CleanupsBeforeDelete();
 }
