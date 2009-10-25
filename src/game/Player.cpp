@@ -6527,7 +6527,7 @@ void Player::DuelComplete(DuelCompleteType type)
 
     //Remove Duel Flag object
     GameObject* obj = GetMap()->GetGameObject(GetUInt64Value(PLAYER_DUEL_ARBITER));
-    if (obj && obj->IsInWorld() && duel->initiator && duel->initiator->IsInWorld() && obj->GetOwnerGUID() == duel->initiator->GetGUID())
+    if (obj)
        duel->initiator->RemoveGameObject(obj,true);
 
     /* remove auras */

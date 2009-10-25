@@ -2328,7 +2328,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
 			case 55360:
 			{
 				// Living Bomb
-				if(m_target && caster)
+				if(m_target && caster && m_target->GetHealth() != 1) //prevent crashing at duel's end...
 				{
 					m_target->CastSpell(m_target, 46419, false); // Let it BOOM firstly... 
 					caster->CastSpell(m_target, m_modifier.m_amount, true, NULL, this);
