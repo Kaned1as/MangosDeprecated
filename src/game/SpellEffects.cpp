@@ -359,7 +359,11 @@ void Spell::EffectSchoolDMG(uint32 effect_idx)
                 // Arcane Blast
                 if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x20000000))
                 {
-                    m_caster->CastSpell(m_caster, 36032, true);
+                    m_caster->CastSpell(m_caster, 36032, false);
+                }
+                else if (m_spellInfo->SchoolMask & SPELL_SCHOOL_MASK_ARCANE && !(m_spellInfo->SpellVisual[0] == 7749 && m_spellInfo->Attributes & SPELL_ATTR_UNK18) )
+                {
+                    m_caster->RemoveAurasDueToSpell(36032);
                 }
                 break;
             }
