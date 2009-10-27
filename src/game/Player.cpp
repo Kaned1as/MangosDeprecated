@@ -17688,7 +17688,7 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
 	// Ranger: GCD - Global CoolDown - based on www.wowwiki.com/Cooldown
 	// not affected on: professions (create item), auto shoot, channeled spells, triggered spells, familyname is SPELLFAMILY_GENERIC, ...
 	int32 GCD = 0;
-	if( spellInfo && (spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM || spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC) && !IsChanneledSpell(spellInfo) && !IsTrigSpell && !IsAutoRepeatRangedSpell(spellInfo) && spellInfo->Id != SPELL_ID_AUTOSHOT )
+	if( spellInfo && (spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM || spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC) && !IsChanneledSpell(spellInfo) && !IsTrigSpell && !IsAutoRepeatRangedSpell(spellInfo) && spellInfo->Id != SPELL_ID_AUTOSHOT && !IsPassiveSpell(spellInfo->Id) )
 	{
 		if( getClass() == CLASS_ROGUE || ( getClass() == CLASS_DRUID && m_form && m_form == FORM_CAT ) )
 			GCD = 1000;
