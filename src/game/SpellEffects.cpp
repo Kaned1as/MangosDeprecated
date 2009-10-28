@@ -3401,6 +3401,18 @@ void Spell::EffectSummonType(uint32 i)
             sLog.outError("EffectSummonType: Unhandled summon type %u", m_spellInfo->EffectMiscValueB[i]);
             break;
     }
+
+    //Ranger: hackfix...
+    switch(m_spellInfo->Id)
+    {
+        case 53173:
+            EffectSummonGuardian(0);
+            break;
+
+        default:
+            break;
+    }
+
 }
 
 void Spell::EffectSummon(uint32 i)
@@ -3771,6 +3783,9 @@ void Spell::EffectSummonWild(uint32 i)
 
     int32 amount = damage > 0 ? damage : 1;
 
+    if( amount > 10 )
+         amount = 1;
+
     for(int32 count = 0; count < amount; ++count)
     {
         float px, py, pz;
@@ -3841,6 +3856,9 @@ void Spell::EffectSummonGuardian(uint32 i)
     float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
 
     int32 amount = damage > 0 ? damage : 1;
+
+    if( amount > 10 )
+         amount = 1;
 
     for(int32 count = 0; count < amount; ++count)
     {
@@ -6780,6 +6798,9 @@ void Spell::EffectSummonDemon(uint32 i)
 
     if (m_spellInfo->EffectMiscValueB[i] == SUMMON_TYPE_INFERNO)
         amount = 1;
+
+    if( amount > 10 )
+         amount = 1;
 
     for(int32 count = 0; count < amount; ++count)
     {
