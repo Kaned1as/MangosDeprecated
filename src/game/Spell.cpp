@@ -3936,6 +3936,22 @@ SpellCastResult Spell::CheckCast(bool strict)
                 return SPELL_FAILED_BAD_TARGETS;
         }
 
+        //Ranger: cheater safe check - attack friendly targets (WPE, WEH and other shit...)
+        if(non_caster_target && m_caster->GetTypeId() == TYPEID_PLAYER && target->GetTypeId() == TYPEID_PLAYER)
+        {
+            Player *mcaster = NULL;
+            Player *mtarget = NULL;
+
+            mcaster = (Player*)m_caster;
+            mtarget = (Player*)target;
+
+            if(mcaster && mtarget && !IsPositiveSpell(m_spellInfo->Id) && !mcaster->isGameMaster() && m_spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC)
+            {
+                if( mcaster->GetTeam() == mtarget->GetTeam() && !(mcaster->duel && mcaster->duel->opponent == mtarget && mcaster->duel->startTime != 0) && !(mcaster->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP) && mtarget->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP)) )
+                    return SPELL_FAILED_BAD_TARGETS;
+            }
+        }
+
         // check pet presents
         for(int j = 0; j < 3; ++j)
         {
