@@ -3945,7 +3945,7 @@ SpellCastResult Spell::CheckCast(bool strict)
             mcaster = (Player*)m_caster;
             mtarget = (Player*)target;
 
-            if(mcaster && mtarget && !IsPositiveSpell(m_spellInfo->Id) && !mcaster->isGameMaster() && m_spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC)
+            if(mcaster && mtarget && !IsPositiveSpell(m_spellInfo->Id) && !mcaster->isGameMaster() && m_spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC && m_spellInfo->Effect[0] != SPELL_EFFECT_DUMMY && !m_IsTriggeredSpell )
             {
                 if( mcaster->GetTeam() == mtarget->GetTeam() && !(mcaster->duel && mcaster->duel->opponent == mtarget && mcaster->duel->startTime != 0) && !(mcaster->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP) && mtarget->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP)) )
                     return SPELL_FAILED_BAD_TARGETS;
