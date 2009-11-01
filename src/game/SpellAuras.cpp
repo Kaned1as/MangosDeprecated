@@ -1332,6 +1332,10 @@ void Aura::HandleAddModifier(bool apply, bool Real)
             case 57761:    // Fireball!
                 SetAuraCharges(1);
                 break;
+                
+            case 36032:    // Arcane Blast
+                SetAuraCharges(0);
+                break;
         }
 
         SpellModifier *mod = new SpellModifier;
@@ -4513,6 +4517,10 @@ void Aura::HandlePeriodicTriggerSpell(bool apply, bool /*Real*/)
             default:
                 break;
         }
+
+        // Arcane Blast
+        if (GetCaster() && m_spellProto->SpellFamilyName == SPELLFAMILY_MAGE && (m_spellProto->SpellFamilyFlags & UI64LIT(0x0000000000000800))) // AM
+            GetCaster()->RemoveAurasDueToSpell(36032);
     }
 }
 
