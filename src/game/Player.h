@@ -257,14 +257,13 @@ struct PvPInfo
 
 struct DuelInfo
 {
-    DuelInfo() : initiator(NULL), opponent(NULL), startTimer(0), startTime(0), outOfBound(0), is_being_deleted(false) {}
+    DuelInfo() : initiator(NULL), opponent(NULL), startTimer(0), startTime(0), outOfBound(0) {}
 
     Player *initiator;
     Player *opponent;
     time_t startTimer;
     time_t startTime;
     time_t outOfBound;
-	bool is_being_deleted;
 };
 
 struct Areas

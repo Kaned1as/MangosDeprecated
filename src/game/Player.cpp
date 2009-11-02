@@ -6504,11 +6504,6 @@ void Player::DuelComplete(DuelCompleteType type)
     if(!duel)
         return;
 
-	if(duel->is_being_deleted || duel->opponent->duel->is_being_deleted) //duel ends only once!
-		return;
-			
-	duel->is_being_deleted = true;
-
     WorldPacket data(SMSG_DUEL_COMPLETE, (1));
     data << (uint8)((type != DUEL_INTERUPTED) ? 1 : 0);
     GetSession()->SendPacket(&data);
