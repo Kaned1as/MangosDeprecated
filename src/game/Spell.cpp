@@ -2482,6 +2482,14 @@ void Spell::cast(bool skipCheck)
             ((Player*)m_caster)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_USE_ITEM, m_CastItem->GetEntry());
 
         ((Player*)m_caster)->GetAchievementMgr().UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_CAST_SPELL, m_spellInfo->Id);
+
+        //Ranger: Mage Invisibility interrupt on cast hackfix
+        if (m_caster->getClass() == CLASS_MAGE && !IsPassiveSpell(m_spellInfo->Id) && m_spellInfo->Id != 32612)
+        {
+            if (m_caster->HasAura(32612))
+                m_caster->RemoveAurasDueToSpell(32612);
+        }
+
     }
 
     FillTargetMap();
