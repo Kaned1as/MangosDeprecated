@@ -3926,10 +3926,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                     else
                         return SPELL_FAILED_BAD_TARGETS;
                 }
-
-		//Ranger: anti WPE self-resurrect
-		if(m_spellInfo->Effect[0] == SPELL_EFFECT_RESURRECT_NEW && m_caster->isDead())
-			return SPELL_FAILED_CASTER_DEAD;
             }
 
             // Some special spells with non-caster only mode

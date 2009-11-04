@@ -243,6 +243,30 @@ void Spell::EffectResurrectNew(uint32 i)
     if(!unitTarget->IsInWorld())
         return;
 
+    //Ranger: anti WPE self-resurrect
+    if( m_caster && m_caster->GetTypeId() == TYPEID_PLAYER && unitTarget == m_caster)
+    {
+        Player* mcaster = (Player*)m_caster;
+
+        //Collecting logs...
+        if( mcaster && mcaster->GetName() && mcaster->GetSession() && !mcaster->isGameMaster() )
+        {
+            std::stringstream resurrectinfo;
+            resurrectinfo << "Self resurrect? Cheater? Check it! Spell: " << m_spellInfo->Id;
+
+            std::stringstream myposition;
+            myposition << "Player Position: " << mcaster->GetPositionX() << " " << mcaster->GetPositionY() << " "
+                << mcaster->GetPositionZ();
+
+            CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
+                                       "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
+                                       mcaster->GetName(),mcaster->GetSession()->GetAccountId(),resurrectinfo.str().c_str(),"detected in Spell::EffectResurrectNew",mcaster->GetMapId(),
+                                       myposition.str().c_str(),mcaster->getLevel());
+        }
+
+        //return;
+    }
+
     Player* pTarget = ((Player*)unitTarget);
 
     if(pTarget->isRessurectRequested())       // already have one active request
