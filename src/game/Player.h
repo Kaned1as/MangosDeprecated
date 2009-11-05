@@ -1584,7 +1584,7 @@ class MANGOS_DLL_SPEC Player : public Unit
             time_t t = time(NULL);
             return itr != m_spellCooldowns.end() && itr->second.end > t ? itr->second.end - t : 0;
         }
-        void AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 itemId, Spell* spell = NULL, bool infinityCooldown = false, bool IsTrigSpell = false);
+        void AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 itemId, Spell* spell = NULL, bool infinityCooldown = false);
         void AddSpellCooldown(uint32 spell_id, uint32 itemid, time_t end_time);
         void SendCooldownEvent(SpellEntry const *spellInfo, uint32 itemId = 0, Spell* spell = NULL);
         void ProhibitSpellScholl(SpellSchoolMask idSchoolMask, uint32 unTimeMs );
@@ -1598,6 +1598,11 @@ class MANGOS_DLL_SPEC Player : public Unit
         void _SaveSpellCooldowns();
         void SetLastPotionId(uint32 item_id) { m_lastPotionId = item_id; }
         void UpdatePotionCooldown(Spell* spell = NULL);
+
+        // global cooldown
+        void AddGlobalCooldown(SpellEntry const *spellInfo, Spell const *spell);
+        bool HasGlobalCooldown(SpellEntry const *spellInfo) const;
+        void RemoveGlobalCooldown(SpellEntry const *spellInfo);
 
         void setResurrectRequestData(uint64 guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana)
         {
@@ -2374,7 +2379,10 @@ class MANGOS_DLL_SPEC Player : public Unit
         PlayerMails m_mail;
         PlayerSpellMap m_spells;
         SpellCooldowns m_spellCooldowns;
-		PlayerTalentMap *m_talents[MAX_TALENT_SPECS];
+
+        std::map<uint32, uint32> m_globalCooldowns; // whole start recovery category stored in one
+
+        PlayerTalentMap *m_talents[MAX_TALENT_SPECS];
         uint32 m_lastPotionId;                              // last used health/mana potion in combat, that block next potion use
 
         uint32 m_activeSpec;

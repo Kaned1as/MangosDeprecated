@@ -480,6 +480,8 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
 
     m_lastFallTime = 0;
     m_lastFallZ = 0;
+
+    m_globalCooldowns.clear();
 }
 
 Player::~Player ()
@@ -1079,6 +1081,15 @@ void Player::Update( uint32 p_time )
         // It will be recalculate at mailbox open (for unReadMails important non-0 until mailbox open, it also will be recalculated)
         m_nextMailDelivereTime = 0;
     }
+
+    for(std::map<uint32, uint32>::iterator itr = m_globalCooldowns.begin(); itr != m_globalCooldowns.end(); ++itr)
+        if(itr->second)
+        {
+            if(itr->second > p_time)
+                itr->second -= p_time;
+            else
+                itr->second = 0;
+        }
 
     //used to implement delayed far teleports
     SetCanDelayTeleport(true);
@@ -17650,7 +17661,7 @@ void Player::UpdatePvP(bool state, bool ovrride)
     }
 }
 
-void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 itemId, Spell* spell, bool infinityCooldown, bool IsTrigSpell)
+void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 itemId, Spell* spell, bool infinityCooldown)
 {
     // init cooldown values
     uint32 cat   = 0;
@@ -17713,19 +17724,8 @@ void Player::AddSpellAndCategoryCooldowns(SpellEntry const* spellInfo, uint32 it
         if(catrec > 0)
             ApplySpellMod(spellInfo->Id, SPELLMOD_COOLDOWN, catrec, spell);
 
-	// Ranger: GCD - Global CoolDown - based on www.wowwiki.com/Cooldown
-	// not affected on: professions (create item), auto shoot, channeled spells, triggered spells, familyname is SPELLFAMILY_GENERIC, ...
-	int32 GCD = 0;
-	/*if( spellInfo && (spellInfo->Effect[0] != SPELL_EFFECT_CREATE_ITEM || spellInfo->SpellFamilyName != SPELLFAMILY_GENERIC) && !IsChanneledSpell(spellInfo) && !IsTrigSpell && !IsAutoRepeatRangedSpell(spellInfo) && spellInfo->Id != SPELL_ID_AUTOSHOT && !IsPassiveSpell(spellInfo->Id) )
-	{
-		if( getClass() == CLASS_ROGUE || ( getClass() == CLASS_DRUID && m_form && m_form == FORM_CAT ) )
-			GCD = 1000;
-		else
-			GCD = 1500;
-	}*/
-
-        // replace negative or 0 cooldowns by GCD
-        if (rec < 0 || rec == 0) rec = GCD;
+        // replace negative cooldowns by 0
+        if (rec < 0) rec = 0;
         if (catrec < 0) catrec = 0;
 
         // no cooldown after applying spell mods
@@ -21053,4 +21053,36 @@ void Player::RemoveBuggedPrimarySkills()
 		return;
 
 	SetSkill(skilltoremove, 0, 0);
+}
+
+void Player::AddGlobalCooldown(SpellEntry const *spellInfo, Spell const *spell)
+{
+    if(!spellInfo || !spellInfo->StartRecoveryTime)
+        return;
+
+    uint32 cdTime = spellInfo->StartRecoveryTime;
+
+    if( !(spellInfo->Attributes & (SPELL_ATTR_UNK4|SPELL_ATTR_TRADESPELL)) )
+        cdTime *= GetFloatValue(UNIT_MOD_CAST_SPEED);
+    else if (spell->IsRangedSpell() && !spell->IsAutoRepeat())
+        cdTime *= m_modAttackSpeedPct[RANGED_ATTACK];
+
+    m_globalCooldowns[spellInfo->StartRecoveryCategory] = ((cdTime<1000 || cdTime>2000) ? 1000 : cdTime);
+}
+
+bool Player::HasGlobalCooldown(SpellEntry const *spellInfo) const
+{
+    if(!spellInfo)
+        return false;
+
+    std::map<uint32, uint32>::const_iterator itr = m_globalCooldowns.find(spellInfo->StartRecoveryCategory);
+    return itr != m_globalCooldowns.end() && (itr->second > sWorld.GetUpdateTime());
+}
+
+void Player::RemoveGlobalCooldown(SpellEntry const *spellInfo)
+{
+    if(!spellInfo)
+        return;
+
+    m_globalCooldowns[spellInfo->StartRecoveryCategory] = 0;
 }

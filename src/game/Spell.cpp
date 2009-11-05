@@ -2308,6 +2308,9 @@ void Spell::prepare(SpellCastTargets const* targets, Aura* triggeredByAura)
     {
         m_caster->SetCurrentCastedSpell( this );
         SendSpellStart();
+
+        if(m_caster->GetTypeId() == TYPEID_PLAYER)
+            ((Player*)m_caster)->AddGlobalCooldown(m_spellInfo,this);
     }
 }
 
@@ -2342,6 +2345,9 @@ void Spell::cancel()
             SendChannelUpdate(0);
             SendInterrupted(0);
             SendCastResult(SPELL_FAILED_INTERRUPTED);
+
+            if(m_caster->GetTypeId() == TYPEID_PLAYER)
+                ((Player*)m_caster)->RemoveGlobalCooldown(m_spellInfo);
         } break;
 
         default:
@@ -2695,7 +2701,7 @@ void Spell::SendSpellCooldown()
     if(m_spellInfo->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE)
         return;
 
-    _player->AddSpellAndCategoryCooldowns(m_spellInfo,m_CastItem ? m_CastItem->GetEntry() : 0, this, false, m_IsTriggeredSpell);
+    _player->AddSpellAndCategoryCooldowns(m_spellInfo,m_CastItem ? m_CastItem->GetEntry() : 0, this);
 }
 
 void Spell::update(uint32 difftime)
@@ -3781,7 +3787,7 @@ void Spell::CastPreCastSpells(Unit* target)
 SpellCastResult Spell::CheckCast(bool strict)
 {
     // check cooldowns to prevent cheating
-    if(m_caster->GetTypeId()==TYPEID_PLAYER && ((Player*)m_caster)->HasSpellCooldown(m_spellInfo->Id))
+    if(!m_IsTriggeredSpell && m_caster->GetTypeId()==TYPEID_PLAYER && (((Player*)m_caster)->HasSpellCooldown(m_spellInfo->Id) || strict && ((Player*)m_caster)->HasGlobalCooldown(m_spellInfo)))
     {
         if(m_triggeredByAuraSpell)
             return SPELL_FAILED_DONT_REPORT;
