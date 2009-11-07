@@ -295,19 +295,19 @@ class Guild
 
         uint32 GetId(){ return m_Id; }
         const uint64& GetLeader(){ return m_LeaderGuid; }
-        std::string GetName(){ return m_Name; }
-        std::string GetMOTD(){ return MOTD; }
-        std::string GetGINFO(){ return GINFO; }
+        std::string const& GetName() const { return m_Name; }
+        std::string const& GetMOTD() const { return MOTD; }
+        std::string const& GetGINFO() const { return GINFO; }
 
-        uint32 GetCreatedYear(){ return m_CreatedYear; }
-        uint32 GetCreatedMonth(){ return m_CreatedMonth; }
-        uint32 GetCreatedDay(){ return m_CreatedDay; }
+        uint32 GetCreatedYear() const { return m_CreatedYear; }
+        uint32 GetCreatedMonth() const { return m_CreatedMonth; }
+        uint32 GetCreatedDay() const { return m_CreatedDay; }
 
-        uint32 GetEmblemStyle(){ return m_EmblemStyle; }
-        uint32 GetEmblemColor(){ return m_EmblemColor; }
-        uint32 GetBorderStyle(){ return m_BorderStyle; }
-        uint32 GetBorderColor(){ return m_BorderColor; }
-        uint32 GetBackgroundColor(){ return m_BackgroundColor; }
+        uint32 GetEmblemStyle() const { return m_EmblemStyle; }
+        uint32 GetEmblemColor() const { return m_EmblemColor; }
+        uint32 GetBorderStyle() const { return m_BorderStyle; }
+        uint32 GetBorderColor() const { return m_BorderColor; }
+        uint32 GetBackgroundColor() const { return m_BackgroundColor; }
 
         void SetLeader(uint64 guid);
         bool AddMember(uint64 plGuid, uint32 plRank);
@@ -324,9 +324,10 @@ class Guild
 
         uint32 GetMemberSize() const { return members.size(); }
 
-        bool LoadGuildFromDB(uint32 GuildId);
-        bool LoadRanksFromDB(uint32 GuildId);
-        bool LoadMembersFromDB(uint32 GuildId);
+        bool LoadGuildFromDB(QueryResult *guildDataResult);
+        bool CheckGuildStructure();
+        bool LoadRanksFromDB(QueryResult *guildRanksResult);
+        bool LoadMembersFromDB(QueryResult *guildMembersResult);
 
         void SetMemberStats(uint64 guid);
 
@@ -374,7 +375,7 @@ class Guild
             return NULL;
         }
 
-        void Roster(WorldSession *session);
+        void Roster(WorldSession *session = NULL);          // NULL = broadcast
         void Query(WorldSession *session);
 
         void   UpdateLogoutTime(uint64 guid);
@@ -399,7 +400,6 @@ class Guild
         void   SetGuildBankTabText(uint8 TabId, std::string text);
         void   SendGuildBankTabText(WorldSession *session, uint8 TabId);
         void   SetGuildBankTabInfo(uint8 TabId, std::string name, std::string icon);
-        const  GuildBankTab *GetBankTab(uint8 index) { if(index >= m_TabListMap.size()) return NULL; return m_TabListMap[index]; }
         uint8  GetPurchasedTabs() const { return m_PurchasedTabs; }
         uint32 GetBankRights(uint32 rankId, uint8 TabId) const;
         bool   IsMemberHaveRights(uint32 LowGuid, uint8 TabId,uint32 rights) const;
@@ -407,6 +407,7 @@ class Guild
         // Load/unload
         void   LoadGuildBankFromDB();
         void   UnloadGuildBank();
+        bool   IsGuildBankLoaded() const { return m_GuildBankLoaded; }
         void   IncOnlineMemberCount() { ++m_OnlineMembers; }
         // Money deposit/withdraw
         void   SendMoneyInfo(WorldSession *session, uint32 LowGuid);
@@ -422,7 +423,7 @@ class Guild
         uint32 GetBankMoneyPerDay(uint32 rankId);
         uint32 GetBankSlotPerDay(uint32 rankId, uint8 TabId);
         // rights per day
-        void   LoadBankRightsFromDB(uint32 GuildId);
+        bool   LoadBankRightsFromDB(QueryResult *guildBankTabRightsResult);
         // Guild Bank Event Logs
         void   LoadGuildBankEventLogFromDB();
         void   UnloadGuildBankEventLog();
