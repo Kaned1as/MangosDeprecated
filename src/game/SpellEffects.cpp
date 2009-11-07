@@ -3385,7 +3385,6 @@ void Spell::EffectSummonType(uint32 i)
         case SUMMON_TYPE_POSESSED2:
         case SUMMON_TYPE_FORCE_OF_NATURE:
         case SUMMON_TYPE_GUARDIAN2:
-        case SUMMON_TYPE_GUARDIAN3:
             // Jewelery statue case (totem like)
             if(m_spellInfo->SpellIconID == 2056)
                 EffectSummonTotem(i);
@@ -3403,6 +3402,9 @@ void Spell::EffectSummonType(uint32 i)
         case SUMMON_TYPE_ELEMENTAL:
             EffectSummon(i);
             break;
+		case SUMMON_TYPE_GUARDIAN3:
+			EffectSummonSpecialPets(i);
+			break;
         case SUMMON_TYPE_CRITTER:
         case SUMMON_TYPE_CRITTER2:
         case SUMMON_TYPE_CRITTER3:
@@ -7070,4 +7072,111 @@ void Spell::EffectActivateSpec(uint32 /*eff_idx*/)
         return;
 
     ((Player*)unitTarget)->ActivateSpec(damage-1);  // damage is 1 or 2, spec is 0 or 1
+}
+
+void Spell::EffectSummonSpecialPets(uint32 i)
+{
+
+    if (!unitTarget)
+        return;
+
+    uint32 pet_entry = m_spellInfo->EffectMiscValue[i];
+    if (!pet_entry)
+        return;
+
+    uint32 level = m_caster->getLevel();
+	int32 amount = damage > 0 ? damage : 1;
+
+    if( amount > 10 )
+         amount = 1;
+
+	for(uint8 count = 0; count < amount; ++count)
+	{
+		Pet* spawnCreature = new Pet(GUARDIAN_PET);
+
+		Map *map = m_caster->GetMap();
+		uint32 pet_number = objmgr.GeneratePetNumber();
+		if (!spawnCreature->Create(objmgr.GenerateLowGuid(HIGHGUID_PET), map, m_caster->GetPhaseMask(),
+		    m_spellInfo->EffectMiscValue[i], pet_number))
+		{
+		    sLog.outErrorDb("Spell::EffectSummon: no such creature entry %u",m_spellInfo->EffectMiscValue[i]);
+		    delete spawnCreature;
+		    return;
+		}
+
+		// Summon in dest location
+		float x, y, z;
+		if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+		{
+		    x = m_targets.m_destX;
+		    y = m_targets.m_destY;
+		    z = m_targets.m_destZ;
+		}
+		else
+		    m_caster->GetClosePoint(x, y, z, spawnCreature->GetObjectSize());
+
+		spawnCreature->Relocate(x, y, z, -m_caster->GetOrientation());
+
+		if (!spawnCreature->IsPositionValid())
+		{
+		    sLog.outError("Pet (guidlow %d, entry %d) not summoned. Suggested coordinates isn't valid (X: %f Y: %f)",
+		        spawnCreature->GetGUIDLow(), spawnCreature->GetEntry(), spawnCreature->GetPositionX(), spawnCreature->GetPositionY());
+		    delete spawnCreature;
+		    return;
+		}
+
+		// set timer for unsummon
+		int32 duration = GetSpellDuration(m_spellInfo);
+		if (duration > 0)
+		    spawnCreature->SetDuration(duration);
+
+		spawnCreature->SetOwnerGUID(m_caster->GetGUID());
+		spawnCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+		spawnCreature->setPowerType(POWER_MANA);
+		spawnCreature->setFaction(m_caster->getFaction());
+		spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
+		spawnCreature->SetUInt32Value(UNIT_FIELD_BYTES_0, 2048);
+		spawnCreature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
+		spawnCreature->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
+		spawnCreature->SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
+		spawnCreature->SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, 1000);
+		spawnCreature->SetCreatorGUID(m_caster->GetGUID());
+		spawnCreature->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
+
+		spawnCreature->InitStatsForLevel(level, m_caster);
+		if(pet_entry == 29264) //spirit wolf + from shaman stats
+		{
+			spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, spawnCreature->GetCreatureInfo()->mindmg);
+			spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, spawnCreature->GetCreatureInfo()->maxdmg);
+			spawnCreature->SetCreateHealth(spawnCreature->GetCreatureInfo()->maxhealth);
+			spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, m_caster->GetTotalAttackPowerValue(BASE_ATTACK)/3);
+			spawnCreature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor()+m_caster->GetUInt32Value(UNIT_FIELD_RESISTANCES)/3);
+
+			spawnCreature->UpdateMaxHealth();
+			spawnCreature->SetHealth(spawnCreature->GetMaxHealth());
+			spawnCreature->UpdateDamagePhysical(BASE_ATTACK);
+			spawnCreature->UpdateArmor();
+		}
+
+		//spawnCreature->((count+1)*M_PI/(amount+1));
+		spawnCreature->GetCharmInfo()->SetPetNumber(pet_number, false);
+
+		spawnCreature->AIM_Initialize();
+		spawnCreature->InitPetCreateSpells();
+		spawnCreature->InitLevelupSpellsForLevel();
+
+		//spawnCreature
+
+		std::string name = m_caster->GetName();
+		name.append(petTypeSuffix[spawnCreature->getPetType()]);
+		spawnCreature->SetName( name );
+		map->Add((Creature*)spawnCreature);
+		m_caster->SetPet(spawnCreature);
+		
+		if (m_caster->GetTypeId() == TYPEID_PLAYER)
+		{
+		    spawnCreature->GetCharmInfo()->SetReactState( REACT_DEFENSIVE );
+		    ((Player*)m_caster)->PetSpellInitialize();
+		}
+	}
 }

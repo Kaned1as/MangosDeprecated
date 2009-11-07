@@ -6032,3 +6032,20 @@ void Spell::FillRaidOrPartyHealthPriorityTargets( UnitList &TagUnitMap, Unit* me
         healthQueue.pop();
     }
 }
+
+void Spell::ReportLogSpell()
+{
+	sLog.outDebug("----------------- BEGIN SPELL REPORT -------------------");
+	sLog.outDebug("Id: %u", m_spellInfo->Id);
+	sLog.outDebug("Name: %s", *m_spellInfo->SpellName);
+	sLog.outDebug("Effects: 1: %u 2: %u 3: %u", m_spellInfo->Effect[0], m_spellInfo->Effect[1], m_spellInfo->Effect[2]);
+	sLog.outDebug("BaseEffectValues: 1: %u 2: %u 3: %u", m_spellInfo->EffectBasePoints[0], m_spellInfo->EffectBasePoints[1], m_spellInfo->EffectBasePoints[2]);
+	sLog.outDebug("MiscValueA: 1: %u 2: %u 3: %u", m_spellInfo->EffectMiscValue[0], m_spellInfo->EffectMiscValue[1], m_spellInfo->EffectMiscValue[2]);
+	sLog.outDebug("MiscValueB: 1: %u 2: %u 3: %u", m_spellInfo->EffectMiscValueB[0], m_spellInfo->EffectMiscValueB[1], m_spellInfo->EffectMiscValueB[2]);
+	sLog.outDebug("Affecting target type A: 1: %u 2: %u 3: %u", m_spellInfo->EffectImplicitTargetA[0], m_spellInfo->EffectImplicitTargetA[1], m_spellInfo->EffectImplicitTargetA[2]);
+	sLog.outDebug("Affecting target type B: 1: %u 2: %u 3: %u", m_spellInfo->EffectImplicitTargetB[0], m_spellInfo->EffectImplicitTargetB[1], m_spellInfo->EffectImplicitTargetB[2]);
+	sLog.outDebug("ApplyAuranames: 1: %u 2: %u 3: %u", m_spellInfo->EffectApplyAuraName[0], m_spellInfo->EffectApplyAuraName[1], m_spellInfo->EffectApplyAuraName[2]);
+	sLog.outDebug("Spellmask: 1: %X 2: %X", m_spellInfo->SpellFamilyFlags, m_spellInfo->SpellFamilyFlags2);
+	sLog.outDebug("Spell Family Name:  %u", m_spellInfo->SpellFamilyName);
+	sLog.outDebug("----------------- END SPELL REPORT ---------------------");
+}
