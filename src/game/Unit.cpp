@@ -5983,13 +5983,9 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 case 58877:
                 {
                     // Cast on owner
-
-                    if(GetOwner() && pVictim != GetOwner())
-						HandleDummyAuraProc(GetOwner(), damage, triggeredByAura, procSpell, procFlag, procEx, cooldown);
-					
-					if(target != GetOwner()) 
-						target = this;
-
+                    target = GetOwner();
+                    if(!target)
+                        return false;
                     basepoints0 = triggerAmount * damage / 100;
                     triggered_spell_id = 58879;
                     break;

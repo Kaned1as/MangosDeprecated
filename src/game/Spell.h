@@ -212,8 +212,6 @@ class Spell
     friend struct MaNGOS::SpellNotifierCreatureAndPlayer;
     friend void Unit::SetCurrentCastedSpell( Spell * pSpell );
     public:
-		void EffectSummonSpecialPets(uint32 i);
-		void ReportLogSpell();
 
         void EffectNULL(uint32 );
         void EffectUnused(uint32 );
