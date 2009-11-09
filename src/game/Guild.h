@@ -407,6 +407,7 @@ class Guild
         // Load/unload
         void   LoadGuildBankFromDB();
         void   UnloadGuildBank();
+        bool   IsGuildBankLoaded() { return m_GuildBankLoaded; }
         void   IncOnlineMemberCount() { ++m_OnlineMembers; }
         // Money deposit/withdraw
         void   SendMoneyInfo(WorldSession *session, uint32 LowGuid);
