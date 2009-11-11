@@ -34,7 +34,7 @@ namespace FactorySelector
     {
         // Allow scripting AI for normal creatures and not controlled pets (guardians and mini-pets)
 		// and totems (try)
-		if ((!creature->isPet() || !((Pet*)creature)->isControlled()) && !creature->isCharmed() || !creature->isTotem())
+		if ((!creature->isPet() || !((Pet*)creature)->isControlled()) && !creature->isCharmed() && !creature->isTotem())
             if(CreatureAI* scriptedAI = Script->GetAI(creature))
                 return scriptedAI;
 
