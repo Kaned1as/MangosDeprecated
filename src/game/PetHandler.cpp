@@ -31,6 +31,8 @@
 
 void WorldSession::HandlePetAction( WorldPacket & recv_data )
 {
+	sLog.outDebug("WORLD: CMSG_HANDLE_PET_ACTION");
+
     uint64 guid1;
     uint32 data;
     uint64 guid2;
@@ -43,6 +45,19 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
 
     // used also for charmed creature
     Unit* pet= ObjectAccessor::GetUnit(*_player, guid1);
+
+	//copyguids system (for treants or spirit wolves)
+	uint64 copyguid = MAKE_NEW_GUID(pet->GetGUIDLow()-1, pet->GetGUIDMid()-1, pet->GetGUIDHigh());
+	Unit* pet2= ObjectAccessor::GetUnit(*_player, copyguid);
+	if (pet2 && pet2->GetEntry() == pet->GetEntry() && pet2->GetOwnerGUID() == pet->GetOwnerGUID())
+	{
+		WorldPacket *virtualpacket = new WorldPacket(recv_data.GetOpcode());
+		*virtualpacket << copyguid;
+		*virtualpacket << data;
+		*virtualpacket << guid2;
+		HandlePetAction( *virtualpacket );
+	}
+
     sLog.outDetail("HandlePetAction.Pet %u flag is %u, spellid is %u, target %u.", uint32(GUID_LOPART(guid1)), uint32(flag), spellid, uint32(GUID_LOPART(guid2)) );
     if(!pet)
     {
@@ -50,7 +65,7 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
         return;
     }
 
-    if(pet != GetPlayer()->GetPet() && pet != GetPlayer()->GetCharm())
+	if(pet->GetOwnerGUID() != GetPlayer()->GetGUID() && pet != GetPlayer()->GetCharm())
     {
         sLog.outError("HandlePetAction.Pet %u isn't pet of player %s.", uint32(GUID_LOPART(guid1)), GetPlayer()->GetName() );
         return;
@@ -387,7 +402,7 @@ void WorldSession::HandlePetRename( WorldPacket & recv_data )
 
     Pet* pet = ObjectAccessor::GetPet(petguid);
                                                             // check it!
-    if( !pet || !pet->isPet() || ((Pet*)pet)->getPetType()!= HUNTER_PET ||
+	if( !pet || !(pet->IsInWorld()) || !pet->isPet() || ((Pet*)pet)->getPetType()!= HUNTER_PET ||
         pet->GetByteValue(UNIT_FIELD_BYTES_2, 2) != UNIT_RENAME_ALLOWED ||
         pet->GetOwnerGUID() != _player->GetGUID() || !pet->GetCharmInfo() )
         return;

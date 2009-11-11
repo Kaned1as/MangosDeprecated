@@ -512,11 +512,11 @@ void Pet::Update(uint32 diff)
 
             if(isControlled())
             {
-                if( owner->GetPetGUID() != GetGUID() )
+				if( owner->GetPetGUID() != GetGUID() && GetEntry() != 29264) //want 2 wolves ;)
                 {
                     Remove(getPetType()==HUNTER_PET?PET_SAVE_AS_DELETED:PET_SAVE_NOT_IN_SLOT);
                     return;
-                }
+				}
             }
 
             if(m_duration > 0)
@@ -1401,7 +1401,7 @@ bool Pet::learnSpell(uint32 spell_id)
     if(!m_loading)
     {
         Unit* owner = GetOwner();
-        if(owner && owner->GetTypeId() == TYPEID_PLAYER)
+		if(owner && owner->GetTypeId() == TYPEID_PLAYER && m_duration == 0)
         {
             WorldPacket data(SMSG_PET_LEARNED_SPELL, 4);
             data << uint32(spell_id);
