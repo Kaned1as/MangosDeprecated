@@ -5987,7 +5987,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     if(GetOwner() && pVictim != GetOwner())
 						HandleDummyAuraProc(GetOwner(), damage, triggeredByAura, procSpell, procFlag, procEx, cooldown);
 					
-					if(target != GetOwner()) 
+					if(GetOwner() && target != GetOwner()) 
 						target = this;
 
                     basepoints0 = triggerAmount * damage / 100;
