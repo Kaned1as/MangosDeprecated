@@ -8150,6 +8150,21 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             }
             break;
         }
+        case SPELLFAMILY_WARLOCK:
+        {
+            // Drain Soul
+            if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000000004000))
+            {
+                if (pVictim->GetHealth() * 100 / pVictim->GetMaxHealth() <= 25)
+                  DoneTotalMod *= 4;
+            }
+
+            //conflagrate coef
+            if (spellProto->TargetAuraState == AURA_STATE_CONFLAGRATE)
+                return pdamage;
+
+            break;
+        }
         default:
             break;
     }
