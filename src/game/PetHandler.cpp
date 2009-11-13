@@ -46,7 +46,14 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
     // used also for charmed creature
     Unit* pet= ObjectAccessor::GetUnit(*_player, guid1);
 
-	//copyguids system (for treants or spirit wolves)
+    sLog.outDetail("HandlePetAction.Pet %u flag is %u, spellid is %u, target %u.", uint32(GUID_LOPART(guid1)), uint32(flag), spellid, uint32(GUID_LOPART(guid2)) );
+    if(!pet)
+    {
+        sLog.outError( "Pet %u not exist.", uint32(GUID_LOPART(guid1)) );
+        return;
+    }
+
+    //copyguids system (for treants or spirit wolves)
 	uint64 copyguid = MAKE_NEW_GUID(pet->GetGUIDLow()-1, pet->GetGUIDMid()-1, pet->GetGUIDHigh());
 	Unit* pet2= ObjectAccessor::GetUnit(*_player, copyguid);
 	if (pet2 && pet2->GetEntry() == pet->GetEntry() && pet2->GetOwnerGUID() == pet->GetOwnerGUID())
@@ -57,13 +64,6 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
 		*virtualpacket << guid2;
 		HandlePetAction( *virtualpacket );
 	}
-
-    sLog.outDetail("HandlePetAction.Pet %u flag is %u, spellid is %u, target %u.", uint32(GUID_LOPART(guid1)), uint32(flag), spellid, uint32(GUID_LOPART(guid2)) );
-    if(!pet)
-    {
-        sLog.outError( "Pet %u not exist.", uint32(GUID_LOPART(guid1)) );
-        return;
-    }
 
 	if(pet->GetOwnerGUID() != GetPlayer()->GetGUID() && pet != GetPlayer()->GetCharm())
     {
