@@ -758,8 +758,7 @@ bool Item::IsFitToSpellRequirements(SpellEntry const* spellInfo) const
 
         if(spellInfo->EquippedItemSubClassMask != 0)        // 0 == any subclass
         {
-            if(!((spellInfo->EquippedItemInventoryTypeMask & (1 << proto->InventoryType)) ||
-                (spellInfo->EquippedItemInventoryTypeMask & (1 << 22) && proto->InventoryType == 13)))
+            if((spellInfo->EquippedItemSubClassMask & (1 << proto->SubClass)) == 0)
                 return false;                               // subclass not present in mask
         }
     }
