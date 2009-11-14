@@ -8380,7 +8380,17 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
     switch(spellProto->DmgClass)
     {
         case SPELL_DAMAGE_CLASS_NONE:
-            return false;
+        {
+            //Ranger: scripted chances
+            //Ranger: Lifebloom - final heal crit chance
+            if (spellProto->Id == 33778 && GetTypeId() == TYPEID_PLAYER)
+            {
+                crit_chance = GetFloatValue( PLAYER_SPELL_CRIT_PERCENTAGE1 + GetFirstSchoolInMask(schoolMask));
+            }
+            else
+                return false;
+            break;
+        }
         case SPELL_DAMAGE_CLASS_MAGIC:
         {
             if (schoolMask & SPELL_SCHOOL_MASK_NORMAL)
