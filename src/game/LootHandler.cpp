@@ -416,8 +416,14 @@ void WorldSession::DoLootRelease( uint64 lguid )
         if (loot->isLooted())
         {
             // skip pickpocketing loot for speed, skinning timer redunction is no-op in fact
-            if(!pCreature->isAlive())
-                pCreature->AllLootRemovedFromCorpse();
+            if(loot->items2.size() > 0)
+            {
+                GetPlayer()->SendLoot(lguid, loot->loot_type);
+                return;
+            }
+            else
+                if(!pCreature->isAlive()) //paranoid checks attack again...
+                    pCreature->AllLootRemovedFromCorpse();
 
             pCreature->RemoveFlag(UNIT_DYNAMIC_FLAGS, UNIT_DYNFLAG_LOOTABLE);
             loot->clear();
