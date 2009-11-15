@@ -236,13 +236,13 @@ struct Loot
     QuestItemMap const& GetPlayerFFAItems() const { return PlayerFFAItems; }
     QuestItemMap const& GetPlayerNonQuestNonFFAConditionalItems() const { return PlayerNonQuestNonFFAConditionalItems; }
 
-    std::vector<LootItem> items, items2;
+    std::vector<LootItem> items;
     uint32 gold;
-    uint8 unlootedCount, unlootedCount2;
+    uint8 unlootedCount;
     LootType loot_type;                                     // required for achievement system
 
-    Loot(uint32 _gold = 0) : gold(_gold), unlootedCount(0), unlootedCount2(0), loot_type(LOOT_CORPSE) {}
-    ~Loot() { clear(); items2.clear(); }
+    Loot(uint32 _gold = 0) : gold(_gold), unlootedCount(0), loot_type(LOOT_CORPSE) {}
+    ~Loot() { clear(); }
 
     // if loot becomes invalid this reference is used to inform the listener
     void addLootValidatorRef(LootValidatorRef* pLootValidatorRef)

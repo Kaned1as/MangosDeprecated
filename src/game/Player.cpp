@@ -7641,18 +7641,15 @@ void Player::SendLoot(uint64 guid, LootType loot_type)
                 loot->clear();
             }
 
-            if (!creature->lootForBody || (loot->items2.size() > 0 && loot->isLooted()))
+            if (!creature->lootForBody)
             {
-                
+                creature->lootForBody = true;
                 loot->clear();
 
                 if (uint32 lootid = creature->GetCreatureInfo()->lootid)
                     loot->FillLoot(lootid, LootTemplates_Creature, recipient, false);
-                
-            if (!creature->lootForBody)
+
                 loot->generateMoneyLoot(creature->GetCreatureInfo()->mingold,creature->GetCreatureInfo()->maxgold);
-                
-                creature->lootForBody = true;
 
                 if (Group* group = recipient->GetGroup())
                 {

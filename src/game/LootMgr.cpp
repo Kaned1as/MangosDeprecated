@@ -383,17 +383,6 @@ void Loot::AddItem(LootStoreItem const & item)
                 ++unlootedCount;
         }
     }
-    else 
-    {
-        items2.push_back(LootItem(item));
-
-        if( !item.conditionId )
-        {
-            ItemPrototype const* proto = objmgr.GetItemPrototype(item.itemid);
-            if( !proto || (proto->Flags & ITEM_FLAGS_PARTY_LOOT)==0 )
-                ++unlootedCount2;
-        }
-    }
 }
 
 // Calls processor of corresponding LootTemplate (which handles everything including references)
@@ -411,22 +400,11 @@ void Loot::FillLoot(uint32 loot_id, LootStore const& store, Player* loot_owner, 
         return;
     }
 
-    if(items2.size() > 0)
-    {
-        items = items2;
-        unlootedCount = unlootedCount2;
-        items2.clear();
-        unlootedCount2 = 0;
-    }
-    else
-    {
+    items.reserve(MAX_NR_LOOT_ITEMS);
+    quest_items.reserve(MAX_NR_QUEST_ITEMS);
 
-        items.reserve(MAX_NR_LOOT_ITEMS);
-        items2.reserve(MAX_NR_LOOT_ITEMS);
-        quest_items.reserve(MAX_NR_QUEST_ITEMS);
+    tab->Process(*this, store,store.IsRatesAllowed ());     // Processing is done there, callback via Loot::AddItem()
 
-        tab->Process(*this, store,store.IsRatesAllowed ());     // Processing is done there, callback via Loot::AddItem()
-    }
     // Setting access rights for group loot case
     Group * pGroup=loot_owner->GetGroup();
     if(!personal && pGroup)
@@ -888,8 +866,6 @@ void LootTemplate::LootGroup::Process(Loot& loot) const
 			{
 				bool has_this_item = false;
 				for (std::vector<LootItem>::iterator i=loot.items.begin(); i != loot.items.end(); ++i)
-					if(i->itemid == item->itemid) has_this_item = true;
-                for (std::vector<LootItem>::iterator i=loot.items2.begin(); i != loot.items2.end(); ++i)
 					if(i->itemid == item->itemid) has_this_item = true;
 				if(!has_this_item) // повторяется?
 					loot.AddItem(*item);
