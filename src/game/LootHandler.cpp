@@ -499,9 +499,6 @@ void WorldSession::HandleLootMasterGiveOpcode( WorldPacket & recv_data )
     item.count=0;
     item.is_looted=true;
 
-    pLoot->NotifyItemRemoved(slotid);
-    --pLoot->unlootedCount;
-
     for(std::vector<LootItem>::iterator itr = pLoot->items.begin(); itr != pLoot->items.end(); ++itr)
         if(itr->itemid == item.itemid)
         {
@@ -509,4 +506,8 @@ void WorldSession::HandleLootMasterGiveOpcode( WorldPacket & recv_data )
             pLoot->items.erase(itr);
             break;
         }
+
+    //извините, ребята, залезьте снова и увидите новый лут :)
+    //pLoot->NotifyItemRemoved(slotid); 
+    --pLoot->unlootedCount;
 }
