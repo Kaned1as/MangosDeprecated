@@ -33,7 +33,7 @@ enum RollType
     ROLL_GREED        = 2
 };
 
-#define MAX_NR_LOOT_ITEMS 16
+#define MAX_NR_LOOT_ITEMS 64
 // note: the client cannot show more than 16 items total
 #define MAX_NR_QUEST_ITEMS 32
 // unrelated to the number of quest items shown, just for reserve
@@ -238,10 +238,10 @@ struct Loot
 
     std::vector<LootItem> items;
     uint32 gold;
-    uint8 unlootedCount;
+    uint8 unlootedCount, loot_count;
     LootType loot_type;                                     // required for achievement system
 
-    Loot(uint32 _gold = 0) : gold(_gold), unlootedCount(0), loot_type(LOOT_CORPSE) {}
+    Loot(uint32 _gold = 0) : gold(_gold), unlootedCount(0), loot_count(0), loot_type(LOOT_CORPSE) {}
     ~Loot() { clear(); }
 
     // if loot becomes invalid this reference is used to inform the listener
@@ -270,6 +270,7 @@ struct Loot
         quest_items.clear();
         gold = 0;
         unlootedCount = 0;
+        loot_count = 0;
         i_LootValidatorRefManager.clearReferences();
     }
 
@@ -281,6 +282,7 @@ struct Loot
     void NotifyMoneyRemoved();
     void AddLooter(uint64 GUID) { PlayersLooting.insert(GUID); }
     void RemoveLooter(uint64 GUID) { PlayersLooting.erase(GUID); }
+    void FillVisualLootIfPossible();
 
     void generateMoneyLoot(uint32 minAmount, uint32 maxAmount);
     void FillLoot(uint32 loot_id, LootStore const& store, Player* loot_owner, bool personal);

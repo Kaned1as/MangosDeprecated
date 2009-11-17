@@ -1372,3 +1372,19 @@ void LoadLootTemplates_Reference()
     // output error for any still listed ids (not referenced from any loot table)
     LootTemplates_Reference.ReportUnusedIds(ids_set);
 }
+
+void Loot::FillVisualLootIfPossible()
+{
+    if(PlayersLooting.size() != 0)
+        return;
+
+    if(items.empty())
+        return;
+
+    std::vector<LootItem> tmpitems;
+    for(uint8 i = 0; i < items.size(); ++i)
+        if(!items[i].is_looted)
+            tmpitems.push_back(items[i]);
+
+    items = tmpitems;
+}
