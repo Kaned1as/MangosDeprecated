@@ -63,6 +63,7 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
 		*virtualpacket << data;
 		*virtualpacket << guid2;
 		HandlePetAction( *virtualpacket );
+        delete virtualpacket;
 	}
 
 	if(pet->GetOwnerGUID() != GetPlayer()->GetGUID() && pet != GetPlayer()->GetCharm())
