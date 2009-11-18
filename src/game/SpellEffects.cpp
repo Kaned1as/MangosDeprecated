@@ -504,12 +504,13 @@ void Spell::EffectSchoolDMG(uint32 effect_idx)
                     if (damage >= unitTarget->GetHealth())
                     {
                         //heal
-                        m_caster->CastCustomSpell(m_caster, 48210, &damage, 0,0, true, NULL, NULL, unitTarget->GetGUID());
+			const int32 hauntFullDmg = damage + m_damage;
+                        m_caster->CastCustomSpell(m_caster, 48210, &hauntFullDmg, 0,0, true, NULL, NULL, unitTarget->GetGUID());
                         //visual
                         m_caster->CastSpell(m_caster, 50091, true, NULL, NULL, unitTarget->GetGUID());
                         unitTarget->hauntDmg = 0;
                     } else {
-                        unitTarget->hauntDmg = damage;
+                        unitTarget->hauntDmg = damage + m_damage;
                     }
                 }
                 break;
