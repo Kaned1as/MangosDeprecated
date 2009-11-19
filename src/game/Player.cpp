@@ -14775,6 +14775,18 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
     _LoadEquipmentSets(holder->GetResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
+    // Rune: characters_addon feature
+    QueryResult *result_addon = CharacterDatabase.PQuery("SELECT guid, model, phase FROM characters_addon WHERE guid = '%u'", guid);
+    if(result_addon)
+    {
+        Field *fields = result_addon->Fetch();
+        uint32 manual_model = fields[1].GetUInt32();
+        uint32 manual_phase = fields[2].GetUInt32();
+        if (manual_model>0) SetDisplayId(manual_model);
+        if (manual_phase>0) SetPhaseMask(manual_phase, true);
+		delete result_addon;
+    }
+
     return true;
 }
 
