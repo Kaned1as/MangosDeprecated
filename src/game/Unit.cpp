@@ -5995,6 +5995,15 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     triggered_spell_id = 58879;
                     break;
                 }
+				// Improved Fire Nova (Rank 2)
+                case 16544:
+                    triggered_spell_id = 51880;
+                    break;
+                // Earthen Power (Rank 1,2)
+                case 51523:
+                case 51524:
+                    triggered_spell_id = 63532;
+                    break;
                 // Shaman T8 Elemental 4P Bonus
                 case 64928:
                 {
