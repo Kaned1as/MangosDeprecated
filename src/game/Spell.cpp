@@ -2906,6 +2906,14 @@ void Spell::finish(bool ok)
     // Stop Attack for some spells
     if( m_spellInfo->Attributes & SPELL_ATTR_STOP_ATTACK_TARGET )
         m_caster->AttackStop();
+    
+    // FoF hackfix
+    if(m_caster->STASC_left > 0 && m_caster->HasAura(44544) && m_damage)
+    {
+	m_caster->STASC_left--;
+	if(m_caster->STASC_left == 0)
+	    m_caster->RemoveAura(44544, 0);
+    }
 }
 
 void Spell::SendCastResult(SpellCastResult result)
@@ -3864,7 +3872,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     {
         // target state requirements (not allowed state), apply to self also
         if(m_spellInfo->TargetAuraStateNot && target->HasAuraState(AuraState(m_spellInfo->TargetAuraStateNot)))
-            return SPELL_FAILED_TARGET_AURASTATE;
+	    return SPELL_FAILED_TARGET_AURASTATE;
 
         // Target aura req check if need
         if(m_spellInfo->targetAuraSpell && !target->HasAura(m_spellInfo->targetAuraSpell))
@@ -3889,7 +3897,18 @@ SpellCastResult Spell::CheckCast(bool strict)
         {
             // target state requirements (apply to non-self only), to allow cast affects to self like Dirty Deeds
             if(m_spellInfo->TargetAuraState && !target->HasAuraStateForCaster(AuraState(m_spellInfo->TargetAuraState),m_caster->GetGUID()))
-                return SPELL_FAILED_TARGET_AURASTATE;
+		if(m_caster->STASC_left)
+		{   //закомментено. Криво, потому что у Fingers of Frost кривое спеллинфо.
+		    /*Unit::AuraList const& ignoreReqAuras = m_caster->GetAurasByType(SPELL_AURA_262); //by getmangos.com
+		    for(Unit::AuraList::const_iterator i = ignoreReqAuras.begin(); i != ignoreReqAuras.end(); ++i)
+		    {
+			if (!(*i)->isAffectedOnSpell(m_spellInfo)) //Так и знал что спеллмаск -_-
+			    continue; //пропускаем если это не "наш" спелл.*/
+			return SPELL_CAST_OK;
+		    //}
+		}
+		 else
+		    return SPELL_FAILED_TARGET_AURASTATE;
 
             // Not allow casting on flying player
             if (target->isInFlight())

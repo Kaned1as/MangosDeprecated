@@ -1502,6 +1502,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         uint64 hauntedSId;
         uint32 hauntDmg;
 
+	uint8 STASC_left;
+
     protected:
         explicit Unit ();
 

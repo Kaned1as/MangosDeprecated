@@ -212,6 +212,7 @@ class MANGOS_DLL_SPEC Aura
         void HandleNoReagentUseAura(bool Apply, bool Real);
         void HandlePhase(bool Apply, bool Real);
         void HandleModTargetArmorPct(bool Apply, bool Real);
+	void HandleSkipTASC(bool apply, bool Real);
 
         virtual ~Aura();
 
