@@ -1136,6 +1136,18 @@ void WorldSession::HandleGuildBankSwapItems( WorldPacket & recv_data )
             recv_data.rpos(recv_data.wpos());               // prevent additional spam at rejected packet
             return;
         }
+
+        //Ranger: work ONLY with valid Inventory
+        if(AutoStore && ToChar)
+        {
+            PlayerBag = NULL_BAG;
+            PlayerSlot = NULL_SLOT;
+        }
+        if (!GetPlayer()->IsInventoryPos(PlayerBag, PlayerSlot) && !(PlayerBag == NULL_BAG && PlayerSlot == NULL_SLOT))
+        {
+            recv_data.rpos(recv_data.wpos());
+            return;
+        }
     }
     if (!GetPlayer()->GetGameObjectIfCanInteractWith(GoGuid, GAMEOBJECT_TYPE_GUILD_BANK))
         return;
