@@ -6061,6 +6061,9 @@ void Aura::HandleAuraAllowFlight(bool apply, bool Real)
     if(!Real)
         return;
 
+    if(!m_target || !m_target->IsInWorld() || m_target->GetTypeId() != TYPEID_PLAYER)
+        return;
+
     // allow fly
     WorldPacket data;
     if(apply)
@@ -7500,7 +7503,7 @@ void Aura::UnregisterSingleCastAura()
         else
         {
             sLog.outError("Couldn't find the caster of the single target aura (SpellId %u), may crash later!", GetId());
-            assert(false);
+            //assert(false);
         }
         m_isSingleTargetAura = false;
     }
