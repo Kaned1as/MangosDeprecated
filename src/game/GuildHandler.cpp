@@ -1137,15 +1137,28 @@ void WorldSession::HandleGuildBankSwapItems( WorldPacket & recv_data )
             return;
         }
 
-        //Ranger: work ONLY with valid Inventory
+        //Ranger: work ONLY with valid position
         if(AutoStore && ToChar)
         {
             PlayerBag = NULL_BAG;
             PlayerSlot = NULL_SLOT;
         }
-        if (!GetPlayer()->IsInventoryPos(PlayerBag, PlayerSlot) && !(PlayerBag == NULL_BAG && PlayerSlot == NULL_SLOT))
+        if (!GetPlayer()->IsValidPos(PlayerBag, PlayerSlot))
         {
             recv_data.rpos(recv_data.wpos());
+            //sLog.outError("GuildHandler: HandleGuildBankSwapItems - invalid position detected, cheater? Check this: BankTab = %u, BankTabSlot = %u, PlayerBag = %u, PlayerSlot = %u", BankTab, BankTabSlot, PlayerBag, PlayerSlot);
+
+            std::stringstream guildreason;
+            guildreason << "GuildHandler: HandleGuildBankSwapItems - invalid position detected, cheater? Check this: BankTab = " << uint32(BankTab) << ", BankTabSlot = " << uint32(BankTabSlot) << ", PlayerBag = " << uint32(PlayerBag) << ", PlayerSlot = " << uint32(PlayerSlot);
+
+            std::stringstream positions;
+            positions << "Player position: " << GetPlayer()->GetPositionX() << " " << GetPlayer()->GetPositionY() << " "
+                << GetPlayer()->GetPositionZ();
+
+            CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
+                                       "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
+                                       GetPlayer()->GetName(),GetPlayer()->GetSession()->GetAccountId(),guildreason.str().c_str(),"detected in GuildHandler::HandleGuildBankSwapItems",GetPlayer()->GetMapId(),
+                                       positions.str().c_str(),GetPlayer()->getLevel());
             return;
         }
     }
