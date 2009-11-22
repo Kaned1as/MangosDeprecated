@@ -2273,6 +2273,13 @@ void Guild::MoveFromCharToBank( Player * pl, uint8 PlayerBag, uint8 PlayerSlot, 
         return;
     }
 
+    //Ranger: проверка на soulbond
+    if (pItemChar->IsSoulBound())
+    {
+        pl->SendEquipError( EQUIP_ERR_CANT_DROP_SOULBOUND, pItemChar, NULL );
+        return;
+    }
+
     // check source pos rights (item moved to bank)
     if (!IsMemberHaveRights(pl->GetGUIDLow(), BankTab, GUILD_BANK_RIGHT_DEPOSIT_ITEM))
         return;
