@@ -1075,6 +1075,11 @@ bool Group::_addMember(const uint64 &guid, const char* name, bool isAssistant, u
         InstanceGroupBind *bind = GetBoundInstance(player->GetMapId(), player->GetDifficulty());
         if(bind && bind->save->GetInstanceId() == player->GetInstanceId())
             player->m_InstanceValid = true;
+
+        // Raid faction hackfix
+        Player *Leader = objmgr.GetPlayer(GetLeaderGUID());
+        if(Leader)
+            player->setFaction(Leader->getFaction());
     }
 
     if(!isRaidGroup())                                      // reset targetIcons for non-raid-groups
@@ -1108,6 +1113,8 @@ bool Group::_removeMember(const uint64 &guid)
             else
                 player->SetGroup(NULL);
         }
+
+        player->setFactionForRace(player->getRace());
     }
 
     _removeRolls(guid);
