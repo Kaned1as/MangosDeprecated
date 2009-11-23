@@ -4375,6 +4375,10 @@ void Aura::HandleModMechanicImmunity(bool apply, bool /*Real*/)
             }
         }
     }
+
+    // Ranger: Heroic Fury - Intercept cooldown remove
+    if (apply && GetSpellProto()->Id == 60970 && m_target->GetTypeId() == TYPEID_PLAYER)
+        ((Player*)m_target)->RemoveSpellCooldown(20252, true);
 }
 
 //this method is called whenever we add / remove aura which gives m_target some imunity to some spell effect
