@@ -33,8 +33,7 @@ enum RollType
     ROLL_GREED        = 2
 };
 
-#define MAX_NR_LOOT_ITEMS 64
-// note: the client cannot show more than 16 items total
+#define MAX_NR_LOOT_ITEMS 128 // AVARICE =)
 #define MAX_NR_QUEST_ITEMS 32
 // unrelated to the number of quest items shown, just for reserve
 

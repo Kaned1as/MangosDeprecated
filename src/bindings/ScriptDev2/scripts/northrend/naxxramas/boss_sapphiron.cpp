@@ -127,8 +127,9 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                 ++Icebolt_Count;
                 Icebolt_Timer = 4000;
             }else Icebolt_Timer -= diff;
-
-            if (Icebolt_Count == 5 && !landoff)
+            
+            // too sad for the fun :)
+            /*if (Icebolt_Count == 5 && !landoff)
             {
                 if (FrostBreath_Timer < diff)
                 {
@@ -138,7 +139,7 @@ struct MANGOS_DLL_DECL boss_sapphironAI : public ScriptedAI
                     landoff = true;
                     FrostBreath_Timer = 6000;
                 }else FrostBreath_Timer -= diff;
-            }
+            }*/
 
             if (landoff)
             {
