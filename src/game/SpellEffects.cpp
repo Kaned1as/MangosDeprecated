@@ -3196,7 +3196,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
             if( gofact && player && player->GetName() && player->GetSession() )
             {
                 FactionTemplateEntry const* gobfaction = sFactionTemplateStore.LookupEntry(gofact);
-                FactionTemplateEntry const* playerfaction = player->getFactionTemplateEntry();
+                FactionTemplateEntry const* playerfaction = sFactionTemplateStore.LookupEntry(player->getFaction());
 
                 if( playerfaction && gobfaction && !player->isGameMaster() )
                     if( (gobfaction->IsHostileTo(*playerfaction) ) )

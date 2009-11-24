@@ -856,7 +856,7 @@ void GameObject::Use(Unit* user)
 
     //Ranger: WEH safe check!
     GameObjectInfo const * mygoinfo = GetGOInfo();
-    if( user && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
+    if( user && user->IsInWorld() && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
     {
         Player* plr = (Player*)user;
         uint32 gofact = mygoinfo->faction;
@@ -864,7 +864,7 @@ void GameObject::Use(Unit* user)
         if( gofact && plr && plr->GetName() && plr->GetSession() )
         {
             FactionTemplateEntry const* gofaction = sFactionTemplateStore.LookupEntry(gofact);
-            FactionTemplateEntry const* plrfaction = plr->getFactionTemplateEntry();
+            FactionTemplateEntry const* plrfaction = sFactionTemplateStore.LookupEntry(plr->getFaction());
 
             if( plrfaction && gofaction && !plr->isGameMaster() )
                 if( (gofaction->IsHostileTo(*plrfaction) ) )
