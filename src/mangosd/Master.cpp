@@ -135,8 +135,18 @@ public:
             loopCounter = 0;
             sLog.outDetail ("Ping MySQL to keep connection alive");
             delete WorldDatabase.Query ("SELECT 1 FROM command LIMIT 1");
-            delete loginDatabase.Query ("SELECT 1 FROM realmlist LIMIT 1");
+            QueryResult* query = loginDatabase.Query("SELECT 1 FROM realmlist LIMIT 1");
             delete CharacterDatabase.Query ("SELECT 1 FROM bugreport LIMIT 1");
+
+             if(!query)
+            {
+                std::string dbstring;
+                sConfig.GetString("LoginDatabaseInfo", &dbstring);
+                if(!loginDatabase.Initialize(dbstring.c_str()))
+                sLog.outDetail("Reinitialization of realmd db failed");
+            }
+            else
+                delete query;
         }
     }
 
