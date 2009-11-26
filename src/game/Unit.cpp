@@ -8230,6 +8230,54 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
 
             break;
         }
+        case SPELLFAMILY_DEATHKNIGHT:
+        {
+            // Icy Touch, Howling Blast and Frost Strike
+            if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000600000002))
+            {
+                // search disease
+                bool found = false;
+                Unit::AuraMap const& auras = pVictim->GetAuras();
+                for(Unit::AuraMap::const_iterator itr = auras.begin(); itr!=auras.end(); ++itr)
+                {
+                    if(itr->second->GetSpellProto()->Dispel == DISPEL_DISEASE)
+                    {
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found)
+                    break;
+
+                // search for Glacier Rot dummy aura
+                Unit::AuraList const& dummyAuras = GetAurasByType(SPELL_AURA_DUMMY);
+                for(Unit::AuraList::const_iterator i = dummyAuras.begin(); i != dummyAuras.end(); ++i)
+                {
+                    if ((*i)->GetSpellProto()->EffectMiscValue[(*i)->GetEffIndex()] == 7244)
+                    {
+                        DoneTotalMod *= ((*i)->GetModifier()->m_amount+100.0f) / 100.0f;
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+        case SPELLFAMILY_PRIEST:
+        {
+            //Ranger: Glyph of Smite
+            if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000000000080))
+            {
+                if (Aura* GoSaur = owner->GetDummyAura(55692))
+                {
+                    if (pVictim->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, UI64LIT(0x40000100000)))
+                    {
+                            DoneTotalMod *= (GoSaur->GetModifier()->m_amount + 100.0f) / 100.0f;
+                            break;
+                    }
+                }
+            }
+            break;
+        }
         default:
             break;
     }

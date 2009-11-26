@@ -520,17 +520,6 @@ void Spell::EffectSchoolDMG(uint32 effect_idx)
                 // Shadow Word: Death - deals damage equal to damage done to caster
                 if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0000000200000000))
                     m_caster->CastCustomSpell(m_caster, 32409, &damage, 0, 0, true);
-                //Ranger: Glyph of Smite
-                else if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0000000000000080))
-                    if (Aura* GoSaur = m_caster->GetDummyAura(55692))
-                    {
-                        if (unitTarget->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, UI64LIT(0x40000100000)))
-                        {
-                                int32 GoS_aur_mod = GoSaur->GetModifier()->m_amount;
-                                damage += int32(damage * (GoS_aur_mod / 100));
-                                break;
-                        }
-                    }
                 break;
             }
             case SPELLFAMILY_DRUID:
