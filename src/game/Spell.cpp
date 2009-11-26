@@ -51,28 +51,27 @@ extern pEffect SpellEffects[TOTAL_SPELL_EFFECTS];
 
 class PrioritizeManaUnitWraper
 {
-    public:
-        explicit PrioritizeManaUnitWraper(Unit* unit) : i_unit(unit)
-        {
-            uint32 maxmana = unit->GetMaxPower(POWER_MANA);
-            i_percent = maxmana ? unit->GetPower(POWER_MANA) * 100 / maxmana : 101;
-        }
-        Unit* getUnit() const { return i_unit; }
-        uint32 getPercent() const { return i_percent; }
-    private:
-        Unit* i_unit;
-        uint32 i_percent;
-};
-
-struct PrioritizeMana
-{
-    int operator()( PrioritizeManaUnitWraper const& x, PrioritizeManaUnitWraper const& y ) const
+public:
+    explicit PrioritizeManaUnitWraper(Unit* unit) : i_unit(unit)
     {
-        return x.getPercent() < y.getPercent();
+        uint32 maxmana = unit->GetMaxPower(POWER_MANA);
+        i_percent = maxmana ? unit->GetPower(POWER_MANA) * 100 / maxmana : 101;
     }
+
+    bool operator <(const PrioritizeManaUnitWraper& right) const
+    {
+        return right.getPercent() < getPercent();
+    }
+
+    Unit* getUnit() const { return i_unit; }
+    uint32 getPercent() const { return i_percent; }
+private:
+    Unit* i_unit;
+    uint32 i_percent;
 };
 
-typedef std::priority_queue<PrioritizeManaUnitWraper, std::vector<PrioritizeManaUnitWraper>, PrioritizeMana> PrioritizeManaUnitQueue;
+
+typedef std::priority_queue<PrioritizeManaUnitWraper> PrioritizeManaUnitQueue;
 
 class PrioritizeHealthUnitWraper
 {
@@ -81,6 +80,12 @@ public:
     {
         i_percent = unit->GetHealth() * 100 / unit->GetMaxHealth();
     }
+
+    bool operator <(const PrioritizeHealthUnitWraper& right) const
+    {
+        return right.getPercent() < getPercent();
+    }
+
     Unit* getUnit() const { return i_unit; }
     uint32 getPercent() const { return i_percent; }
 private:
@@ -88,15 +93,7 @@ private:
     uint32 i_percent;
 };
 
-struct PrioritizeHealth
-{
-    int operator()( PrioritizeHealthUnitWraper const& x, PrioritizeHealthUnitWraper const& y ) const
-    {
-        return x.getPercent() < y.getPercent();
-    }
-};
-
-typedef std::priority_queue<PrioritizeHealthUnitWraper, std::vector<PrioritizeHealthUnitWraper>, PrioritizeHealth> PrioritizeHealthUnitQueue;
+typedef std::priority_queue<PrioritizeHealthUnitWraper> PrioritizeHealthUnitQueue;
 
 bool IsQuestTameSpell(uint32 spellId)
 {
@@ -6022,12 +6019,12 @@ void Spell::FillRaidOrPartyManaPriorityTargets( UnitList &TagUnitMap, Unit* memb
     FillRaidOrPartyTargets(TagUnitMap, member, center, radius, raid, withPets, withCaster);
 
     PrioritizeManaUnitQueue manaUsers;
-    for(UnitList::const_iterator itr = TagUnitMap.begin(); itr != TagUnitMap.end() && manaUsers.size() < count; ++itr)
+    for(UnitList::const_iterator itr = TagUnitMap.begin(); itr != TagUnitMap.end(); ++itr)
         if ((*itr)->getPowerType() == POWER_MANA && !(*itr)->isDead())
             manaUsers.push(PrioritizeManaUnitWraper(*itr));
 
     TagUnitMap.clear();
-    while(!manaUsers.empty())
+    while(!manaUsers.empty() && TagUnitMap.size() < count)
     {
         TagUnitMap.push_back(manaUsers.top().getUnit());
         manaUsers.pop();
@@ -6039,12 +6036,12 @@ void Spell::FillRaidOrPartyHealthPriorityTargets( UnitList &TagUnitMap, Unit* me
     FillRaidOrPartyTargets(TagUnitMap, member, center, radius, raid, withPets, withCaster);
 
     PrioritizeHealthUnitQueue healthQueue;
-    for(UnitList::const_iterator itr = TagUnitMap.begin(); itr != TagUnitMap.end() && healthQueue.size() < count; ++itr)
+    for(UnitList::const_iterator itr = TagUnitMap.begin(); itr != TagUnitMap.end(); ++itr)
         if (!(*itr)->isDead())
             healthQueue.push(PrioritizeHealthUnitWraper(*itr));
 
     TagUnitMap.clear();
-    while(!healthQueue.empty())
+    while(!healthQueue.empty() && TagUnitMap.size() < count)
     {
         TagUnitMap.push_back(healthQueue.top().getUnit());
         healthQueue.pop();

@@ -7172,7 +7172,7 @@ void Spell::EffectSummonSpecialPets(uint32 i)
 			spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, spawnCreature->GetCreatureInfo()->mindmg);
 			spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, spawnCreature->GetCreatureInfo()->maxdmg);
 			spawnCreature->SetCreateHealth(spawnCreature->GetCreatureInfo()->maxhealth);
-			spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, uint32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK)/3));
+			spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, (uint32)m_caster->GetTotalAttackPowerValue(BASE_ATTACK)/3);
 			spawnCreature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor()+m_caster->GetUInt32Value(UNIT_FIELD_RESISTANCES)/3);
 
 			spawnCreature->UpdateMaxHealth();
