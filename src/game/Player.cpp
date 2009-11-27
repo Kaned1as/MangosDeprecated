@@ -6960,6 +6960,10 @@ void Player::_ApplyWeaponDependentAuraCritMod(Item *item, WeaponAttackType attac
 
 void Player::_ApplyWeaponDependentAuraDamageMod(Item *item, WeaponAttackType attackType, Aura* aura, bool apply)
 {
+    //Ranger: not apply/remove mods for broken item
+    if (!item || item->IsBroken())
+        return;
+
     // ignore spell mods for not wands
     Modifier const* modifier = aura->GetModifier();
     if((modifier->m_miscvalue & SPELL_SCHOOL_MASK_NORMAL)==0 && (getClassMask() & CLASSMASK_WAND_USERS)==0)
