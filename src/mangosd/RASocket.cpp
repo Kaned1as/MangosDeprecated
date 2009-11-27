@@ -222,6 +222,13 @@ void RASocket::OnRead()
             case OK:
                 if(strlen(buff))
                 {
+                    if(!memcmp(buff,"LOGOUT",6))
+                    {
+                        Sendf("Logout accepted, disconnecting.\r\n");
+                        SetCloseAndDelete();
+                        break;
+                    }
+
                     sLog.outRALog("Got '%s' cmd.\n",buff);
                     sWorld.QueueCliCommand(&RASocket::zprint , buff);
                 }
