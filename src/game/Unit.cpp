@@ -471,6 +471,13 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
     uint32 health = pVictim->GetHealth();
     sLog.outDetail("deal dmg:%d to health:%d ",damage,health);
 
+    //Ranger: ÂÐÅÌÅÍÍÀß ÇÀÒÛ×ÊÀ!
+    if (this && this->GetTypeId() == TYPEID_PLAYER && (damage < 0 || damage > 35000))
+    {
+        sLog.outError("Unit::DealDamage - Abnormal damage found, damage = %u", damage);
+        damage = 1;
+    }
+
     // duel ends when player has 1 or less hp
     bool duel_hasEnded = false;
     if(pVictim->GetTypeId() == TYPEID_PLAYER && ((Player*)pVictim)->duel && damage >= (health-1))
