@@ -9080,6 +9080,10 @@ uint8 Player::_CanStoreItem_InBag( uint8 bag, ItemPosCountVec &dest, ItemPrototy
 
         Item* pItem2 = GetItemByPos( bag, j );
 
+        //Ranger: temp fix
+        if (pProto == pBagProto)
+            return EQUIP_ERR_BAG_FULL;
+
         // ignore move item (this slot will be empty at move)
         if (pItem2==pSrcItem)
             pItem2 = NULL;
