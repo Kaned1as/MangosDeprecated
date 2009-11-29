@@ -10047,6 +10047,9 @@ uint8 Player::CanBankItem( uint8 bag, uint8 slot, ItemPosCountVec &dest, Item *p
     if (!pItem)
         return swap ? EQUIP_ERR_ITEMS_CANT_BE_SWAPPED : EQUIP_ERR_ITEM_NOT_FOUND;
 
+    if (pItem->m_lootGenerated)
+        return EQUIP_ERR_CANT_DO_RIGHT_NOW;
+
     uint32 count = pItem->GetCount();
 
     sLog.outDebug( "STORAGE: CanBankItem bag = %u, slot = %u, item = %u, count = %u", bag, slot, pItem->GetEntry(), pItem->GetCount());
@@ -11253,6 +11256,11 @@ void Player::SwapItem( uint16 src, uint16 dst )
         SendEquipError( EQUIP_ERR_CANT_DO_RIGHT_NOW, pSrcItem, NULL );
         return;
     }
+
+    // Ranger: taked from getmangos.com
+    // release loot in case of both item being bags (bags might contain boxes that are opened for looting)
+    if(pSrcItem->IsBag() && pDstItem && pDstItem->IsBag())
+        GetSession()->DoLootRelease(GetLootGUID());
 
     // check unequip potability for equipped items and bank bags
     if(IsEquipmentPos ( src ) || IsBagPos ( src ))
