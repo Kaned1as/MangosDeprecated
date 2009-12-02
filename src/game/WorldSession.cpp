@@ -567,9 +567,21 @@ void WorldSession::SendAuthWaitQue(uint32 position)
 {
     if(position == 0)
     {
-        WorldPacket packet( SMSG_AUTH_RESPONSE, 1 );
-        packet << uint8( AUTH_OK );
-        SendPacket(&packet);
+        WorldPacket packet(SMSG_AUTH_RESPONSE, 1 + 4 + 1 + 4 + 1);
+        packet << uint8 (AUTH_OK);
+        packet << uint32 (0);                                   // BillingTimeRemaining
+        packet << uint8 (0);                                    // BillingPlanFlags
+        packet << uint32 (0);                                   // BillingTimeRested
+        packet << uint8 (Expansion());                       // 0 - normal, 1 - TBC, must be set in database manually for each account
+        SendPacket (&packet);
+
+        SendAddonsInfo();
+
+        WorldPacket pkt(SMSG_CLIENTCACHE_VERSION, 4);
+        pkt << uint32(sWorld.getConfig(CONFIG_CLIENTCACHE_VERSION));
+        SendPacket(&pkt);
+
+        SendTutorialsData();
     }
     else
     {
