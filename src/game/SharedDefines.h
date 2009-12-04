@@ -1047,6 +1047,8 @@ enum Targets
     TARGET_SCRIPT_COORDINATES          = 46,
     TARGET_DYNAMIC_OBJECT              = 47,
     TARGET_SUMMON                      = 48,
+	TARGET1_MIRROR					   = 49,				//seems only this differs 58831, 58833, 58834 spells
+	TARGET3_MIRROR					   = 50,
     TARGET_AREAEFFECT_CUSTOM_2         = 52,
     TARGET_CURRENT_ENEMY_COORDINATES   = 53,                // set unit coordinates as dest, only 16 target B imlemented
     TARGET_ALL_RAID_AROUND_CASTER      = 56,
@@ -2429,6 +2431,7 @@ enum SummonType
     SUMMON_TYPE_POSESSED2   = 428,
     SUMMON_TYPE_INFERNO     = 711,
     SUMMON_TYPE_GUARDIAN2   = 713,
+	SUMMON_TYPE_MIRRORIMAGE = 1021,
     SUMMON_TYPE_GUARDIAN3   = 1161,
     SUMMON_TYPE_ELEMENTAL   = 1561,
     SUMMON_TYPE_FORCE_OF_NATURE = 1562

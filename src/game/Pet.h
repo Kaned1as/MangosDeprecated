@@ -119,7 +119,7 @@ typedef std::vector<uint32> AutoSpellList;
 #define OWNER_MAX_DISTANCE 100.0f
 
 #define PET_FOLLOW_DIST  1
-#define PET_FOLLOW_ANGLE (M_PI/2)
+#define PET_FOLLOW_ANGLE (2*M_PI/3)
 
 class Player;
 
@@ -134,7 +134,7 @@ class Pet : public Creature
 
         PetType getPetType() const { return m_petType; }
         void setPetType(PetType type) { m_petType = type; }
-        bool isControlled() const { return getPetType()==SUMMON_PET || getPetType()==HUNTER_PET || getPetType()==GUARDIAN_PET; }
+        bool isControlled() const { return getPetType()==SUMMON_PET || getPetType()==HUNTER_PET || (getPetType()==GUARDIAN_PET && GetEntry() == 29264); }
         bool isTemporarySummoned() const { return m_duration > 0; }
 
         bool IsPermanentPetFor(Player* owner);              // pet have tab in character windows and set UNIT_FIELD_PETNUMBER

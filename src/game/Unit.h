@@ -874,6 +874,9 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void AddToWorld();
         void RemoveFromWorld();
 
+		float GetFollowAngle() { return m_followAngle; }
+	    void SetFollowAngle(float angle) { m_followAngle = angle; }
+
         void CleanupsBeforeDelete();                        // used in ~Creature/~Player (or before mass creature delete to remove cross-references to already deleted units)
 
         DiminishingLevels GetDiminishing(DiminishingGroup  group);
@@ -1271,6 +1274,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         uint64 m_ObjectSlot[4];
         uint32 m_detectInvisibilityMask;
         uint32 m_invisibilityMask;
+		float m_followAngle;
 
         uint32 m_ShapeShiftFormSpellId;
         ShapeshiftForm m_form;

@@ -1323,6 +1323,8 @@ void Spell::SetTargetMap(uint32 effIndex,uint32 targetMode,UnitList& TagUnitMap)
         case TARGET_TOTEM_FIRE:
         case TARGET_SELF:
         case TARGET_SELF2:
+		case TARGET1_MIRROR: //really this is the same spell for self and 2 other mirrors  
+		case TARGET3_MIRROR: // sorry I had nothing to do with them
         case TARGET_DYNAMIC_OBJECT:
         case TARGET_AREAEFFECT_CUSTOM:
         case TARGET_AREAEFFECT_CUSTOM_2:

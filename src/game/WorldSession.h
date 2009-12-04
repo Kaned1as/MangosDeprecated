@@ -367,6 +367,7 @@ class MANGOS_DLL_SPEC WorldSession
         void HandleBugOpcode(WorldPacket& recvPacket);
         void HandleSetAmmoOpcode(WorldPacket& recvPacket);
         void HandleItemNameQueryOpcode(WorldPacket& recvPacket);
+		void HandleMirrrorImageDataRequest( WorldPacket & recv_data );
 
         void HandleAreaTriggerOpcode(WorldPacket& recvPacket);
 

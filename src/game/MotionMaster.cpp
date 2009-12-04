@@ -236,7 +236,7 @@ MotionMaster::MoveTargetedHome()
             DEBUG_LOG("Following %s (GUID: %u)",
                 target->GetTypeId()==TYPEID_PLAYER ? "player" : "creature",
                 target->GetTypeId()==TYPEID_PLAYER ? target->GetGUIDLow() : ((Creature*)target)->GetDBTableGUIDLow() );
-            Mutate(new TargetedMovementGenerator<Creature>(*target,PET_FOLLOW_DIST,PET_FOLLOW_ANGLE));
+            Mutate(new TargetedMovementGenerator<Creature>(*target,PET_FOLLOW_DIST,target->GetFollowAngle()));
         }
     }
     else

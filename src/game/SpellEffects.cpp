@@ -3412,6 +3412,7 @@ void Spell::EffectSummonType(uint32 i)
     {
         case SUMMON_TYPE_GUARDIAN:
         case SUMMON_TYPE_POSESSED:
+		case SUMMON_TYPE_MIRRORIMAGE:
         case SUMMON_TYPE_POSESSED2:
         case SUMMON_TYPE_FORCE_OF_NATURE:
         case SUMMON_TYPE_GUARDIAN2:
@@ -3884,7 +3885,7 @@ void Spell::EffectSummonGuardian(uint32 i)
     // FIXME: some guardians have control spell applied and controlled by player and anyway player can't summon in this time
     //        so this code hack in fact
     if (m_caster->GetTypeId() == TYPEID_PLAYER && (duration <= 0 || GetSpellRecoveryTime(m_spellInfo) == 0))
-        if(m_caster->FindGuardianWithEntry(pet_entry))
+        if(m_caster->FindGuardianWithEntry(pet_entry) && pet_entry != 31216) //we want 3 caster mirrors instead of 1
             return;                                         // find old guardian, ignore summon
 
     // in another case summon new
@@ -3980,6 +3981,31 @@ void Spell::EffectSummonGuardian(uint32 i)
         m_caster->AddGuardian(spawnCreature);
 
         map->Add((Creature*)spawnCreature);
+
+		if(pet_entry == 31216)
+		{
+			switch(m_spellInfo->EffectImplicitTargetA[i]) //setting follow angles for mirrors
+			{
+				case 49: spawnCreature->SetFollowAngle(2*PET_FOLLOW_ANGLE); break;
+				case 50: spawnCreature->SetFollowAngle(3*PET_FOLLOW_ANGLE); break;
+			}
+
+			spawnCreature->SetDisplayId(m_caster->GetDisplayId());
+			spawnCreature->SetLevel(m_caster->getLevel());
+			//spells & spelldamage
+			spawnCreature->m_spells.clear();
+			spawnCreature->addSpell(59638);
+			spawnCreature->addSpell(59637);
+			spawnCreature->ToggleAutocast(59638, true);
+			spawnCreature->ToggleAutocast(59637, true);
+			if(m_caster->GetTypeId() == TYPEID_PLAYER)
+			{
+				float val = m_caster->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FROST) * 0.4;
+				if(val >= 0) spawnCreature->SetBonusDamage( int32(val));
+			}
+			// Clone me!
+			m_caster->CastSpell(spawnCreature, 45204, true);
+		}
     }
 }
 
@@ -4985,6 +5011,16 @@ void Spell::EffectScriptEffect(uint32 effIndex)
         {
             switch(m_spellInfo->Id)
             {
+				/*case 45204: // Clone Me!
+				case 41055: // Copy Weapon
+				case 45206: // Copy Off-hand Weapon
+					unitTarget->CastSpell(m_caster, damage, false);
+					break;
+				case 45205: // Copy Offhand Weapon
+				case 41054: // Copy Weapon
+					m_caster->CastSpell(unitTarget, damage, false);
+					break;*/
+			
                 // PX-238 Winter Wondervolt TRAP
                 case 26275:
                 {
