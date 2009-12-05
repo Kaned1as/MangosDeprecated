@@ -8619,7 +8619,14 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
             break;
         }
         case SPELL_DAMAGE_CLASS_MELEE:
+        case SPELL_DAMAGE_CLASS_RANGED:
         {
+            if (pVictim)
+            {
+                crit_chance = GetUnitCriticalChance(attackType, pVictim);
+                crit_chance+= GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, schoolMask);
+            }
+
             // Judgement of Command proc always crits on stunned target
             if(spellProto->SpellFamilyName == SPELLFAMILY_PALADIN && pVictim)
             {
@@ -8646,9 +8653,6 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                     }
                 }
 
-                if (bonusRaT == 0)
-                     break;
-
                 bool bleed_found = false;
 
                 Unit::AuraList const& PeriodicDamage = pVictim->GetAurasByType(SPELL_AURA_PERIODIC_DAMAGE);
@@ -8664,15 +8668,6 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
 
                 if (bleed_found)
                     crit_chance+=float(bonusRaT);
-            }
-            break;
-        }
-        case SPELL_DAMAGE_CLASS_RANGED:
-        {
-            if (pVictim)
-            {
-                crit_chance = GetUnitCriticalChance(attackType, pVictim);
-                crit_chance+= GetTotalAuraModifierByMiscMask(SPELL_AURA_MOD_SPELL_CRIT_CHANCE_SCHOOL, schoolMask);
             }
             break;
         }
