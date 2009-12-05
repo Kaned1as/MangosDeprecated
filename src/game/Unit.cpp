@@ -8567,23 +8567,40 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                 // Custom crit by class
                 switch(spellProto->SpellFamilyName)
                 {
+                    case SPELLFAMILY_PRIEST:
+                        // Flash Heal
+                        if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000000000800))
+                        {
+                            if (pVictim->GetHealth() > pVictim->GetMaxHealth()/2)
+                                break;
+                            AuraList const& mDummyAuras = GetAurasByType(SPELL_AURA_DUMMY);
+                            for(AuraList::const_iterator i = mDummyAuras.begin(); i!= mDummyAuras.end(); ++i)
+                            {
+                                // Improved Flash Heal
+                                if ((*i)->GetSpellProto()->SpellFamilyName == SPELLFAMILY_PRIEST &&
+                                    (*i)->GetSpellProto()->SpellIconID == 2542)
+                                {
+                                    crit_chance+=(*i)->GetModifier()->m_amount;
+                                    break;
+                                }
+                            }
+                        }
+                        break;
                     case SPELLFAMILY_PALADIN:
                         // Sacred Shield
                         if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000040000000))
                         {
                             Aura *aura = pVictim->GetDummyAura(58597);
                             if (aura && aura->GetCasterGUID() == GetGUID())
-                            crit_chance+=aura->GetModifier()->m_amount;
-                            break;
+                                crit_chance+=aura->GetModifier()->m_amount;
                         }
                         // Exorcism
                         else if (spellProto->Category == 19)
                         {
                             if (pVictim->GetCreatureTypeMask() & CREATURE_TYPEMASK_DEMON_OR_UNDEAD)
                                 return true;
-                            break;
                         }
-                    break;
+                        break;
                     case SPELLFAMILY_SHAMAN:
                         // Lava Burst
                         if (spellProto->SpellFamilyFlags & UI64LIT(0x0000100000000000))
@@ -8595,15 +8612,61 @@ bool Unit::isSpellCrit(Unit *pVictim, SpellEntry const *spellProto, SpellSchoolM
                                     pVictim->RemoveAurasByCasterSpell(flameShock->GetId(), GetGUID());
                                 return true;
                             }
-                            break;
                         }
-                    break;
-
+                        break;
                 }
             }
             break;
         }
         case SPELL_DAMAGE_CLASS_MELEE:
+        {
+            // Judgement of Command proc always crits on stunned target
+            if(spellProto->SpellFamilyName == SPELLFAMILY_PALADIN && pVictim)
+            {
+                if(spellProto->SpellFamilyFlags & 0x0000000000800000LL && spellProto->SpellIconID == 561)
+                {
+                    if(pVictim->hasUnitState(UNIT_STAT_STUNNED))
+                        return true;
+                }
+            }
+
+            // Ranger: Rend and Tear - crit bonus to Ferocious Bite
+            if (spellProto->SpellFamilyName == SPELLFAMILY_DRUID && spellProto->SpellFamilyFlags & UI64LIT(0x0000000000800000) && spellProto->SpellIconID == 1680 && pVictim)
+            {
+                int32 bonusRaT = 0;
+
+                Unit::AuraList const& dummyRaT = GetAurasByType(SPELL_AURA_DUMMY);
+                for (Unit::AuraList::const_iterator RaT_itr = dummyRaT.begin(); RaT_itr != dummyRaT.end(); ++RaT_itr)
+                {
+                    SpellEntry const* RaT_spell = (*RaT_itr)->GetSpellProto();
+                    if (RaT_spell->SpellFamilyName == SPELLFAMILY_DRUID && RaT_spell->SpellIconID == 2859)
+                    {
+                           bonusRaT = RaT_spell->EffectBasePoints[1] + 1;
+                           break;
+                    }
+                }
+
+                if (bonusRaT == 0)
+                     break;
+
+                bool bleed_found = false;
+
+                Unit::AuraList const& PeriodicDamage = pVictim->GetAurasByType(SPELL_AURA_PERIODIC_DAMAGE);
+                for(Unit::AuraList::const_iterator bleed_itr = PeriodicDamage.begin(); bleed_itr != PeriodicDamage.end(); ++bleed_itr)
+                {
+                    SpellEntry const *bleedspell = (*bleed_itr)->GetSpellProto();
+                    if (bleedspell->Mechanic == MECHANIC_BLEED || bleedspell->EffectMechanic[(*bleed_itr)->GetEffIndex()] == MECHANIC_BLEED)
+                    {
+                          bleed_found = true;
+                          break;
+                    }
+                }
+
+                if (bleed_found)
+                    crit_chance+=float(bonusRaT);
+            }
+            break;
+        }
         case SPELL_DAMAGE_CLASS_RANGED:
         {
             if (pVictim)

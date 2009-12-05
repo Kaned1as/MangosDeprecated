@@ -4741,6 +4741,52 @@ void Spell::EffectWeaponDmg(uint32 i)
             }
             break;
         }
+        case SPELLFAMILY_HUNTER:
+        {
+            // Kill Shot
+            if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x80000000000000))
+                damage += int32(0.4f * m_caster->GetTotalAttackPowerValue(RANGED_ATTACK));
+            break;
+        }
+        case SPELLFAMILY_DRUID:
+        {
+            // Ranger: Rend and Tear - Maul and Shred damage bonus
+            if(m_spellInfo->SpellFamilyFlags & UI64LIT(0x00000000008800))
+            {
+                int32 bonusRaT = 0;
+
+                Unit::AuraList const& dummyRaT = m_caster->GetAurasByType(SPELL_AURA_DUMMY);
+                for (Unit::AuraList::const_iterator RaT_itr = dummyRaT.begin(); RaT_itr != dummyRaT.end(); ++RaT_itr)
+                {
+                    SpellEntry const* RaT_spell = (*RaT_itr)->GetSpellProto();
+                    if (RaT_spell->SpellFamilyName == SPELLFAMILY_DRUID && RaT_spell->SpellIconID == 2859)
+                    {
+                          bonusRaT = RaT_spell->EffectBasePoints[0] + 1;
+                          break;
+                    }
+                }
+
+                if (bonusRaT == 0)
+                     break;
+
+                bool bleed_found = false;
+
+                Unit::AuraList const& PeriodicDamage = unitTarget->GetAurasByType(SPELL_AURA_PERIODIC_DAMAGE);
+                for(Unit::AuraList::const_iterator bleed_itr = PeriodicDamage.begin(); bleed_itr != PeriodicDamage.end(); ++bleed_itr)
+                {
+                    SpellEntry const *bleedspell = (*bleed_itr)->GetSpellProto();
+                    if (bleedspell->Mechanic == MECHANIC_BLEED || bleedspell->EffectMechanic[(*bleed_itr)->GetEffIndex()] == MECHANIC_BLEED)
+                    {
+                          bleed_found = true;
+                          break;
+                    }
+                }
+
+                if (bleed_found)
+                    totalDamagePercentMod *= (bonusRaT + 100.0f) / 100.0f;
+            }
+            break;
+        }
     }
 
     int32 fixed_bonus = 0;
