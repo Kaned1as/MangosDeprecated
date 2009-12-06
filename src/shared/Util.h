@@ -285,6 +285,7 @@ bool consoleToUtf8(const std::string& conStr,std::string& utf8str);
 bool Utf8FitTo(const std::string& str, std::wstring search);
 void utf8printf(FILE *out, const char *str, ...);
 void vutf8printf(FILE *out, const char *str, va_list* ap);
+void utf8print(const char* str);
 
 bool IsIPAddress(char const* ipaddress);
 uint32 CreatePIDFile(const std::string& filename);

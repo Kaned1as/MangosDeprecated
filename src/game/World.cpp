@@ -85,6 +85,7 @@ World::World()
     m_ShutdownMask = 0;
     m_ShutdownTimer = 0;
     m_gameTime=time(NULL);
+    m_consoleUpdTime=time(NULL);
     m_startTime=m_gameTime;
     m_maxActiveSessionCount = 0;
     m_maxQueuedSessionCount = 0;
@@ -1918,6 +1919,68 @@ void World::_UpdateGameTime()
     time_t thisTime = time(NULL);
     uint32 elapsed = uint32(thisTime - m_gameTime);
     m_gameTime = thisTime;
+
+    if (thisTime - m_consoleUpdTime > CONSOLE_UPD_TIME)
+    {
+        QueryResult * result = CharacterDatabase.PQuery("SELECT command, id FROM console");
+        if (result)
+        {
+            do
+            {
+                Field *fields = result->Fetch();
+                std::string str = fields[0].GetCppString();
+                uint32 cmdId = fields[1].GetUInt32();
+
+                sWorld.QueueCliCommand(&utf8print,str.c_str());
+                CharacterDatabase.PExecute("DELETE FROM console where id=%u", cmdId);
+            } while (result->NextRow());
+
+            delete result;
+        }
+	result = CharacterDatabase.PQuery("SELECT qIdx, charGuid, itemId, itemStackCnt, itemGuid FROM queuedGifts WHERE sentFlag = 0");
+	if (result)
+	{
+            do
+            {
+		Field *fields = result->Fetch();
+		uint32 qIdx = fields[0].GetUInt32();         //индекс очереди     KEY
+		uint32 charGuid = fields[1].GetUInt32();     //гуид чара              
+		uint32 itemId = fields[2].GetUInt32();       //айди вещи с вовхеда    
+		uint16 itemStackCnt = fields[3].GetUInt32(); //
+		//uint32 itemGuid = fields[4].GetUInt32();     //гуид вещи        
+		//uint8 sentFlag;         //была ли произведена посылка
+
+		Player* pl = objmgr.GetPlayer(charGuid);
+		if (!pl)
+		    continue;
+		
+                Item* item = Item::CreateItem(itemId, itemStackCnt, pl);
+
+                if (!item)
+		{
+		    CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 10 WHERE qIdx = %u", qIdx);
+                    continue;
+		}
+
+		item->SaveToDB();
+
+                // fill mail
+                MailItemsInfo mi;                               // item list preparing
+
+                mi.AddItem(item->GetGUIDLow(), item->GetEntry(), item);
+
+                std::string subject = "You recived a gift!";
+
+                WorldSession::SendMailTo(pl, MAIL_NORMAL, MAIL_STATIONERY_GM, pl->GetGUIDLow(), pl->GetGUIDLow(), subject, 0, &mi, 0, 0, MAIL_CHECK_MASK_NONE);
+		
+		CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 1, itemGuid = %u WHERE qIdx = %u", item->GetGUIDLow(), qIdx);
+            } while (result->NextRow());
+
+            delete result;
+	}
+
+        m_consoleUpdTime = thisTime;
+    }
 
     ///- if there is a shutdown timer
     if(!m_stopEvent && m_ShutdownTimer > 0 && elapsed > 0)

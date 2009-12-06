@@ -23,6 +23,8 @@
 #ifndef __WORLD_H
 #define __WORLD_H
 
+#define CONSOLE_UPD_TIME 60
+
 #include "Common.h"
 #include "Timer.h"
 #include "Policies/Singleton.h"
@@ -555,6 +557,7 @@ class World
 
         time_t m_startTime;
         time_t m_gameTime;
+	time_t m_consoleUpdTime;
         IntervalTimer m_timers[WUPDATE_COUNT];
         uint32 mail_timer;
         uint32 mail_timer_expires;

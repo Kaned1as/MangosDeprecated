@@ -35,22 +35,6 @@
 #include "Player.h"
 #include "Chat.h"
 
-void utf8print(const char* str)
-{
-#if PLATFORM == PLATFORM_WINDOWS
-    wchar_t wtemp_buf[6000];
-    size_t wtemp_len = 6000-1;
-    if(!Utf8toWStr(str,strlen(str),wtemp_buf,wtemp_len))
-        return;
-
-    char temp_buf[6000];
-    CharToOemBuffW(&wtemp_buf[0],&temp_buf[0],wtemp_len+1);
-    printf(temp_buf);
-#else
-    printf(str);
-#endif
-}
-
 /// Delete a user account and all associated characters in this realm
 /// \todo This function has to be enhanced to respect the login/realm split (delete char, delete account chars in realm, delete account chars in realm then delete account
 bool ChatHandler::HandleAccountDeleteCommand(const char* args)

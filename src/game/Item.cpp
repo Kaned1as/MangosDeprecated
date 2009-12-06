@@ -432,11 +432,13 @@ bool Item::LoadFromDB(uint32 guid, uint64 owner_guid, QueryResult *result)
 void Item::DeleteFromDB()
 {
     CharacterDatabase.PExecute("DELETE FROM item_instance WHERE guid = '%u'",GetGUIDLow());
+    CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 20 WHERE itemGuid = %u", GetGUIDLow());
 }
 
 void Item::DeleteFromInventoryDB()
 {
     CharacterDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'",GetGUIDLow());
+    CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 30 WHERE itemGuid = %u", GetGUIDLow());	
 }
 
 ItemPrototype const *Item::GetProto() const
