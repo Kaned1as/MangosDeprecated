@@ -5834,6 +5834,14 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                 }
             }
 
+            // Improved Barkskin - apply/remove armor bonus due to shapeshift
+            if (((Player*)m_target)->HasSpell(63410) || ((Player*)m_target)->HasSpell(63411))
+            {
+                m_target->RemoveAurasDueToSpell(66530);
+                if (form == FORM_TRAVEL || form == FORM_NONE) // "while in Travel Form or while not shapeshifted"
+                    m_target->CastSpell(m_target, 66530, true);
+            }
+
             // Heart of the Wild
             if (HotWSpellId)
             {
@@ -5861,6 +5869,16 @@ void Aura::HandleShapeshiftBoosts(bool apply)
             m_target->RemoveAurasDueToSpell(spellId2);
         if(MasterShaperSpellId)
             m_target->RemoveAurasDueToSpell(MasterShaperSpellId);
+
+       	// Improved Barkskin - apply/remove armor bonus due to shapeshift
+        if(m_target->GetTypeId() == TYPEID_PLAYER)
+        {
+            if (((Player*)m_target)->HasSpell(63410) || ((Player*)m_target)->HasSpell(63411))
+            {
+                m_target->RemoveAurasDueToSpell(66530);
+                m_target->CastSpell(m_target,66530,true);
+            }
+        }
 
         Unit::AuraMap& tAuras = m_target->GetAuras();
         for (Unit::AuraMap::iterator itr = tAuras.begin(); itr != tAuras.end();)
