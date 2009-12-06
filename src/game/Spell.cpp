@@ -2408,6 +2408,8 @@ void Spell::cast(bool skipCheck)
             else if(m_spellInfo->SpellIconID == 1662 && m_spellInfo->AttributesEx & 0x20)
                                                             // Blood Fury (Racial)
                 AddPrecastSpell(23230);                     // Blood Fury - Healing Reduction
+            else if(m_spellInfo->Id == 20594)               // Stoneform (Racial)
+                AddPrecastSpell(65116);                     // Stoneform - Armor buff
             break;
         }
         case SPELLFAMILY_MAGE:
@@ -2429,7 +2431,6 @@ void Spell::cast(bool skipCheck)
 
             switch(m_spellInfo->Id)
             {
-                case 47585: AddPrecastSpell(60069); break;  // Dispersion (transform)
                 case 15237: AddTriggeredSpell(23455); break;// Holy Nova, rank 1
                 case 15430: AddTriggeredSpell(23458); break;// Holy Nova, rank 2
                 case 15431: AddTriggeredSpell(23459); break;// Holy Nova, rank 3
@@ -4884,6 +4885,19 @@ SpellCastResult Spell::CheckCasterAuras() const
         prevented_reason = SPELL_FAILED_SILENCED;
     else if(unitflag & UNIT_FLAG_PACIFIED && m_spellInfo->PreventionType == SPELL_PREVENTION_TYPE_PACIFY)
         prevented_reason = SPELL_FAILED_PACIFIED;
+    //Ranger: hackfix for Bladestorm
+    else if(m_caster->HasAuraType(SPELL_AURA_ALLOW_ONLY_ABILITY))
+    {
+        Unit::AuraList const& casingLimit = m_caster->GetAurasByType(SPELL_AURA_ALLOW_ONLY_ABILITY);
+        for(Unit::AuraList::const_iterator itr = casingLimit.begin(); itr != casingLimit.end(); ++itr)
+        {
+            if(m_spellInfo->SpellFamilyFlags != (uint64)(*itr)->getAuraSpellClassMask())
+            {
+               prevented_reason = SPELL_FAILED_CASTER_AURASTATE;
+               break;
+            }
+        }
+    }
 
     // Attr must make flag drop spell totally immune from all effects
     if(prevented_reason != SPELL_CAST_OK)
