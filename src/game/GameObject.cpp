@@ -866,7 +866,7 @@ void GameObject::Use(Unit* user)
             FactionTemplateEntry const* gofaction = sFactionTemplateStore.LookupEntry(gofact);
             FactionTemplateEntry const* plrfaction = sFactionTemplateStore.LookupEntry(plr->getFaction());
 
-            if( plrfaction && gofaction && !plr->isGameMaster() )
+            if( plrfaction && gofaction && !plr->isGameMaster() && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP) )
                 if( (gofaction->IsHostileTo(*plrfaction) ) )
                 {
                     std::stringstream gobid;

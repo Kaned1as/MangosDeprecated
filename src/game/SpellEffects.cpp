@@ -3208,7 +3208,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
                 FactionTemplateEntry const* gobfaction = sFactionTemplateStore.LookupEntry(gofact);
                 FactionTemplateEntry const* playerfaction = sFactionTemplateStore.LookupEntry(player->getFaction());
 
-                if( playerfaction && gobfaction && !player->isGameMaster() )
+                if( playerfaction && gobfaction && !player->isGameMaster() && !sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP) )
                     if( (gobfaction->IsHostileTo(*playerfaction) ) )
                     {
                         std::stringstream goid;
