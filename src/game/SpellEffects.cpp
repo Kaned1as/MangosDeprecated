@@ -6293,6 +6293,8 @@ void Spell::EffectLeapForward(uint32 i)
         if( unitTarget->isInFlight() || !unitTarget->isAlive() )
             return;
 
+   if (m_caster->GetTypeId() == TYPEID_PLAYER) ((Player*)m_caster)->SDetector.Skip(4000);
+
 	bool fall = false;
 	// Cast checks from spell.cpp
 	float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
@@ -6356,6 +6358,8 @@ void Spell::EffectLeapBack(uint32 i)
 {
     if(unitTarget->isInFlight())
         return;
+
+    if (m_caster->GetTypeId() == TYPEID_PLAYER) ((Player*)m_caster)->SDetector.Skip(4000);
 
     m_caster->KnockBackFrom(unitTarget,float(m_spellInfo->EffectMiscValue[i])/10,float(damage)/10);
 }
@@ -6457,6 +6461,8 @@ void Spell::EffectCharge(uint32 /*i*/)
     if (!unitTarget)
         return;
 
+    if (m_caster->GetTypeId() == TYPEID_PLAYER) ((Player*)m_caster)->SDetector.Skip(4000);
+
     //TODO: research more ContactPoint/attack distance.
     //3.666666 instead of ATTACK_DISTANCE(5.0f) in below seem to give more accurate result.
     float x, y, z;
@@ -6492,6 +6498,8 @@ void Spell::EffectCharge2(uint32 /*i*/)
         unitTarget->GetContactPoint(m_caster, x, y, z, 3.666666f);
     else
         return;
+
+    if (m_caster->GetTypeId() == TYPEID_PLAYER) ((Player*)m_caster)->SDetector.Skip(4000);
 
     // Only send MOVEMENTFLAG_WALK_MODE, client has strange issues with other move flags
     m_caster->SendMonsterMove(x, y, z, 0, m_caster->GetTypeId()==TYPEID_PLAYER ? MONSTER_MOVE_WALK : ((Creature*)m_caster)->GetMonsterMoveFlags(), 1);

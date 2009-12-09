@@ -36,6 +36,7 @@
 #include "AchievementMgr.h"
 #include "ReputationMgr.h"
 #include "BattleGround.h"
+#include "SpeedDetector.h"
 
 #include<string>
 #include<vector>
@@ -2090,6 +2091,8 @@ class MANGOS_DLL_SPEC Player : public Unit
         /*********************************************************/
         /***                 VARIOUS SYSTEMS                   ***/
         /*********************************************************/
+        SpeedCheatDetector SDetector;
+
         MovementInfo m_movementInfo;
         bool HasMovementFlag(MovementFlags f) const;        // for script access to m_movementInfo.HasMovementFlag
         void UpdateFallInformationIfNeed(MovementInfo const& minfo,uint16 opcode);

@@ -268,7 +268,7 @@ std::ostringstream& operator<< (std::ostringstream& ss, PlayerTaxi const& taxi)
 
 UpdateMask Player::updateVisualBits;
 
-Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputationMgr(this)
+Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputationMgr(this), SDetector()
 {
     m_transport = 0;
 
@@ -5751,6 +5751,23 @@ bool Player::SetPosition(float x, float y, float z, float orientation, bool tele
     const float old_y = GetPositionY();
     const float old_z = GetPositionZ();
     const float old_r = GetOrientation();
+
+#define USE_ANTICHEAT_2
+//one more define in movementhandler.cpp
+#ifdef USE_ANTICHEAT_2
+    //AntiSpeedHack 2
+    if (m_transport == NULL
+        && !teleport
+        && sWorld.GetMvAnticheatEnable()
+        && GetSession()->GetSecurity() <= sWorld.GetMvAnticheatGmLevel()
+        && GetMotionMaster()->GetCurrentMovementGeneratorType() != FLIGHT_MOTION_TYPE)
+    {
+            SDetector.Check(this, old_x - x, old_y - y);
+
+            if (SDetector.IsCheatDetected())
+                SDetector.ReportCheater(this);
+    }
+#endif
 
     if( teleport || old_x != x || old_y != y || old_z != z || old_r != orientation )
     {

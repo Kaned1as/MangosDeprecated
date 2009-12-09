@@ -28,6 +28,8 @@ noinst_LIBRARIES = libmangosgame.a
 
 #  libmangossgame library will later be reused by ...
 libmangosgame_a_SOURCES = \
+	SpeedDetector.h \
+	SpeedDetector.cpp \
 	AccountMgr.cpp \
 	AccountMgr.h \
 	AchievementMgr.h \

@@ -492,9 +492,41 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
         }
     }
 
+#define USE_ANTICHEAT_2
+//one more define in player.cpp
+#ifdef USE_ANTICHEAT_2
+    //AntiSpeedHack 2
+    //in player::setposition
+    _player->SDetector.UpdateMvData(movementInfo.time, movementInfo.flags & (MOVEMENTFLAG_ONTRANSPORT | 0xE000)); //full falling mask(ascent-tested)
+
+//next time...
+    /*//flyhack
+    if( (movement_info.flags & MOVEFLAG_AIR_SWIMMING)
+            && !(movement_info.flags & MOVEFLAG_SWIMMING)
+            && !(_player->flying_aura || _player->FlyCheat)
+            && !_player->HasAurasOfType(SPELL_AURA_HOVER)
+            && !(sWorld.no_antihack_on_gm && _player->GetSession()->HasGMPermissions()) )
+    {
+            //cancel flying
+            WorldPacket data (SMSG_MOVE_UNSET_CAN_FLY, 13);
+            data << _player->GetNewGUID();
+            data << uint32(5);
+            SendPacket(&data);
+
+            //_player->BroadcastMessage( "Flyhack detected. You will be logged out in 5 seconds." );
+            //sCheatLog.writefromsession( _player->GetSession(), "Caught %s with flyhack");
+            //sEventMgr.AddEvent( _player, &Player::_Kick, EVENT_PLAYER_KICK, 5000, 1, 0 );
+
+            //std::string banReason;
+            //banReason = "anti cheat 2: fly hack";
+            //_player->SetBanned(TIME_DAY + (uint32)UNIXTIME, banReason);
+    }*/
+
+#elif
     // ---- anti-cheat features -->>>
     uint32 Anti_TeleTimeDiff=plMover ? time(NULL) - plMover->Anti__GetLastTeleTime() : time(NULL);
     static const uint32 Anti_TeleTimeIgnoreDiff=sWorld.GetMvAnticheatIgnoreAfterTeleport();
+
     if (plMover && (plMover->m_transport == 0) && sWorld.GetMvAnticheatEnable() &&
         GetPlayer()->GetSession()->GetSecurity() <= sWorld.GetMvAnticheatGmLevel() &&
         GetPlayer()->GetMotionMaster()->GetCurrentMovementGeneratorType()!=FLIGHT_MOTION_TYPE &&
@@ -624,7 +656,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
         }*/
     }
 	// <<---- anti-cheat features
-
+#endif
 
     /* process position-change */
     recv_data.put<uint32>(6, getMSTime());                  // fix time, offset flags(4) + unk(2)

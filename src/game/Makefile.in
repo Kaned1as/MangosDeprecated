@@ -62,18 +62,19 @@ LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 libmangosgame_a_AR = $(AR) $(ARFLAGS)
 libmangosgame_a_LIBADD =
-am_libmangosgame_a_OBJECTS = AccountMgr.$(OBJEXT) \
-	AchievementMgr.$(OBJEXT) AggressorAI.$(OBJEXT) \
-	ArenaTeam.$(OBJEXT) ArenaTeamHandler.$(OBJEXT) \
-	AuctionHouseHandler.$(OBJEXT) AuctionHouseMgr.$(OBJEXT) \
-	Bag.$(OBJEXT) BattleGround.$(OBJEXT) BattleGroundAA.$(OBJEXT) \
-	BattleGroundAB.$(OBJEXT) BattleGroundAV.$(OBJEXT) \
-	BattleGroundBE.$(OBJEXT) BattleGroundDS.$(OBJEXT) \
-	BattleGroundEY.$(OBJEXT) BattleGroundNA.$(OBJEXT) \
-	BattleGroundRL.$(OBJEXT) BattleGroundRV.$(OBJEXT) \
-	BattleGroundSA.$(OBJEXT) BattleGroundWS.$(OBJEXT) \
-	BattleGroundHandler.$(OBJEXT) BattleGroundMgr.$(OBJEXT) \
-	Calendar.$(OBJEXT) CalendarHandler.$(OBJEXT) Channel.$(OBJEXT) \
+am_libmangosgame_a_OBJECTS = SpeedDetector.$(OBJEXT) \
+	AccountMgr.$(OBJEXT) AchievementMgr.$(OBJEXT) \
+	AggressorAI.$(OBJEXT) ArenaTeam.$(OBJEXT) \
+	ArenaTeamHandler.$(OBJEXT) AuctionHouseHandler.$(OBJEXT) \
+	AuctionHouseMgr.$(OBJEXT) Bag.$(OBJEXT) BattleGround.$(OBJEXT) \
+	BattleGroundAA.$(OBJEXT) BattleGroundAB.$(OBJEXT) \
+	BattleGroundAV.$(OBJEXT) BattleGroundBE.$(OBJEXT) \
+	BattleGroundDS.$(OBJEXT) BattleGroundEY.$(OBJEXT) \
+	BattleGroundNA.$(OBJEXT) BattleGroundRL.$(OBJEXT) \
+	BattleGroundRV.$(OBJEXT) BattleGroundSA.$(OBJEXT) \
+	BattleGroundWS.$(OBJEXT) BattleGroundHandler.$(OBJEXT) \
+	BattleGroundMgr.$(OBJEXT) Calendar.$(OBJEXT) \
+	CalendarHandler.$(OBJEXT) Channel.$(OBJEXT) \
 	ChannelHandler.$(OBJEXT) ChannelMgr.$(OBJEXT) \
 	CharacterHandler.$(OBJEXT) Chat.$(OBJEXT) \
 	ChatHandler.$(OBJEXT) CombatHandler.$(OBJEXT) \
@@ -278,6 +279,8 @@ noinst_LIBRARIES = libmangosgame.a
 
 #  libmangossgame library will later be reused by ...
 libmangosgame_a_SOURCES = \
+	SpeedDetector.h \
+	SpeedDetector.cpp \
 	AccountMgr.cpp \
 	AccountMgr.h \
 	AchievementMgr.h \
@@ -706,6 +709,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SkillExtraItems.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SkillHandler.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SocialMgr.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpeedDetector.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/Spell.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpellAuras.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/SpellEffects.Po@am__quote@

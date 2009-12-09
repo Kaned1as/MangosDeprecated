@@ -994,6 +994,14 @@
 				RelativePath="..\..\src\game\World.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\src\game\SpeedDetector.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\SpeedDetector.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Object"
