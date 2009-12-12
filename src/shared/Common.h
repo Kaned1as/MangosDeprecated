@@ -170,8 +170,8 @@ enum TimeConstants
 #define SEC_PLAYER         0
 #define SEC_MODERATOR      1
 #define SEC_GAMEMASTER     2
-#define SEC_ADMINISTRATOR  3
-#define SEC_CONSOLE        4                                  // must be always last in list, accounts must have less security level always also
+#define SEC_ADMINISTRATOR  15
+#define SEC_CONSOLE        20                                  // must be always last in list, accounts must have less security level always also
 #define SEC_DEFTYPE        0x3
 
 
