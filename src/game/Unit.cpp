@@ -10790,7 +10790,21 @@ void Unit::SetPower(Powers power, uint32 val)
 void Unit::SetMaxPower(Powers power, uint32 val)
 {
     uint32 cur_power = GetPower(power);
+    uint32 cur_max_power = GetMaxPower(power);
     SetStatInt32Value(UNIT_FIELD_MAXPOWER1 + power, val);
+	
+    if(cur_max_power > 0)
+    {
+        float coef = (float)val / cur_max_power;     // < 1 - power decrease
+        uint32 cur_val = (uint32)(coef * cur_power); // > 1 - power increase
+
+        SetPower(power, cur_val);
+    }
+    else //unusual case
+    {
+        if(val < cur_power)
+             SetPower(power, val);
+    }
 
     // group update
     if(GetTypeId() == TYPEID_PLAYER)
@@ -10809,8 +10823,6 @@ void Unit::SetMaxPower(Powers power, uint32 val)
         }
     }
 
-    if(val < cur_power)
-        SetPower(power, val);
 }
 
 void Unit::ApplyPowerMod(Powers power, uint32 val, bool apply)
