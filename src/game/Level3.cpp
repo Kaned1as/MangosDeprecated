@@ -870,7 +870,7 @@ bool ChatHandler::HandleAccountSetGmLevelCommand(const char* args)
     }
 
     int32 gm = (int32)atoi(arg2);
-    if ( gm < SEC_PLAYER || gm > 15 )
+    if ( gm < SEC_PLAYER || gm > SEC_ADMINISTRATOR )
     {
         SendSysMessage(LANG_BAD_VALUE);
         SetSentErrorMessage(true);
