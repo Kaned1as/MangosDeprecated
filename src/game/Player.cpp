@@ -9078,8 +9078,9 @@ uint8 Player::_CanStoreItem_InBag( uint8 bag, ItemPosCountVec &dest, ItemPrototy
     if (bag==skip_bag)
         return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
 
+    // skip not existed bag or self targeted bag
     Bag* pBag = (Bag*)GetItemByPos( INVENTORY_SLOT_BAG_0, bag );
-    if (!pBag)
+    if (!pBag || pBag==pSrcItem)
         return EQUIP_ERR_ITEM_DOESNT_GO_INTO_BAG;
 
     ItemPrototype const* pBagProto = pBag->GetProto();
@@ -9100,10 +9101,6 @@ uint8 Player::_CanStoreItem_InBag( uint8 bag, ItemPosCountVec &dest, ItemPrototy
             continue;
 
         Item* pItem2 = GetItemByPos( bag, j );
-
-        //Ranger: temp fix
-        if (pProto == pBagProto)
-            return EQUIP_ERR_BAG_FULL;
 
         // ignore move item (this slot will be empty at move)
         if (pItem2==pSrcItem)
@@ -16012,21 +16009,41 @@ void Player::_SaveInventory()
             sLog.outError("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%d) and slot(%d) values for the item with guid %d are incorrect, the player doesn't have an item at that position!", GetGUIDLow(), GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow());
             error = true;
 
-            //Ranger: o_O
-            sWorld.BanAccount(BAN_CHARACTER, GetName(), "-1d", "unknow exploit", "Anticheat");
-            return;
+            //Ranger: need logs!!
+            std::stringstream inventoryone;
+            inventoryone << "WARNING! _SaveInventory ERROR #1! Cheater?? INFO: bag - " << uint32(item->GetBagSlot()) << ", slot - " << uint32(item->GetSlot()) << ", item - " << uint32(item->GetEntry());
+
+            std::stringstream mypositionone;
+            mypositionone << "Player Position: " << GetPositionX() << " " << GetPositionY() << " " << GetPositionZ();
+
+            CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
+                                       "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
+                                       GetName(),GetSession()->GetAccountId(),inventoryone.str().c_str(),"detected in Player::_SaveInventory()",GetMapId(),
+                                       mypositionone.str().c_str(),getLevel());
         }
         else if (test != item)
         {
             sLog.outError("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%d) and slot(%d) values for the item with guid %d are incorrect, the item with guid %d is there instead!", GetGUIDLow(), GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow(), test->GetGUIDLow());
             error = true;
+
+            //Ranger: need logs!!
+            std::stringstream inventorytwo;
+            inventorytwo << "WARNING! _SaveInventory ERROR #2! Cheater?? INFO: bag - " << uint32(item->GetBagSlot()) << ", slot - " << uint32(item->GetSlot()) << ", item - " << item->GetEntry() << ", test - " << uint32(test->GetEntry());
+
+            std::stringstream mypositiontwo;
+            mypositiontwo << "Player Position: " << GetPositionX() << " " << GetPositionY() << " " << GetPositionZ();
+
+            CharacterDatabase.PExecute("INSERT IGNORE INTO cheaters (player,acctid,reason,count,first_date,last_date,`Op`,Map,Pos,Level) "
+                                       "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
+                                       GetName(),GetSession()->GetAccountId(),inventorytwo.str().c_str(),"detected in Player::_SaveInventory()",GetMapId(),
+                                       mypositiontwo.str().c_str(),getLevel());
         }
     }
 
     if (error)
     {
         sLog.outError("Player::_SaveInventory - one or more errors occurred save aborted!");
-        ChatHandler(this).SendSysMessage(LANG_ITEM_SAVE_FAILED);
+        //ChatHandler(this).SendSysMessage(LANG_ITEM_SAVE_FAILED);
         return;
     }
 
