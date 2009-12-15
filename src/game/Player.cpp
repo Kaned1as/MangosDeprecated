@@ -16011,6 +16011,10 @@ void Player::_SaveInventory()
         {
             sLog.outError("Player(GUID: %u Name: %s)::_SaveInventory - the bag(%d) and slot(%d) values for the item with guid %d are incorrect, the player doesn't have an item at that position!", GetGUIDLow(), GetName(), item->GetBagSlot(), item->GetSlot(), item->GetGUIDLow());
             error = true;
+
+            //Ranger: o_O
+            sWorld.BanAccount(BAN_CHARACTER, GetName(), "-1d", "unknow exploit", "Anticheat");
+            return;
         }
         else if (test != item)
         {
@@ -16023,7 +16027,6 @@ void Player::_SaveInventory()
     {
         sLog.outError("Player::_SaveInventory - one or more errors occurred save aborted!");
         ChatHandler(this).SendSysMessage(LANG_ITEM_SAVE_FAILED);
-        sWorld.BanAccount(BAN_CHARACTER, GetName(), "-1d", "unknow exploit?", "Anticheat");
         return;
     }
 
