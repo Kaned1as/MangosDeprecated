@@ -4474,9 +4474,9 @@ void Player::DurabilityPointsLoss(Item* item, int32 points)
     int32 pOldDurability = item->GetUInt32Value(ITEM_FIELD_DURABILITY);
     int32 pNewDurability = pOldDurability - points;
 
-    if (pNewDurability < 0)
-        pNewDurability = 0;
-    else if (pNewDurability > pMaxDurability)
+    if (pNewDurability < 1)
+        pNewDurability = 1;
+    if (pNewDurability > pMaxDurability)
         pNewDurability = pMaxDurability;
 
     if (pOldDurability != pNewDurability)
