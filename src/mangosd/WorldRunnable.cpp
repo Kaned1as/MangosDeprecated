@@ -51,6 +51,8 @@ void WorldRunnable::run()
 
     uint32 realCurrTime = 0;
     uint32 realPrevTime = getMSTime();
+    uint32 currDiffTime = 0;
+    std::priority_queue<uint32> latencies; 
 
     uint32 prevSleepTime = 0;                               // used for balanced full tick time length near WORLD_SLEEP_CONST
 
@@ -61,6 +63,16 @@ void WorldRunnable::run()
         realCurrTime = getMSTime();
 
         uint32 diff = getMSTimeDiff(realPrevTime,realCurrTime);
+
+        currDiffTime += diff;
+        latencies.push(diff);
+
+        if(currDiffTime > 60000)
+        {
+            currDiffTime = 0;
+            WorldDatabase.PExecute("INSERT INTO world_statistics (unixtime, latency) VALUES ('%u', '%u')", realCurrTime, latencies.top());
+            while(!latencies.empty()) latencies.pop();
+        }
 
         sWorld.Update( diff );
         realPrevTime = realCurrTime;
