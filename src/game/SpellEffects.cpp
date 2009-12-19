@@ -3200,9 +3200,9 @@ void Spell::EffectOpenLock(uint32 effIndex)
             }
         }
         //Ranger: WEH safe check!
-        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST)
+        else if (goInfo->type == GAMEOBJECT_TYPE_CHEST && gameObjTarget->IsInWorld())
         {
-            uint32 gofact = goInfo->faction;
+            uint32 gofact = gameObjTarget->GetUInt32Value(GAMEOBJECT_FACTION);
             if( gofact && player && player->GetName() && player->GetSession() )
             {
                 FactionTemplateEntry const* gobfaction = sFactionTemplateStore.LookupEntry(gofact);
@@ -3212,7 +3212,7 @@ void Spell::EffectOpenLock(uint32 effIndex)
                     if( (gobfaction->IsHostileTo(*playerfaction) ) )
                     {
                         std::stringstream goid;
-                        goid << "Faction hack (GO entry: " << goInfo->id << ", GO faction: " << gofact << "; Player race: " << uint32(player->getRace()) << ")";
+                        goid << "Faction hack (GO entry: " << gameObjTarget->GetEntry() << ", GO faction: " << gofact << "; Player race: " << uint32(player->getRace()) << ")";
 
                         std::stringstream Position;
                         Position << "Player Position: " << player->GetPositionX() << " " << player->GetPositionY() << " "

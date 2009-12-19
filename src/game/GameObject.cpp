@@ -855,11 +855,10 @@ void GameObject::Use(Unit* user)
     bool triggered = false;
 
     //Ranger: WEH safe check!
-    GameObjectInfo const * mygoinfo = GetGOInfo();
-    if( user && user->IsInWorld() && user->GetTypeId() == TYPEID_PLAYER && mygoinfo )
+    if( user && user->IsInWorld() && user->GetTypeId() == TYPEID_PLAYER && IsInWorld())
     {
         Player* plr = (Player*)user;
-        uint32 gofact = mygoinfo->faction;
+        uint32 gofact = GetUInt32Value(GAMEOBJECT_FACTION);
 
         if( gofact && plr && plr->GetName() && plr->GetSession() )
         {
@@ -870,7 +869,7 @@ void GameObject::Use(Unit* user)
                 if( (gofaction->IsHostileTo(*plrfaction) ) )
                 {
                     std::stringstream gobid;
-                    gobid << "Faction hack (GO entry: " << mygoinfo->id << ", GO faction: " << gofact << "; Player race: " << uint32(plr->getRace()) << ")";
+                    gobid << "Faction hack (GO entry: " << GetEntry() << ", GO faction: " << gofact << "; Player race: " << uint32(plr->getRace()) << ")";
 
                     std::stringstream Position;
                     Position << "Player Position: " << plr->GetPositionX() << " " << plr->GetPositionY() << " "
