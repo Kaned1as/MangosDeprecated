@@ -6354,14 +6354,14 @@ void Player::UpdateArea(uint32 newArea)
     if(area && (area->flags & AREA_FLAG_ARENA))
     {
         if(!isGameMaster())
-            SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+            SetFFA(true);
     }
     else
     {
         // remove ffa flag only if not ffapvp realm
         // removal in sanctuaries and capitals is handled in zone update
         if(HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP) && !sWorld.IsFFAPvPRealm())
-            RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+            SetFFA(false);
     }
 
     UpdateAreaDependentAuras(newArea);

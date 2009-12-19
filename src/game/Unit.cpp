@@ -12088,6 +12088,8 @@ Pet* Unit::CreateTamedPetFrom(Creature* creatureTarget,uint32 spell_id)
 
     if(IsPvP())
         pet->SetPvP(true);
+    if(IsFFA())
+        pet->SetFFA(true);
 
     uint32 level = (creatureTarget->getLevel() < (getLevel() - 5)) ? (getLevel() - 5) : creatureTarget->getLevel();
 
@@ -12322,6 +12324,24 @@ void Unit::SetPvP( bool state )
         if(m_TotemSlot[i])
             if(Creature *totem = GetMap()->GetCreature(m_TotemSlot[i]))
                 totem->SetPvP(state);
+}
+
+void Unit::SetFFA( bool state )
+{
+    if(state)
+        SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+    else
+        RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+
+    if(Pet* pet = GetPet())
+        pet->SetFFA(state);
+    if(Unit* charmed = GetCharm())
+        charmed->SetFFA(state);
+
+    for (int8 i = 0; i < MAX_TOTEM; ++i)
+        if(m_TotemSlot[i])
+            if(Creature *totem = GetMap()->GetCreature(m_TotemSlot[i]))
+                totem->SetFFA(state);
 }
 
 void Unit::KnockBackFrom(Unit* target, float horizintalSpeed, float verticalSpeed)

@@ -4486,6 +4486,8 @@ void Spell::EffectSummonPet(uint32 i)
 
     if(m_caster->IsPvP())
         NewSummon->SetPvP(true);
+    if(m_caster->IsFFA())
+        NewSummon->SetFFA(true);
 
     NewSummon->InitStatsForLevel(petlevel, m_caster);
     NewSummon->InitPetCreateSpells();
@@ -6026,6 +6028,8 @@ void Spell::EffectSummonTotem(uint32 i)
 
     if(m_caster->IsPvP())
         pTotem->SetPvP(true);
+    if(m_caster->IsFFA())
+        pTotem->SetFFA(true);
 
     pTotem->Summon(m_caster);
 

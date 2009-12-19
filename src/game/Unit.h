@@ -996,6 +996,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         }
         bool IsPvP() const { return HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_PVP); }
         void SetPvP(bool state);
+        bool IsFFA() const { return HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP); }
+        void SetFFA(bool state);
         uint32 GetCreatureType() const;
         uint32 GetCreatureTypeMask() const
         {

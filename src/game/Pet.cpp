@@ -223,6 +223,8 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
 
     if(owner->IsPvP())
         SetPvP(true);
+    if(owner->IsFFA())
+        SetFFA(true);
 
     SetCanModifyStats(true);
     InitStatsForLevel(petlevel);
