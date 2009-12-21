@@ -373,7 +373,11 @@ void Unit::RemoveSpellbyDamageTaken(AuraType auraType, uint32 damage)
         return;
 
     // The chance to dispel an aura depends on the damage taken with respect to the casters level.
-    uint32 max_dmg = getLevel() > 8 ? 25 * getLevel() - 150 : 50;
+    uint32 max_dmg;
+    if(auraType == SPELL_AURA_MOD_ROOT && GetMaxHealth() > 4)
+        max_dmg = GetMaxHealth()/4;
+    else
+        max_dmg = getLevel() > 8 ? 25 * getLevel() - 150 : 50;
     float chance = float(damage) / max_dmg * 100.0f;
     if (roll_chance_f(chance))
         RemoveSpellsCausingAura(auraType);
