@@ -1333,6 +1333,7 @@ void Aura::HandleAddModifier(bool apply, bool Real)
             case 51124:    // Killing Machine
             case 54741:    // Firestarter
             case 57761:    // Fireball!
+            case 64823:    // Elune's Wrath (Balance druid T8 set)
                 SetAuraCharges(1);
                 break;
                 
