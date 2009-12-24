@@ -124,13 +124,6 @@ void WorldSession::HandleSwapItem( WorldPacket & recv_data )
     if(src==dst)
         return;
 
-    //Ranger: temp crashfix (WPE)
-    if(srcbag == dstslot)
-    {
-        _player->SendEquipError( EQUIP_ERR_ITEM_DOESNT_GO_TO_SLOT, NULL, NULL );
-        return;
-    }
-
     if(!_player->IsValidPos(srcbag,srcslot))
     {
         _player->SendEquipError( EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL );

@@ -11297,9 +11297,16 @@ void Player::SwapItem( uint16 src, uint16 dst )
     }
 
     // prevent put equipped/bank bag in self
-    if( IsBagPos ( src ) && srcslot == dstbag)
+    if(IsBagPos(src) && srcslot == dstbag)
     {
         SendEquipError( EQUIP_ERR_NONEMPTY_BAG_OVER_OTHER_BAG, pSrcItem, pDstItem );
+        return;
+    }
+
+    // prevent put equipped/bank bag in self
+    if (IsBagPos(dst) && dstslot == srcbag)
+    {
+        SendEquipError( EQUIP_ERR_NONEMPTY_BAG_OVER_OTHER_BAG, pDstItem, pSrcItem );
         return;
     }
 
