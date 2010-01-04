@@ -783,59 +783,6 @@ void WorldSession::HandlePlayerLogin(LoginQueryHolder * holder)
 
     m_playerLoading = false;
     delete holder;
-
-    //new year mail staff
-    Player* pl = GetPlayer();
-    if (!pl)
-        return;
-
-    QueryResult *resultnewyear = CharacterDatabase.PQuery("SELECT guid FROM `new_year` WHERE guid = '%u'", pl->GetGUIDLow());
-    QueryResult *resultmessages = WorldDatabase.PQuery("SELECT `subject`, `body` FROM `new_year_messages` ORDER BY RAND() LIMIT 1");
-
-    if (!resultnewyear && pl->GetTotalPlayedTime() >= 3*HOUR && resultmessages)
-    {
-        Item* item1 = Item::CreateItem(21325, 1, pl);
-        Item* item2 = Item::CreateItem(21212, 10, pl);
-        Item* item3 = Item::CreateItem(21747, 20, pl);
-        Item* item4 = Item::CreateItem(34191, 20, pl);
-
-        if (!item1 || !item2 || !item3 || !item4)
-        {
-            delete resultmessages;
-            return;
-        }
-
-        item1->SaveToDB();
-        item2->SaveToDB();
-        item3->SaveToDB();
-        item4->SaveToDB();
-
-        // fill mail
-        std::string subject;
-        std::string body;
-
-        Field *fields = resultmessages->Fetch();
-        subject = fields[0].GetCppString();
-        body = fields[1].GetCppString();
-        delete resultmessages;
-
-        uint32 itemTextId = objmgr.CreateItemText( body );
-
-        MailItemsInfo NewYear;
-
-        NewYear.AddItem(item1->GetGUIDLow(), item1->GetEntry(), item1);
-        NewYear.AddItem(item2->GetGUIDLow(), item2->GetEntry(), item2);
-        NewYear.AddItem(item3->GetGUIDLow(), item3->GetEntry(), item3);
-        NewYear.AddItem(item4->GetGUIDLow(), item4->GetEntry(), item4);
-
-        WorldSession::SendMailTo(pl, MAIL_NORMAL, MAIL_STATIONERY_GM, pl->GetGUIDLow(), pl->GetGUIDLow(), subject, itemTextId, &NewYear, 0, 0, MAIL_CHECK_MASK_NONE);;
-
-        CharacterDatabase.PExecute("INSERT INTO `new_year` (guid) VALUES ('%u')", pl->GetGUIDLow());
-    }
-
-    if (resultnewyear) 
-        delete resultnewyear;
-    //end new year mail
 }
 
 void WorldSession::HandleSetFactionAtWar( WorldPacket & recv_data )
