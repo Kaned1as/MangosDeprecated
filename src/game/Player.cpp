@@ -16027,6 +16027,9 @@ void Player::_SaveInventory()
                                        "VALUES ('%s','%u','%s','1',NOW(),NOW(),'%s','%u','%s','%u')",
                                        GetName(),GetSession()->GetAccountId(),inventoryone.str().c_str(),"detected in Player::_SaveInventory()",GetMapId(),
                                        mypositionone.str().c_str(),getLevel());
+
+            //Ranger: BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN BAN 
+            sWorld.BanAccount(BAN_CHARACTER, GetName(), "-1d", "unknow exploit", "Anticheat");
         }
         else if (test != item)
         {
