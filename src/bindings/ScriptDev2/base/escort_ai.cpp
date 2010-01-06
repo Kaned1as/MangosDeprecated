@@ -47,7 +47,7 @@ void npc_escortAI::AttackStart(Unit* pWho)
 
     if (m_creature->Attack(pWho, true))
     {
-        m_creature->AddThreat(pWho, 0.0f);
+        m_creature->AddThreat(pWho);
         m_creature->SetInCombatWith(pWho);
         pWho->SetInCombatWith(m_creature);
 
@@ -101,7 +101,7 @@ bool npc_escortAI::AssistPlayerInCombat(Unit* pWho)
         else
         {
             pWho->SetInCombatWith(m_creature);
-            m_creature->AddThreat(pWho, 0.0f);
+            m_creature->AddThreat(pWho);
             return true;
         }
     }
@@ -132,7 +132,7 @@ void npc_escortAI::MoveInLineOfSight(Unit* pWho)
                 else if (m_creature->GetMap()->IsDungeon())
                 {
                     pWho->SetInCombatWith(m_creature);
-                    m_creature->AddThreat(pWho, 0.0f);
+                    m_creature->AddThreat(pWho);
                 }
             }
         }
@@ -152,8 +152,8 @@ void npc_escortAI::JustDied(Unit* pKiller)
             {
                 if (Player* pMember = pRef->getSource())
                 {
-                    if (pPlayer->GetQuestStatus(m_pQuestForEscort->GetQuestId()) == QUEST_STATUS_INCOMPLETE)
-                        pPlayer->FailQuest(m_pQuestForEscort->GetQuestId());
+                    if (pMember->GetQuestStatus(m_pQuestForEscort->GetQuestId()) == QUEST_STATUS_INCOMPLETE)
+                        pMember->FailQuest(m_pQuestForEscort->GetQuestId());
                 }
             }
         }
@@ -318,7 +318,7 @@ void npc_escortAI::UpdateAI(const uint32 uiDiff)
 void npc_escortAI::UpdateEscortAI(const uint32 uiDiff)
 {
     //Check if we have a current target
-    if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+    if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         return;
 
     DoMeleeAttackIfReady();

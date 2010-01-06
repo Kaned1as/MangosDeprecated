@@ -20,7 +20,6 @@
 #define MANGOS_GRIDNOTIFIERS_H
 
 #include "ObjectGridLoader.h"
-#include "ByteBuffer.h"
 #include "UpdateData.h"
 #include <iostream>
 
@@ -720,7 +719,7 @@ namespace MaNGOS
             bool operator()(Unit* u)
             {
                 if(u->isAlive() && u->isInCombat() && !i_obj->IsHostileTo(u) && i_obj->IsWithinDistInMap(u, i_range) &&
-                    (u->isFeared() || u->isCharmed() || u->isFrozen() || u->hasUnitState(UNIT_STAT_STUNNED) || u->hasUnitState(UNIT_STAT_CONFUSED)))
+                    (u->isFeared() || u->isCharmed() || u->isFrozen() || u->hasUnitState(UNIT_STAT_STUNNED | UNIT_STAT_CONFUSED | UNIT_STAT_DIED)))
                 {
                     return true;
                 }
@@ -872,11 +871,11 @@ namespace MaNGOS
                 return false;
             }
         private:
-            bool i_hitHidden;
             bool i_targetForPlayer;
             WorldObject const* i_obj;
             Unit const* i_funit;
             float i_range;
+            bool i_hitHidden;
     };
 
     // do attack at call of help to friendly crearture
@@ -1076,7 +1075,7 @@ namespace MaNGOS
             ~LocalizedPacketListDo()
             {
                 for(size_t i = 0; i < i_data_cache.size(); ++i)
-                    for(int j = 0; j < i_data_cache[i].size(); ++j)
+                    for(size_t j = 0; j < i_data_cache[i].size(); ++j)
                         delete i_data_cache[i][j];
             }
             void operator()( Player* p );

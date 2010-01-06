@@ -22,7 +22,7 @@ SDCategory: Hellfire Citadel, Blood Furnace
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_blood_furnace.h"
+#include "blood_furnace.h"
 
 enum
 {
@@ -35,6 +35,7 @@ enum
 
     SPELL_ACID_SPRAY            = 38153,                    // heroic 38973 ??? 38153
     SPELL_EXPLODING_BREAKER     = 30925,
+    H_SPELL_EXPLODING_BREAKER   = 40059,
     SPELL_KNOCKDOWN             = 20276,
     SPELL_DOMINATION            = 25772                     // ???
 };
@@ -44,10 +45,12 @@ struct MANGOS_DLL_DECL boss_the_makerAI : public ScriptedAI
     boss_the_makerAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
+    bool m_bIsRegularMode;
 
     uint32 AcidSpray_Timer;
     uint32 ExplodingBreaker_Timer;
@@ -58,13 +61,13 @@ struct MANGOS_DLL_DECL boss_the_makerAI : public ScriptedAI
     {
         AcidSpray_Timer = 15000;
         ExplodingBreaker_Timer = 6000;
-        Domination_Timer = 120000;
+        Domination_Timer = 20000;
         Knockdown_Timer = 10000;
     }
 
     void Aggro(Unit *who)
     {
-        switch(rand()%3)
+        switch(urand(0, 2))
         {
             case 0: DoScriptText(SAY_AGGRO_1, m_creature); break;
             case 1: DoScriptText(SAY_AGGRO_2, m_creature); break;
@@ -83,11 +86,7 @@ struct MANGOS_DLL_DECL boss_the_makerAI : public ScriptedAI
 
     void KilledUnit(Unit* victim)
     {
-        switch(rand()%2)
-        {
-            case 0: DoScriptText(SAY_KILL_1, m_creature); break;
-            case 1: DoScriptText(SAY_KILL_2, m_creature); break;
-        }
+        DoScriptText(urand(0, 1) ? SAY_KILL_1 : SAY_KILL_2, m_creature);
     }
 
     void JustDied(Unit* Killer)
@@ -100,38 +99,36 @@ struct MANGOS_DLL_DECL boss_the_makerAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (AcidSpray_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_ACID_SPRAY);
-            AcidSpray_Timer = 15000+rand()%8000;
+            AcidSpray_Timer = urand(15000, 23000);
         }else AcidSpray_Timer -=diff;
 
         if (ExplodingBreaker_Timer < diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                DoCast(target,SPELL_EXPLODING_BREAKER);
-            ExplodingBreaker_Timer = 4000+rand()%8000;
+                DoCast(target, m_bIsRegularMode ? H_SPELL_EXPLODING_BREAKER : SPELL_EXPLODING_BREAKER);
+            ExplodingBreaker_Timer = urand(4000, 12000);
         }else ExplodingBreaker_Timer -=diff;
 
-        /* // Disabled until Core Support for mind control
-        if (domination_timer_timer < diff)
+        if (Domination_Timer < diff)
         {
-        Unit* target;
-        target = SelectUnit(SELECT_TARGET_RANDOM,0);
+            Unit* target;
+            target = SelectUnit(SELECT_TARGET_RANDOM,0);
 
-        DoCast(target,SPELL_DOMINATION);
+            DoCast(target,SPELL_DOMINATION);
 
-        domination_timer = 120000;
-        }else domination_timer -=diff;
-        */
+            Domination_Timer = 15000+rand()%10000;
+        }else Domination_Timer -=diff;
 
         if (Knockdown_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_KNOCKDOWN);
-            Knockdown_Timer = 4000+rand()%8000;
+            Knockdown_Timer = urand(4000, 12000);
         }else Knockdown_Timer -=diff;
 
         DoMeleeAttackIfReady();

@@ -121,7 +121,6 @@ enum WorldConfigs
     CONFIG_MIN_LEVEL_FOR_HEROIC_CHARACTER_CREATING,
     CONFIG_SKIP_CINEMATICS,
     CONFIG_MAX_PLAYER_LEVEL,
-    CONFIG_MIN_DUALSPEC_LEVEL,
     CONFIG_START_PLAYER_LEVEL,
     CONFIG_START_HEROIC_PLAYER_LEVEL,
     CONFIG_START_PLAYER_MONEY,
@@ -197,7 +196,6 @@ enum WorldConfigs
     CONFIG_DEATH_BONES_BG_OR_ARENA,
     CONFIG_THREAT_RADIUS,
     CONFIG_INSTANT_LOGOUT,
-    CONFIG_DISABLE_BREATHING,
     CONFIG_ALL_TAXI_PATHS,
     CONFIG_DECLINED_NAMES_USED,
     CONFIG_LISTEN_RANGE_SAY,
@@ -217,10 +215,16 @@ enum WorldConfigs
     CONFIG_ARENA_QUEUE_ANNOUNCER_ENABLE,
     CONFIG_ARENA_SEASON_ID,
     CONFIG_ARENA_SEASON_IN_PROGRESS,
-    CONFIG_OFFHAND_CHECK_AT_SPELL_UNLEARN,
+    CONFIG_OFFHAND_CHECK_AT_TALENTS_RESET,
     CONFIG_CLIENTCACHE_VERSION,
     CONFIG_GUILD_EVENT_LOG_COUNT,
     CONFIG_GUILD_BANK_EVENT_LOG_COUNT,
+    CONFIG_TIMERBAR_FATIGUE_GMLEVEL,
+    CONFIG_TIMERBAR_FATIGUE_MAX,
+    CONFIG_TIMERBAR_BREATH_GMLEVEL,
+    CONFIG_TIMERBAR_BREATH_MAX,
+    CONFIG_TIMERBAR_FIRE_GMLEVEL,
+    CONFIG_TIMERBAR_FIRE_MAX,
     CONFIG_VALUE_COUNT
 };
 
@@ -342,6 +346,7 @@ enum RealmZone
 #define SCRIPT_COMMAND_FLAG_REMOVE           5              // source = any, datalong = field_id, datalog2 = bitmask
 #define SCRIPT_COMMAND_TELEPORT_TO           6              // source or target with Player, datalong = map_id, x/y/z
 #define SCRIPT_COMMAND_QUEST_EXPLORED        7              // one from source or target must be Player, another GO/Creature, datalong=quest_id, datalong2=distance or 0
+#define SCRIPT_COMMAND_KILL_CREDIT           8              // source or target with Player, datalong = creature entry, datalong2 = bool (0=personal credit, 1=group credit)
 #define SCRIPT_COMMAND_RESPAWN_GAMEOBJECT    9              // source = any (summoner), datalong=db_guid, datalong2=despawn_delay
 #define SCRIPT_COMMAND_TEMP_SUMMON_CREATURE 10              // source = any (summoner), datalong=creature entry, datalong2=despawn_delay
 #define SCRIPT_COMMAND_OPEN_DOOR            11              // source = unit, datalong=db_guid, datalong2=reset_delay
@@ -501,12 +506,14 @@ class World
         bool IsScriptScheduled() const { return m_scheduledScripts > 0; }
 
         // for max speed access
-        static float GetMaxVisibleDistanceForCreature() { return m_MaxVisibleDistanceForCreature; }
-        static float GetMaxVisibleDistanceForPlayer()   { return m_MaxVisibleDistanceForPlayer;   }
-        static float GetMaxVisibleDistanceForObject()   { return m_MaxVisibleDistanceForObject;   }
-        static float GetMaxVisibleDistanceInFlight()    { return m_MaxVisibleDistanceInFlight;    }
-        static float GetVisibleUnitGreyDistance()       { return m_VisibleUnitGreyDistance;       }
-        static float GetVisibleObjectGreyDistance()     { return m_VisibleObjectGreyDistance;     }
+        static float GetMaxVisibleDistanceOnContinents()    { return m_MaxVisibleDistanceOnContinents; }
+        static float GetMaxVisibleDistanceInInstances()     { return m_MaxVisibleDistanceInInctances;  }
+        static float GetMaxVisibleDistanceInBGArenas()      { return m_MaxVisibleDistanceInBGArenas;   }
+        static float GetMaxVisibleDistanceForObject()       { return m_MaxVisibleDistanceForObject;   }
+
+        static float GetMaxVisibleDistanceInFlight()        { return m_MaxVisibleDistanceInFlight;    }
+        static float GetVisibleUnitGreyDistance()           { return m_VisibleUnitGreyDistance;       }
+        static float GetVisibleObjectGreyDistance()         { return m_VisibleObjectGreyDistance;     }
 
         //movement anticheat enable flag
         inline bool GetMvAnticheatEnable()             {return m_MvAnticheatEnable;}
@@ -557,7 +564,7 @@ class World
 
         time_t m_startTime;
         time_t m_gameTime;
-	time_t m_consoleUpdTime;
+    	time_t m_consoleUpdTime;
         IntervalTimer m_timers[WUPDATE_COUNT];
         uint32 mail_timer;
         uint32 mail_timer_expires;
@@ -581,9 +588,11 @@ class World
         std::string m_dataPath;
 
         // for max speed access
-        static float m_MaxVisibleDistanceForCreature;
-        static float m_MaxVisibleDistanceForPlayer;
+        static float m_MaxVisibleDistanceOnContinents;
+        static float m_MaxVisibleDistanceInInctances;
+        static float m_MaxVisibleDistanceInBGArenas;
         static float m_MaxVisibleDistanceForObject;
+
         static float m_MaxVisibleDistanceInFlight;
         static float m_VisibleUnitGreyDistance;
         static float m_VisibleObjectGreyDistance;
@@ -599,7 +608,6 @@ class World
         bool m_MvAnticheatKill;
         float m_MvAnticheatMaxXYT;
         uint16 m_MvAnticheatIgnoreAfterTeleport;
-
 
         // CLI command holder to be thread safe
         ACE_Based::LockedQueue<CliCommandHolder*,ACE_Thread_Mutex> cliCmdQueue;

@@ -58,24 +58,40 @@ struct MANGOS_DLL_DECL mobs_risen_husk_spiritAI : public ScriptedAI
     uint32 m_uiConsumeFlesh_Timer;
     uint32 m_uiIntangiblePresence_Timer;
 
+    Player* m_pCreditPlayer;
+
     void Reset()
     {
         m_uiConsumeFlesh_Timer = 10000;
         m_uiIntangiblePresence_Timer = 5000;
+
+        m_pCreditPlayer = NULL;
     }
 
-    void DamageTaken(Unit* pDoneBy, uint32 &damage)
+    void JustSummoned(Creature* pSummoned)
     {
-        if (pDoneBy->GetTypeId() == TYPEID_PLAYER)
+        if (m_pCreditPlayer)
+            m_pCreditPlayer->KilledMonsterCredit(pSummoned->GetEntry(), pSummoned->GetGUID());
+    }
+
+    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+    {
+        if (uiDamage < m_creature->GetHealth())
+            return;
+
+        if (Player* pPlayer = pDoneBy->GetCharmerOrOwnerPlayerOrPlayerItself())
         {
-            if (damage >= m_creature->GetHealth() && ((Player*)pDoneBy)->GetQuestStatus(QUEST_WHATS_HAUNTING_WITCH_HILL) == QUEST_STATUS_INCOMPLETE)
+            if (pPlayer->GetQuestStatus(QUEST_WHATS_HAUNTING_WITCH_HILL) == QUEST_STATUS_INCOMPLETE)
+            {
+                m_pCreditPlayer = pPlayer;
                 m_creature->CastSpell(pDoneBy, SPELL_SUMMON_RESTLESS_APPARITION, true);
+            }
         }
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiConsumeFlesh_Timer < uiDiff)
@@ -111,14 +127,58 @@ CreatureAI* GetAI_mobs_risen_husk_spirit(Creature* pCreature)
 ## npc_restless_apparition
 ######*/
 
-bool GossipHello_npc_restless_apparition(Player* pPlayer, Creature* pCreature)
+enum
 {
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    SAY_RAND_1      = -1000543,
+    SAY_RAND_2      = -1000544,
+    SAY_RAND_3      = -1000545,
+    SAY_RAND_4      = -1000546,
+    SAY_RAND_5      = -1000547,
+    SAY_RAND_6      = -1000548,
+    SAY_RAND_7      = -1000549,
+    SAY_RAND_8      = -1000550
+};
 
-    pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
-    pCreature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
+struct MANGOS_DLL_DECL npc_restless_apparitionAI : public ScriptedAI
+{
+    npc_restless_apparitionAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    return true;
+    uint32 m_uiTalk_Timer;
+
+    void Reset()
+    {
+        m_uiTalk_Timer = 1000;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        if (!m_uiTalk_Timer)
+            return;
+
+        if (m_uiTalk_Timer <= uiDiff)
+        {
+            switch(urand(0, 7))
+            {
+                case 0: DoScriptText(SAY_RAND_1, m_creature); break;
+                case 1: DoScriptText(SAY_RAND_2, m_creature); break;
+                case 2: DoScriptText(SAY_RAND_3, m_creature); break;
+                case 3: DoScriptText(SAY_RAND_4, m_creature); break;
+                case 4: DoScriptText(SAY_RAND_5, m_creature); break;
+                case 5: DoScriptText(SAY_RAND_6, m_creature); break;
+                case 6: DoScriptText(SAY_RAND_7, m_creature); break;
+                case 7: DoScriptText(SAY_RAND_8, m_creature); break;
+            }
+ 
+            m_uiTalk_Timer = 0;
+        }
+        else
+            m_uiTalk_Timer -= uiDiff;
+    }
+};
+
+CreatureAI* GetAI_npc_restless_apparition(Creature* pCreature)
+{
+    return new npc_restless_apparitionAI(pCreature);
 }
 
 /*######
@@ -154,7 +214,7 @@ bool GossipHello_npc_deserter_agitator(Player* pPlayer, Creature* pCreature)
         pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
     }
     else
-        pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
     return true;
 }
@@ -179,7 +239,7 @@ bool GossipHello_npc_lady_jaina_proudmoore(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(QUEST_JAINAS_AUTOGRAPH) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_JAINA, GOSSIP_SENDER_MAIN, GOSSIP_SENDER_INFO);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
     return true;
 }
@@ -272,7 +332,7 @@ struct MANGOS_DLL_DECL npc_morokkAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {
@@ -501,7 +561,7 @@ struct MANGOS_DLL_DECL npc_ogronAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {
@@ -735,7 +795,7 @@ bool GossipHello_npc_cassa_crimsonwing(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(QUEST_SURVEY_ALCAZ) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_RIDE, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     return true;
 }
 
@@ -764,7 +824,7 @@ void AddSC_dustwallow_marsh()
 
     newscript = new Script;
     newscript->Name = "npc_restless_apparition";
-    newscript->pGossipHello = &GossipHello_npc_restless_apparition;
+    newscript->GetAI = &GetAI_npc_restless_apparition;
     newscript->RegisterSelf();
 
     newscript = new Script;

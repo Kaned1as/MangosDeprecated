@@ -125,14 +125,14 @@ struct MANGOS_DLL_DECL npc_giltharesAI : public npc_escortAI
     void Aggro(Unit* pWho)
     {
         //not always use
-        if (rand()%4)
+        if (urand(0, 3))
             return;
 
         //only aggro text if not player and only in this area
         if (pWho->GetTypeId() != TYPEID_PLAYER && m_creature->GetAreaId() == AREA_MERCHANT_COAST)
         {
             //appears to be pretty much random (possible only if escorter not in combat with pWho yet?)
-            switch(rand()%4)
+            switch(urand(0, 3))
             {
                 case 0: DoScriptText(SAY_GIL_AGGRO_1, m_creature, pWho); break;
                 case 1: DoScriptText(SAY_GIL_AGGRO_2, m_creature, pWho); break;
@@ -175,7 +175,7 @@ bool GossipHello_npc_sputtervalve(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(6981) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT,"Can you tell me about this shard?",GOSSIP_SENDER_MAIN,GOSSIP_ACTION_INFO_DEF);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     return true;
 }
 
@@ -255,7 +255,7 @@ struct MANGOS_DLL_DECL npc_taskmaster_fizzuleAI : public ScriptedAI
             } else Reset_Timer -= diff;
         }
 
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         DoMeleeAttackIfReady();
@@ -384,7 +384,7 @@ struct MANGOS_DLL_DECL npc_twiggy_flatheadAI : public ScriptedAI
 
         if (ChallengerDeath_Timer)
         {
-            if (ChallengerDeath_Timer < diff)
+            if (ChallengerDeath_Timer <= diff)
             {
                 for(uint8 i = 0; i < 6; ++i)
                 {
@@ -588,7 +588,7 @@ struct MANGOS_DLL_DECL npc_wizzlecranks_shredderAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (m_bIsPostEvent)
             {

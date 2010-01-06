@@ -46,7 +46,7 @@ TargetedMovementGenerator<T>::_setTargetLocation(T &owner)
     if (!i_target.isValid() || !i_target->IsInWorld())
         return;
 
-    if (owner.hasUnitState(UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_DISTRACTED))
+    if (owner.hasUnitState(UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_DISTRACTED | UNIT_STAT_DIED))
         return;
 
     // prevent redundant micro-movement for pets, other followers.
@@ -103,6 +103,19 @@ void TargetedMovementGenerator<Creature>::Initialize(Creature &owner)
 }
 
 template<>
+void TargetedMovementGenerator<Player>::UpdateFinalDistance(float fDistance)
+{
+    // nothing to do for Player
+}
+
+template<>
+void TargetedMovementGenerator<Creature>::UpdateFinalDistance(float fDistance)
+{
+    i_offset = fDistance;
+    i_recalculateTravel = true;
+}
+
+template<>
 void TargetedMovementGenerator<Player>::Initialize(Player &owner)
 {
     _setTargetLocation(owner);
@@ -132,7 +145,7 @@ TargetedMovementGenerator<T>::Update(T &owner, const uint32 & time_diff)
     if (!owner.isAlive())
         return true;
 
-    if (owner.hasUnitState(UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_FLEEING | UNIT_STAT_DISTRACTED))
+    if (owner.hasUnitState(UNIT_STAT_ROOT | UNIT_STAT_STUNNED | UNIT_STAT_FLEEING | UNIT_STAT_DISTRACTED | UNIT_STAT_DIED))
         return true;
 
     // prevent movement while casting spells with cast time or channel time

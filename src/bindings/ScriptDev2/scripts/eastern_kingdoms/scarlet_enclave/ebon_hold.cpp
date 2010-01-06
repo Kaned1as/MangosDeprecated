@@ -575,7 +575,7 @@ struct MANGOS_DLL_DECL npc_death_knight_initiateAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (m_bIsDuelInProgress)
             {
@@ -724,7 +724,7 @@ struct MANGOS_DLL_DECL npc_koltira_deathweaverAI : public npc_escortAI
         if (Player* pPlayer = GetPlayerForEscort())
         {
             pSummoned->AI()->AttackStart(pPlayer);
-            pSummoned->AddThreat(m_creature, 0.0f);
+            pSummoned->AddThreat(m_creature);
         }
 
         if (pSummoned->GetEntry() == NPC_HIGH_INQUISITOR_VALROTH)
@@ -737,10 +737,8 @@ struct MANGOS_DLL_DECL npc_koltira_deathweaverAI : public npc_escortAI
             m_creature->SummonCreature(NPC_CRIMSON_ACOLYTE, 1642.329, -6045.818, 127.583, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
     }
 
-    void UpdateAI(const uint32 uiDiff)
+    void UpdateEscortAI(const uint32 uiDiff)
     {
-        npc_escortAI::UpdateAI(uiDiff);
-
         if (HasEscortState(STATE_ESCORT_PAUSED))
         {
             if (m_uiWave_Timer < uiDiff)
@@ -799,6 +797,11 @@ struct MANGOS_DLL_DECL npc_koltira_deathweaverAI : public npc_escortAI
             else
                 m_uiWave_Timer -= uiDiff;
         }
+
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -1014,7 +1017,7 @@ struct MANGOS_DLL_DECL npc_unworthy_initiateAI : public ScriptedAI
 
         if (m_uiPhase == PHASE_INACTIVE_OR_COMBAT)
         {
-            if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+            if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
                 return;
 
             if (m_uiBloodStrike_Timer < uiDiff)

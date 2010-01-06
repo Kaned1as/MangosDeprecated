@@ -251,7 +251,6 @@ void utf8print(const char* str)
 #endif
 }
 
-
 bool Utf8toWStr(char const* utf8str, size_t csize, wchar_t* wstr, size_t& wsize)
 {
     try

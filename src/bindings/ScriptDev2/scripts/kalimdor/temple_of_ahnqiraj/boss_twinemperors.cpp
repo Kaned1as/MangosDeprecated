@@ -22,7 +22,7 @@ SDCategory: Temple of Ahn'Qiraj
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_temple_of_ahnqiraj.h"
+#include "temple_of_ahnqiraj.h"
 #include "WorldPacket.h"
 
 #include "Item.h"
@@ -85,7 +85,7 @@ struct MANGOS_DLL_DECL boss_twinemperorsAI : public ScriptedAI
         AfterTeleport = false;
         tspellcasted = false;
         AfterTeleportTimer = 0;
-        Abuse_Bug_Timer = 10000 + rand()%7000;
+        Abuse_Bug_Timer = urand(10000, 17000);
         BugsTimer = 2000;
         m_creature->clearUnitState(UNIT_STAT_STUNNED);
         DontYellWhenDead = false;
@@ -207,10 +207,10 @@ struct MANGOS_DLL_DECL boss_twinemperorsAI : public ScriptedAI
     Unit *GetAnyoneCloseEnough(float dist, bool totallyRandom)
     {
         int cnt = 0;
-        std::list<HostilReference*>::iterator i;
-        std::list<HostilReference*> candidates;
+        std::list<HostileReference*> candidates;
 
-        for (i = m_creature->getThreatManager().getThreatList().begin();i != m_creature->getThreatManager().getThreatList().end(); ++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (m_creature->IsWithinDistInMap(pUnit, dist))
@@ -226,8 +226,7 @@ struct MANGOS_DLL_DECL boss_twinemperorsAI : public ScriptedAI
         for (int randomi = rand() % cnt; randomi > 0; randomi --)
             candidates.pop_front();
 
-        i = candidates.begin();
-        Unit *ret = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
+        Unit *ret = Unit::GetUnit((*m_creature), candidates.front()->getUnitGuid());
         candidates.clear();
         return ret;
     }
@@ -236,8 +235,8 @@ struct MANGOS_DLL_DECL boss_twinemperorsAI : public ScriptedAI
     {
         Unit *nearp = NULL;
         float neardist = 0.0f;
-        std::list<HostilReference*>::iterator i;
-        for (i = m_creature->getThreatManager().getThreatList().begin();i != m_creature->getThreatManager().getThreatList().end(); ++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = NULL;
             pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
@@ -379,7 +378,7 @@ struct MANGOS_DLL_DECL boss_twinemperorsAI : public ScriptedAI
             }
             if (c->IsWithinDistInMap(m_creature, ABUSE_BUG_RANGE))
             {
-                if (!nearb || (rand()%4)==0)
+                if (!nearb || !urand(0, 3))
                     nearb = c;
             }
         }
@@ -396,7 +395,7 @@ struct MANGOS_DLL_DECL boss_twinemperorsAI : public ScriptedAI
                 if (c)
                 {
                     CastSpellOnBug(c);
-                    Abuse_Bug_Timer = 10000 + rand()%7000;
+                    Abuse_Bug_Timer = urand(10000, 17000);
                 }
                 else
                 {
@@ -456,18 +455,18 @@ struct MANGOS_DLL_DECL boss_veknilashAI : public boss_twinemperorsAI
     void Reset()
     {
         TwinReset();
-        UpperCut_Timer = 14000 + rand()%15000;
-        UnbalancingStrike_Timer = 8000 + rand()%10000;
-        Scarabs_Timer = 7000 + rand()%7000;
+        UpperCut_Timer = urand(14000, 29000);
+        UnbalancingStrike_Timer = urand(8000, 18000);
+        Scarabs_Timer = urand(7000, 14000);
 
-                                                            //Added. Can be removed if its included in DB.
+        //Added. Can be removed if its included in DB.
         m_creature->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_MAGIC, true);
     }
 
     void CastSpellOnBug(Creature *target)
     {
         target->setFaction(14);
-        ((CreatureAI*)target->AI())->AttackStart(m_creature->getThreatManager().getHostilTarget());
+        ((CreatureAI*)target->AI())->AttackStart(m_creature->getThreatManager().getHostileTarget());
         SpellEntry *spell = (SpellEntry *)GetSpellStore()->LookupEntry(SPELL_MUTATE_BUG);
         for (int i=0; i<3; ++i)
         {
@@ -481,7 +480,7 @@ struct MANGOS_DLL_DECL boss_veknilashAI : public boss_twinemperorsAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (!TryActivateAfterTTelep(diff))
@@ -491,7 +490,7 @@ struct MANGOS_DLL_DECL boss_veknilashAI : public boss_twinemperorsAI
         if (UnbalancingStrike_Timer < diff)
         {
             DoCast(m_creature->getVictim(),SPELL_UNBALANCING_STRIKE);
-            UnbalancingStrike_Timer = 8000+rand()%12000;
+            UnbalancingStrike_Timer = urand(8000, 20000);
         }else UnbalancingStrike_Timer -= diff;
 
         if (UpperCut_Timer < diff)
@@ -499,7 +498,7 @@ struct MANGOS_DLL_DECL boss_veknilashAI : public boss_twinemperorsAI
             Unit* randomMelee = GetAnyoneCloseEnough(ATTACK_DISTANCE, true);
             if (randomMelee)
                 DoCast(randomMelee,SPELL_UPPERCUT);
-            UpperCut_Timer = 15000+rand()%15000;
+            UpperCut_Timer = urand(15000, 30000);
         }else UpperCut_Timer -= diff;
 
         HandleBugs(diff);
@@ -541,9 +540,9 @@ struct MANGOS_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
     {
         TwinReset();
         ShadowBolt_Timer = 0;
-        Blizzard_Timer = 15000 + rand()%5000;;
+        Blizzard_Timer = urand(15000, 20000);
         ArcaneBurst_Timer = 1000;
-        Scorpions_Timer = 7000 + rand()%7000;
+        Scorpions_Timer = urand(7000, 14000);
 
         //Added. Can be removed if its included in DB.
         m_creature->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, true);
@@ -567,7 +566,7 @@ struct MANGOS_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         // reset arcane burst after teleport - we need to do this because
@@ -595,7 +594,7 @@ struct MANGOS_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
             target = GetAnyoneCloseEnough(45, true);
             if (target)
                 DoCast(target,SPELL_BLIZZARD);
-            Blizzard_Timer = 15000+rand()%15000;
+            Blizzard_Timer = urand(15000, 30000);
         }else Blizzard_Timer -= diff;
 
         if (ArcaneBurst_Timer < diff)
@@ -633,7 +632,7 @@ struct MANGOS_DLL_DECL boss_veklorAI : public boss_twinemperorsAI
         // VL doesn't melee
         if (m_creature->Attack(who, false))
         {
-            m_creature->AddThreat(who, 0.0f);
+            m_creature->AddThreat(who);
             m_creature->SetInCombatWith(who);
             who->SetInCombatWith(m_creature);
 

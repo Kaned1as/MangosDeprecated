@@ -16,12 +16,13 @@
 
 /* ScriptData
 SDName: Boss_Ormorok
-SD%Complete: 10%
-SDComment:
+SD%Complete: 50%
+SDComment: TODO: Correct timers. Research how spikes work, and attempt code it properly from mangos side.
 SDCategory: Nexus
 EndScriptData */
 
 #include "precompiled.h"
+#include "nexus.h"
 
 enum
 {
@@ -30,6 +31,7 @@ enum
     SAY_REFLECT                 = -1576013,
     SAY_ICESPIKE                = -1576014,
     SAY_DEATH                   = -1576015,
+    EMOTE_BOSS_GENERIC_FRENZY   = -1000005,
 
     SPELL_REFLECTION            = 47981,
 
@@ -55,15 +57,28 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
     boss_ormorokAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
+
+    bool m_bIsEnraged;
+
+    uint32 m_uiTrampleTimer;
+    uint32 m_uiSpellReflectTimer;
+    uint32 m_uiCrystalSpikeTimer;
+    uint32 m_uiTanglerTimer;
 
     void Reset()
     {
+        m_bIsEnraged = false;
+
+        m_uiTrampleTimer = urand(10000, 35000);
+        m_uiSpellReflectTimer = urand(5000, 10000);
+        m_uiCrystalSpikeTimer = urand(15000, 30000);
+        m_uiTanglerTimer = 20000;
     }
 
     void Aggro(Unit* pWho)
@@ -74,18 +89,73 @@ struct MANGOS_DLL_DECL boss_ormorokAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
         DoScriptText(SAY_DEATH, m_creature);
+
+        if (m_pInstance)
+            m_pInstance->SetData(TYPE_ORMOROK, DONE);
     }
 
     void KilledUnit(Unit* pVictim)
     {
-        if (rand()%2)
+        if (urand(0, 1))
             DoScriptText(SAY_KILL, m_creature);
+    }
+
+    void JustSummoned(Creature* pSummoned)
+    {
+        if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
+            pSummoned->AI()->AttackStart(pTarget);
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+        if (!m_bIsEnraged && m_creature->GetHealth()*100 < m_creature->GetMaxHealth()*25)
+        {
+            if (!m_creature->IsNonMeleeSpellCasted(false))
+            {
+                m_bIsEnraged = true;
+                DoScriptText(EMOTE_BOSS_GENERIC_FRENZY, m_creature);
+                DoCast(m_creature, m_bIsRegularMode ? SPELL_FRENZY : SPELL_FRENZY_H);
+            }
+        }
+
+        if (m_uiTrampleTimer < uiDiff)
+        {
+            DoCast(m_creature, m_bIsRegularMode ? SPELL_TRAMPLE : SPELL_TRAMPLE_H);
+            m_uiTrampleTimer = urand(10000, 35000);
+        }
+        else
+            m_uiTrampleTimer -= uiDiff;
+
+        if (m_uiSpellReflectTimer < uiDiff)
+        {
+            DoCast(m_creature, SPELL_REFLECTION);
+            m_uiSpellReflectTimer = urand(25000, 40000);
+        }
+        else
+            m_uiSpellReflectTimer -= uiDiff;
+
+        if (m_uiCrystalSpikeTimer < uiDiff)
+        {
+            DoScriptText(SAY_ICESPIKE, m_creature);
+            DoCast(m_creature, SPELL_CRYSTAL_SPIKES);
+            m_uiCrystalSpikeTimer = urand(15000, 30000);
+        }
+        else
+            m_uiCrystalSpikeTimer -= uiDiff;
+
+        if (!m_bIsRegularMode)
+        {
+            if (m_uiTanglerTimer < uiDiff)
+            {
+                DoCast(m_creature, SPELL_SUMMON_TANGLER_H);
+                m_uiTanglerTimer = urand(15000, 25000);
+            }
+            else
+                m_uiTanglerTimer -= uiDiff;
+        }
 
         DoMeleeAttackIfReady();
     }

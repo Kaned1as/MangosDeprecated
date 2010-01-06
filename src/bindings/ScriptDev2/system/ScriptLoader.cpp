@@ -4,6 +4,9 @@
 
 #include "precompiled.h"
 
+//battlegrounds
+extern void AddSC_battleground();
+
 //custom
 
 //examples
@@ -98,6 +101,7 @@ extern void AddSC_boss_houndmaster_loksey();
 extern void AddSC_boss_interrogator_vishas();
 extern void AddSC_boss_mograine_and_whitemane();
 extern void AddSC_boss_scorn();
+extern void AddSC_boss_headless_horseman();
 extern void AddSC_instance_scarlet_monastery();
 extern void AddSC_boss_darkmaster_gandling();               //scholomance
 extern void AddSC_boss_death_knight_darkreaver();
@@ -206,6 +210,7 @@ extern void AddSC_razorfen_downs();
 extern void AddSC_boss_ayamiss();                           //ruins_of_ahnqiraj
 extern void AddSC_boss_kurinnaxx();
 extern void AddSC_boss_moam();
+extern void AddSC_ruins_of_ahnqiraj();
 extern void AddSC_boss_cthun();                             //temple_of_ahnqiraj
 extern void AddSC_boss_fankriss();
 extern void AddSC_boss_huhuran();
@@ -241,11 +246,28 @@ extern void AddSC_ungoro_crater();
 extern void AddSC_winterspring();
 
 //northrend
-extern void AddSC_instance_azjol_nerub();                   //azjol-nerub
+extern void AddSC_boss_jedoga();                            //ahnkahet
+extern void AddSC_boss_nadox();
+extern void AddSC_boss_taldaram();
+extern void AddSC_boss_volazj();
+extern void AddSC_instance_ahnkahet();
+extern void AddSC_boss_anubarak();                          //azjol-nerub
+extern void AddSC_boss_hadronox();
+extern void AddSC_boss_krikthir();
+extern void AddSC_instance_azjol_nerub();
+extern void AddSC_boss_novos();                             //draktharon_keep
+extern void AddSC_boss_tharonja();
+extern void AddSC_boss_trollgore();
+extern void AddSC_boss_colossus();                          //gundrak
+extern void AddSC_boss_galdarah();
+extern void AddSC_boss_moorabi();
+extern void AddSC_boss_sladran();
+extern void AddSC_instance_gundrak();
 extern void AddSC_boss_anubrekhan();                        //naxxramas
 extern void AddSC_boss_four_horsemen();
 extern void AddSC_boss_faerlina();
 extern void AddSC_boss_gluth();
+extern void AddSC_howling_fjord();
 extern void AddSC_boss_kelthuzad();
 extern void AddSC_boss_loatheb();
 extern void AddSC_boss_maexxna();
@@ -258,6 +280,7 @@ extern void AddSC_boss_anomalus();                          //nexus
 extern void AddSC_boss_keristrasza();
 extern void AddSC_boss_ormorok();
 extern void AddSC_boss_telestra();
+extern void AddSC_instance_nexus();
 extern void AddSC_boss_sartharion();                        //obsidian_sanctum
 extern void AddSC_instance_obsidian_sanctum();
 extern void AddSC_boss_bjarngrim();                         //Ulduar, halls_of_lightning
@@ -265,11 +288,20 @@ extern void AddSC_boss_ionar();
 extern void AddSC_boss_loken();
 extern void AddSC_boss_volkhan();
 extern void AddSC_instance_halls_of_lightning();
+extern void AddSC_boss_maiden_of_grief();                   //Ulduar, halls_of_stone
+extern void AddSC_boss_sjonnir();
+extern void AddSC_halls_of_stone();
+extern void AddSC_instance_ulduar();                        //ulduar
 extern void AddSC_boss_ingvar();                            //utgarde_keep
 extern void AddSC_boss_keleseth();
 extern void AddSC_boss_skarvald_and_dalronn();
 extern void AddSC_instance_utgarde_keep();
 extern void AddSC_utgarde_keep();
+extern void AddSC_boss_gortok();                           //utgarde_pinnacle
+extern void AddSC_boss_skadi();
+extern void AddSC_boss_svala();
+extern void AddSC_boss_ymiron();
+extern void AddSC_instance_pinnacle();
 
 extern void AddSC_borean_tundra();
 extern void AddSC_dalaran();
@@ -278,6 +310,7 @@ extern void AddSC_grizzly_hills();
 extern void AddSC_icecrown();
 extern void AddSC_sholazar_basin();
 extern void AddSC_storm_peaks();
+extern void AddSC_zuldrak();
 
 //outland
 extern void AddSC_boss_exarch_maladaar();                   //auchindoun, auchenai_crypts
@@ -359,6 +392,9 @@ extern void AddSC_zangarmarsh();
 
 void AddScripts()
 {
+    //battlegrounds
+    AddSC_battleground();
+
     //custom
 
     //examples
@@ -453,6 +489,7 @@ void AddScripts()
     AddSC_boss_interrogator_vishas();
     AddSC_boss_mograine_and_whitemane();
     AddSC_boss_scorn();
+    AddSC_boss_headless_horseman();
     AddSC_instance_scarlet_monastery();
     AddSC_boss_darkmaster_gandling();                       //scholomance
     AddSC_boss_death_knight_darkreaver();
@@ -561,6 +598,7 @@ void AddScripts()
     AddSC_boss_ayamiss();                                   //ruins_of_ahnqiraj
     AddSC_boss_kurinnaxx();
     AddSC_boss_moam();
+    AddSC_ruins_of_ahnqiraj();
     AddSC_boss_cthun();                                     //temple_of_ahnqiraj
     AddSC_boss_fankriss();
     AddSC_boss_huhuran();
@@ -596,11 +634,28 @@ void AddScripts()
     AddSC_winterspring();
 
     //northrend
-    AddSC_instance_azjol_nerub();                           //azjol-nerub
+    AddSC_boss_jedoga();                                    //ahnkahet
+    AddSC_boss_nadox();
+    AddSC_boss_taldaram();
+    AddSC_boss_volazj();
+    AddSC_instance_ahnkahet();
+    AddSC_boss_anubarak();                                  //azjol-nerub
+    AddSC_boss_hadronox();
+    AddSC_boss_krikthir();
+    AddSC_instance_azjol_nerub();
+    AddSC_boss_novos();                                     //draktharon_keep
+    AddSC_boss_tharonja();
+    AddSC_boss_trollgore();
+    AddSC_boss_colossus();                                  //gundrak
+    AddSC_boss_galdarah();
+    AddSC_boss_moorabi();
+    AddSC_boss_sladran();
+    AddSC_instance_gundrak();
     AddSC_boss_anubrekhan();                                //naxxramas
     AddSC_boss_four_horsemen();
     AddSC_boss_faerlina();
     AddSC_boss_gluth();
+    AddSC_howling_fjord();
     AddSC_boss_kelthuzad();
     AddSC_boss_loatheb();
     AddSC_boss_maexxna();
@@ -613,6 +668,7 @@ void AddScripts()
     AddSC_boss_keristrasza();
     AddSC_boss_ormorok();
     AddSC_boss_telestra();
+    AddSC_instance_nexus();
     AddSC_boss_sartharion();                                //obsidian_sanctum
     AddSC_instance_obsidian_sanctum();
     AddSC_boss_bjarngrim();                                 //Ulduar, halls_of_lightning
@@ -620,11 +676,20 @@ void AddScripts()
     AddSC_boss_loken();
     AddSC_boss_volkhan();
     AddSC_instance_halls_of_lightning();
+    AddSC_boss_maiden_of_grief();                           //Ulduar, halls_of_stone
+    AddSC_boss_sjonnir();
+    AddSC_halls_of_stone();
+    AddSC_instance_ulduar();                                //ulduar
     AddSC_boss_ingvar();                                    //utgarde_keep
     AddSC_boss_keleseth();
     AddSC_boss_skarvald_and_dalronn();
     AddSC_instance_utgarde_keep();
     AddSC_utgarde_keep();
+    AddSC_boss_gortok();                                    //utgarde_pinnacle
+    AddSC_boss_skadi();
+    AddSC_boss_svala();
+    AddSC_boss_ymiron();
+    AddSC_instance_pinnacle();
 
     AddSC_borean_tundra();
     AddSC_dalaran();
@@ -633,6 +698,7 @@ void AddScripts()
     AddSC_icecrown();
     AddSC_sholazar_basin();
     AddSC_storm_peaks();
+    AddSC_zuldrak();
 
     //outland
     AddSC_boss_exarch_maladaar();                           //auchindoun, auchenai_crypts

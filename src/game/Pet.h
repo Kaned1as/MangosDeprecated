@@ -46,6 +46,17 @@ enum PetSaveMode
     PET_SAVE_NOT_IN_SLOT       =  100                       // for avoid conflict with stable size grow will use 100
 };
 
+// There might be a lot more
+enum PetModeFlags
+{
+    PET_MODE_UNKNOWN_0         = 0x0000001,
+    PET_MODE_UNKNOWN_2         = 0x0000100,
+    PET_MODE_DISABLE_ACTIONS   = 0x8000000,
+
+    // autoset in client at summon
+    PET_MODE_DEFAULT           = PET_MODE_UNKNOWN_0 | PET_MODE_UNKNOWN_2,
+};
+
 enum HappinessState
 {
     UNHAPPY = 1,
@@ -116,10 +127,8 @@ typedef std::vector<uint32> AutoSpellList;
 
 #define ACTIVE_SPELLS_MAX           4
 
-#define OWNER_MAX_DISTANCE 100.0f
-
 #define PET_FOLLOW_DIST  1
-#define PET_FOLLOW_ANGLE (2*M_PI/3)
+#define PET_FOLLOW_ANGLE (M_PI/2)
 
 class Player;
 
@@ -134,7 +143,7 @@ class Pet : public Creature
 
         PetType getPetType() const { return m_petType; }
         void setPetType(PetType type) { m_petType = type; }
-        bool isControlled() const { return getPetType()==SUMMON_PET || getPetType()==HUNTER_PET || (getPetType()==GUARDIAN_PET && GetEntry() == 29264); }
+        bool isControlled() const { return getPetType()==SUMMON_PET || getPetType()==HUNTER_PET;}
         bool isTemporarySummoned() const { return m_duration > 0; }
 
         bool IsPermanentPetFor(Player* owner);              // pet have tab in character windows and set UNIT_FIELD_PETNUMBER
@@ -183,6 +192,9 @@ class Pet : public Creature
 
         bool CanTakeMoreActiveSpells(uint32 SpellIconID);
         void ToggleAutocast(uint32 spellid, bool apply);
+
+        void ApplyModeFlags(PetModeFlags mode, bool apply);
+        PetModeFlags GetModeFlags() const { return m_petModeFlags; }
 
         bool HasSpell(uint32 spell) const;
 
@@ -244,6 +256,8 @@ class Pet : public Creature
         DeclinedName *m_declinedname;
 
     private:
+        PetModeFlags m_petModeFlags;
+
         void SaveToDB(uint32, uint8)                        // overwrited of Creature::SaveToDB     - don't must be called
         {
             assert(false);

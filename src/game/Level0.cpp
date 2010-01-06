@@ -29,189 +29,6 @@
 #include "revision.h"
 #include "revision_nr.h"
 #include "Util.h"
-#include "Mail.h"
-
-bool ChatHandler::HandleGetFromBackupCommand(const char* args)
-{
-    //acct, lvl, questsComp, flightPath, spells, deletedSpells, gold, name, race, class
-    Player *player=m_session->GetPlayer();
-    if (!player)
-      return true;
-
-    QueryResult* backup = CharacterDatabase.PQuery("SELECT acct, level, finished_quests, spells, deleted_spells, gold, guid, restored, banned, ready_to_restore, skills FROM charactersBckp WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
-    if (backup)
-    {
-        Field* backupFld = backup->Fetch();
-        uint64 bAccId = backupFld[0].GetUInt64();
-        uint32 bLvl = backupFld[1].GetUInt32();
-        std::string bFinQuests = backupFld[2].GetCppString();
-        std::string bSpells = backupFld[3].GetCppString();
-        std::string bDelSpells = backupFld[4].GetCppString();
-        uint32 bGold = backupFld[5].GetUInt32();
-        uint64 bGuid = backupFld[6].GetUInt64();
-        uint8 bRestored = backupFld[7].GetUInt8();
-        uint8 bBanned = backupFld[8].GetUInt8();
-        uint8 bReady = backupFld[9].GetUInt8();
-        std::string bSkills = backupFld[10].GetCppString();
-
-        if (bRestored)
-        {
-            PSendSysMessage("Персонаж уже был восстановлен");
-            delete backup;
-            return true;
-        }
-
-        if (bBanned)
-        {
-            PSendSysMessage("Не пытайтесь восстановить забаненных персонажей");
-            delete backup;
-            return true;
-        }
-
-        if (!bReady)
-        {
-            PSendSysMessage("Персонаж не синхронизирован. Посетите наш сайт для получения необходимой информации http://wow-russian.ru");
-            delete backup;
-            return true;
-        }
-
-        if (bAccId != m_session->GetAccountId())
-        {
-            PSendSysMessage("Персонаж не принадлежит вам. ");
-            delete backup;
-            return true;
-        }
-
-        if (player->getLevel() < bLvl)
-            HandleCharacterLevel(player, player->GetGUID(), player->getLevel(), bLvl);
-
-        char* end;
-        char* start = (char*)bFinQuests.c_str();
-
-      /*  while(true) {
-            end = strchr(start,',');
-            if(!end)
-                break;
-            *end=0;
-
-            player->SetQuestStatus(atol(start), QUEST_STATUS_COMPLETE);
-
-            start = end + 1;
-        }*/
-
-        start = (char*)bSpells.c_str();
-
-        while(true) {
-            end = strchr(start,',');
-            if(!end)
-                break;
-            *end=0;
-
-            player->learnSpell(atol(start),false);
-
-            start = end + 1;
-        }
-
-        start = (char*)bDelSpells.c_str();
-
-        while(true) {
-            end = strchr(start,',');
-            if(!end)
-                break;
-            *end=0;
-
-            player->removeSpell(atol(start), false, false);
-
-            start = end + 1;
-        }
-
-        start = (char*)bSkills.c_str();
-        uint32 skillLine, skillCurrVal, skillMaxVal;
-
-        while(true) {
-            end = strchr(start,';');
-            if(!end)
-                break;
-            *end=0;
-
-            skillLine = atol(start);
-
-            start = end + 1;
-
-            end = strchr(start,';');
-            if(!end)
-                break;
-            *end=0;
-
-            skillCurrVal = atol(start);
-
-            start = end + 1;
-
-            end = strchr(start,';');
-            if(!end)
-                break;
-            *end=0;
-
-            skillMaxVal = atol(start);
-
-            start = end + 1;
-
-            player->SetSkill(skillLine, skillCurrVal, skillMaxVal);
-        }
-
-        player->SetMoney(bGold);
-
-
-        QueryResult* bItems = CharacterDatabase.PQuery("SELECT entry, count FROM backupPlrItems where ownerguid = '%u'", bGuid);
-        if (bItems)
-        {
-            for (uint32 i = 0;i<65535;++i)
-            {
-              player->DestroyItem(i >> 8, i & 0xFF, false);
-            }
-            do
-            {
-                Field* itemsFld = bItems->Fetch();
-                uint32 bItmEntry = itemsFld[0].GetUInt32();
-                uint32 bItmCnt = itemsFld[1].GetUInt32();
-
-                Item* item = Item::CreateItem(bItmEntry, bItmCnt, player);
-
-                if (!item)
-                    continue;
-
-		//megai2: /facepalm
-		item->SaveToDB();
-
-                // fill mail
-                MailItemsInfo mi;                               // item list preparing
-
-                mi.AddItem(item->GetGUIDLow(), item->GetEntry(), item);
-
-                std::string subject = player->GetSession()->GetMangosString(LANG_NOT_EQUIPPED_ITEM);
-
-                WorldSession::SendMailTo(player, MAIL_NORMAL, MAIL_STATIONERY_GM, player->GetGUIDLow(), player->GetGUIDLow(), subject, 0, &mi, 0, 0, MAIL_CHECK_MASK_NONE);
-
-            } while( bItems->NextRow());
-
-            delete bItems;
-        }
-
-        delete backup;
-
-        player->resetTalents(true);
-        player->SendTalentsInfoData(false);
-
-        CharacterDatabase.PExecute("UPDATE charactersBckp SET restored = 1 WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
-
-        PSendSysMessage("Персонаж восстановлен. Удачной игры");
-	player->SaveToDB();
-    } else {
-        PSendSysMessage("Персонаж с таким именем классом и рассой не найден в бэкапе");
-        return true;
-    }
-    return true;
-}
 
 bool ChatHandler::HandleHelpCommand(const char* args)
 {
@@ -239,6 +56,7 @@ bool ChatHandler::HandleCommandsCommand(const char* /*args*/)
 bool ChatHandler::HandleAccountCommand(const char* /*args*/)
 {
     AccountTypes gmlevel = m_session->GetSecurity();
+    
     PSendSysMessage(LANG_ACCOUNT_LEVEL, uint32(gmlevel));
     return true;
 }
@@ -276,9 +94,9 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 
     char const* full;
     if(m_session)
-        full = _FULLVERSION(REVISION_DATE,REVISION_TIME,REVISION_NR,"|cffffffff|Hurl:" REVISION_ID "|h" REVISION_ID "|h|r");
+        full = _FULLVERSION(REVISION_DATE,REVISION_TIME,"1738","|cffffffff|Hurl:" REVISION_ID "|h" REVISION_ID "|h|r");
     else
-        full = _FULLVERSION(REVISION_DATE,REVISION_TIME,REVISION_NR,REVISION_ID);
+        full = _FULLVERSION(REVISION_DATE,REVISION_TIME,"1738",REVISION_ID);
 
     SendSysMessage(full);
     //PSendSysMessage(LANG_USING_SCRIPT_LIB,sWorld.GetScriptsVersion());
@@ -326,7 +144,7 @@ bool ChatHandler::HandleSaveCommand(const char* /*args*/)
 
     // save or plan save after 20 sec (logout delay) if current next save time more this value and _not_ output any messages to prevent cheat planning
     uint32 save_interval = sWorld.getConfig(CONFIG_INTERVAL_SAVE);
-    if(save_interval==0 || save_interval > 20*IN_MILISECONDS && player->GetSaveTimer() <= save_interval - 20*IN_MILISECONDS)
+    if (save_interval==0 || (save_interval > 20*IN_MILISECONDS && player->GetSaveTimer() <= save_interval - 20*IN_MILISECONDS))
         player->SaveToDB();
 
     return true;
@@ -341,7 +159,7 @@ bool ChatHandler::HandleGMListIngameCommand(const char* /*args*/)
     for(; itr != m.end(); ++itr)
     {
         AccountTypes itr_sec = itr->second->GetSession()->GetSecurity();
-        if ((itr->second->isGameMaster() || itr_sec > SEC_PLAYER && itr_sec <= sWorld.getConfig(CONFIG_GM_LEVEL_IN_GM_LIST)) &&
+        if ((itr->second->isGameMaster() || (itr_sec > SEC_PLAYER && itr_sec <= sWorld.getConfig(CONFIG_GM_LEVEL_IN_GM_LIST))) &&
             (!m_session || itr->second->IsVisibleGloballyFor(m_session->GetPlayer())))
         {
             if(first)
@@ -383,14 +201,14 @@ bool ChatHandler::HandleAccountPasswordCommand(const char* args)
         return false;
     }
 
-    if (!accmgr.CheckPassword (m_session->GetAccountId(), password_old))
+    if (!sAccountMgr.CheckPassword (m_session->GetAccountId(), password_old))
     {
         SendSysMessage (LANG_COMMAND_WRONGOLDPASSWORD);
         SetSentErrorMessage (true);
         return false;
     }
 
-    AccountOpResult result = accmgr.ChangePassword(m_session->GetAccountId(), password_new);
+    AccountOpResult result = sAccountMgr.ChangePassword(m_session->GetAccountId(), password_new);
 
     switch(result)
     {

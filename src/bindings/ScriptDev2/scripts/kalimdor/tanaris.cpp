@@ -96,7 +96,7 @@ struct MANGOS_DLL_DECL mob_aquementasAI : public ScriptedAI
             }else SwitchFaction_Timer -= diff;
         }
 
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (!isFriendly)
@@ -224,7 +224,7 @@ bool GossipHello_npc_marin_noggenfogger(Player* pPlayer, Creature* pCreature)
     if (pCreature->isVendor() && pPlayer->GetQuestRewardStatus(2662))
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
     return true;
 }
@@ -301,7 +301,7 @@ struct MANGOS_DLL_DECL npc_oox17tnAI : public npc_escortAI
     void Aggro(Unit* who)
     {
         //For an small probability he say something when it aggros
-        switch(rand()%10)
+        switch(urand(0, 9))
         {
            case 0: DoScriptText(SAY_OOX_AGGRO1, m_creature); break;
            case 1: DoScriptText(SAY_OOX_AGGRO2, m_creature); break;
@@ -508,7 +508,7 @@ struct MANGOS_DLL_DECL npc_toogaAI : public FollowerAI
 
     void UpdateFollowerAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             //we are doing the post-event, or...
             if (HasFollowState(STATE_FOLLOW_POSTEVENT))
@@ -559,7 +559,7 @@ struct MANGOS_DLL_DECL npc_toogaAI : public FollowerAI
                 {
                     m_uiCheckSpeechTimer = 5000;
 
-                    switch(rand()%50)
+                    switch(urand(0, 50))
                     {
                         case 10: DoScriptText(SAY_TOOG_THIRST, m_creature); break;
                         case 25: DoScriptText(SAY_TOOG_WORRIED, m_creature); break;

@@ -91,7 +91,7 @@ struct MANGOS_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
 
     void Aggro(Unit* pWho)
     {
-        switch(rand()%3)
+        switch(urand(0, 2))
         {
             case 0: DoScriptText(SAY_AGGRO_1, m_creature); break;
             case 1: DoScriptText(SAY_AGGRO_2, m_creature); break;
@@ -112,11 +112,7 @@ struct MANGOS_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
 
     void KilledUnit(Unit* pVictim)
     {
-        switch(rand()%2)
-        {
-            case 0: DoScriptText(SAY_SLAY_1, m_creature); break;
-            case 1: DoScriptText(SAY_SLAY_2, m_creature); break;
-        }
+        DoScriptText(urand(0, 1) ? SAY_SLAY_1 : SAY_SLAY_2, m_creature);
     }
 
     void JustDied(Unit* pKiller)
@@ -126,7 +122,7 @@ struct MANGOS_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiFrostNova_Timer < uiDiff)
@@ -135,20 +131,20 @@ struct MANGOS_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
                 m_creature->InterruptNonMeleeSpells(true);
 
             DoCast(m_creature,SPELL_FROSTNOVA);
-            m_uiFrostNova_Timer  = 17500 + rand()%7500;
+            m_uiFrostNova_Timer = urand(17500, 25000);
             m_bCanBlink = true;
         }else m_uiFrostNova_Timer -= uiDiff;
 
         if (m_uiFrostbolt_Timer < uiDiff)
         {
             DoCast(m_creature->getVictim(),SPELL_FROSTBOLT);
-            m_uiFrostbolt_Timer = 4500 + rand()%1500;
+            m_uiFrostbolt_Timer = urand(4500, 6000);
         }else m_uiFrostbolt_Timer -= uiDiff;
 
         if (m_uiFireBall_Timer < uiDiff)
         {
             DoCast(m_creature->getVictim(),SPELL_FIREBALL);
-            m_uiFireBall_Timer = 4500 + rand()%1500;
+            m_uiFireBall_Timer = urand(4500, 6000);
         }else m_uiFireBall_Timer -= uiDiff;
 
         if (m_bCanBlink)
@@ -165,7 +161,7 @@ struct MANGOS_DLL_DECL boss_nexusprince_shaffarAI : public ScriptedAI
 
                 DoCast(m_creature,SPELL_BLINK);
 
-                m_uiBlink_Timer = 1000 + rand()%1500;
+                m_uiBlink_Timer = urand(1000, 2500);
                 m_bCanBlink = false;
             }else m_uiBlink_Timer -= uiDiff;
         }
@@ -199,18 +195,18 @@ struct MANGOS_DLL_DECL mob_ethereal_beaconAI : public ScriptedAI
 {
     mob_ethereal_beaconAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
 
     uint32 m_uiApprentice_Timer;
     uint32 m_uiArcaneBolt_Timer;
 
     void Reset()
     {
-        m_uiApprentice_Timer = m_bIsHeroicMode ? 10000 : 20000;
+        m_uiApprentice_Timer = m_bIsRegularMode ? 20000 : 10000;
         m_uiArcaneBolt_Timer = 1000;
     }
 
@@ -222,13 +218,13 @@ struct MANGOS_DLL_DECL mob_ethereal_beaconAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiArcaneBolt_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANE_BOLT);
-            m_uiArcaneBolt_Timer = 2000 + rand()%2500;
+            DoCast(m_creature->getVictim(), SPELL_ARCANE_BOLT);
+            m_uiArcaneBolt_Timer = urand(2000, 4500);
         }else m_uiArcaneBolt_Timer -= uiDiff;
 
         if (m_uiApprentice_Timer < uiDiff)
@@ -236,7 +232,7 @@ struct MANGOS_DLL_DECL mob_ethereal_beaconAI : public ScriptedAI
             if (m_creature->IsNonMeleeSpellCasted(false))
                 m_creature->InterruptNonMeleeSpells(true);
 
-            m_creature->CastSpell(m_creature,SPELL_ETHEREAL_APPRENTICE,true);
+            m_creature->CastSpell(m_creature, SPELL_ETHEREAL_APPRENTICE, true);
 
             m_creature->ForcedDespawn();
             return;

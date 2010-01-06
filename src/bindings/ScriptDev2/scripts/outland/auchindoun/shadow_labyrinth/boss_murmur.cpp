@@ -22,7 +22,7 @@ SDCategory: Auchindoun, Shadow Labyrinth
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_shadow_labyrinth.h"
+#include "shadow_labyrinth.h"
 
 #define EMOTE_SONIC_BOOM            -1555036
 
@@ -42,12 +42,12 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
     {
         SetCombatMovement(false);
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
 
     uint32 SonicBoom_Timer;
     uint32 MurmursTouch_Timer;
@@ -62,10 +62,10 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
     void Reset()
     {
         SonicBoom_Timer = 30000;
-        MurmursTouch_Timer = 8000 + rand()%12000;
+        MurmursTouch_Timer = urand(8000, 20000);
         Resonance_Timer = 5000;
-        MagneticPull_Timer = 15000 + rand()%15000;
-        SonicShock_Timer = 4000 + rand()%6000;
+        MagneticPull_Timer = urand(15000, 30000);
+        SonicShock_Timer = urand(4000, 10000);
         ThunderingStorm_Timer = 12000;                //Casting directly after Sonic Boom.
         CanSonicBoom = false;
         CanShockWave = false;
@@ -79,8 +79,8 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
 
     void SonicBoomEffect()
     {
-        std::list<HostilReference *> t_list = m_creature->getThreatManager().getThreatList();
-        for(std::list<HostilReference *>::iterator itr = t_list.begin(); itr!= t_list.end(); ++itr)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
         {
            Unit* target = Unit::GetUnit(*m_creature, (*itr)->getUnitGuid());
            if (target && target->GetTypeId() == TYPEID_PLAYER)
@@ -98,7 +98,7 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
     void UpdateAI(const uint32 diff)
     {
         //Return since we have no target
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         //SonicBoom_Timer
@@ -129,7 +129,7 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
             if (target)
                 DoCast(target, SPELL_MURMURS_TOUCH);*/
             DoCast(m_creature, SPELL_MURMURS_TOUCH);
-            MurmursTouch_Timer = 25000 + rand()%10000;
+            MurmursTouch_Timer = urand(25000, 35000);
         }else MurmursTouch_Timer -= diff;
 
         //Resonance_Timer
@@ -138,17 +138,17 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
             if (Resonance_Timer < diff)
             {
                 DoCast(m_creature->getVictim(), SPELL_RESONANCE);
-                Resonance_Timer = m_bIsHeroicMode ? 3000 : 5000;
+                Resonance_Timer = m_bIsRegularMode ? 5000 : 3000;
             }else Resonance_Timer -= diff;
         }
 
-        if (m_bIsHeroicMode)
+        if (!m_bIsRegularMode)
         {
             if (SonicShock_Timer < diff)
             {
                 if (Unit *target = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     DoCast(target, SPELL_SONIC_SHOCK);
-                SonicShock_Timer = 8000 + rand()%4000;
+                SonicShock_Timer = urand(8000, 12000);
             }else SonicShock_Timer -= diff;
 
             if (ThunderingStorm_Timer < diff)
@@ -179,7 +179,7 @@ struct MANGOS_DLL_DECL boss_murmurAI : public ScriptedAI
                 if (Unit* target = Unit::GetUnit(*m_creature,pTarget))
                     target->CastSpell(target,SPELL_SHOCKWAVE,true);
 
-                MagneticPull_Timer = 15000 + rand()%15000;
+                MagneticPull_Timer = urand(15000, 30000);
                 CanShockWave = false;
                 pTarget = 0;
             }

@@ -22,7 +22,7 @@ SDCategory: Black Temple
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_black_temple.h"
+#include "black_temple.h"
 
 //Speech'n'sound
 #define SAY_INTRO                       -1564037
@@ -88,7 +88,7 @@ struct MANGOS_DLL_DECL mob_doom_blossomAI : public ScriptedAI
             CheckTeronTimer = 5000;
         }else CheckTeronTimer -= diff;
 
-        if (!m_creature->getVictim() || !m_creature->SelectHostilTarget())
+        if (!m_creature->getVictim() || !m_creature->SelectHostileTarget())
             return;
 
         if (ShadowBoltTimer < diff)
@@ -141,13 +141,13 @@ struct MANGOS_DLL_DECL mob_shadowy_constructAI : public ScriptedAI
 
     void CheckPlayers()
     {
-        std::list<HostilReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
-        if (m_threatlist.empty())
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        if (tList.empty())
             return;                                         // No threat list. Don't continue.
 
-        std::list<HostilReference*>::iterator itr = m_threatlist.begin();
         std::list<Unit*> targets;
-        for(; itr != m_threatlist.end(); ++itr)
+
+        for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
             if (pUnit && pUnit->isAlive())
@@ -208,7 +208,7 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
     void Reset()
     {
-        IncinerateTimer = 20000 + rand()%11000;
+        IncinerateTimer = urand(20000, 30000);
         SummonDoomBlossomTimer = 12000;
         EnrageTimer = 600000;
         CrushingShadowsTimer = 22000;
@@ -256,11 +256,7 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
     void KilledUnit(Unit *victim)
     {
-        switch(rand()%2)
-        {
-            case 0: DoScriptText(SAY_SLAY1, m_creature); break;
-            case 1: DoScriptText(SAY_SLAY2, m_creature); break;
-        }
+        DoScriptText(urand(0, 1) ? SAY_SLAY1 : SAY_SLAY2, m_creature);
     }
 
     void JustDied(Unit *victim)
@@ -274,7 +270,7 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
     float CalculateRandomLocation(float Loc, uint32 radius)
     {
         float coord = Loc;
-        switch(rand()%2)
+        switch(urand(0, 1))
         {
             case 0:
                 coord += rand()%radius;
@@ -291,9 +287,8 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
         if (!Blossom)
             return;
 
-        std::list<HostilReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
-        std::list<HostilReference*>::iterator i = m_threatlist.begin();
-        for(i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && pUnit->isAlive())
@@ -376,7 +371,7 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
             }else AggroTimer -= diff;
         }
 
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim() || Intro)
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim() || Intro)
             return;
 
         if (SummonShadowsTimer < diff)
@@ -414,7 +409,7 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
                 {
                     DoomBlossom->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
                     DoomBlossom->setFaction(m_creature->getFaction());
-                    DoomBlossom->AddThreat(target, 1.0f);
+                    DoomBlossom->AddThreat(target);
                     ((mob_doom_blossomAI*)DoomBlossom->AI())->SetTeronGUID(m_creature->GetGUID());
 
                     SetThreatList(DoomBlossom);
@@ -431,13 +426,9 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
             if (target)
             {
-                switch(rand()%2)
-                {
-                    case 0: DoScriptText(SAY_SPECIAL1, m_creature); break;
-                    case 1: DoScriptText(SAY_SPECIAL2, m_creature); break;
-                }
+                DoScriptText(urand(0, 1) ? SAY_SPECIAL1 : SAY_SPECIAL2, m_creature);
                 DoCast(target, SPELL_INCINERATE);
-                IncinerateTimer = 20000 + rand()%31 * 1000;
+                IncinerateTimer = urand(20000, 50000);
             }
         }else IncinerateTimer -= diff;
 
@@ -447,7 +438,7 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
             if (target && target->isAlive())
                 DoCast(target, SPELL_CRUSHING_SHADOWS);
 
-            CrushingShadowsTimer = 10000 + rand()%16 * 1000;
+            CrushingShadowsTimer = urand(10000, 26000);
         }else CrushingShadowsTimer -= diff;
 
         /*** NOTE FOR FUTURE DEV: UNCOMMENT BELOW ONLY IF MIND CONTROL IS FULLY IMPLEMENTED **/
@@ -469,12 +460,8 @@ struct MANGOS_DLL_DECL boss_teron_gorefiendAI : public ScriptedAI
 
         if (RandomYellTimer < diff)
         {
-            switch(rand()%2)
-            {
-                case 0: DoScriptText(SAY_SPELL1, m_creature); break;
-                case 1: DoScriptText(SAY_SPELL2, m_creature); break;
-            }
-            RandomYellTimer = 50000 + rand()%51 * 1000;
+            DoScriptText(urand(0, 1) ? SAY_SPELL1 : SAY_SPELL2, m_creature);
+            RandomYellTimer = urand(50000, 100000);
         }else RandomYellTimer -= diff;
 
         if (!m_creature->HasAura(SPELL_BERSERK, 0))

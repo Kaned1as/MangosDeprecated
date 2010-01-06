@@ -26,7 +26,7 @@ mob_dragonflayer_forge_master
 EndContentData */
 
 #include "precompiled.h"
-#include "def_utgarde_keep.h"
+#include "utgarde_keep.h"
 
 /*######
 ## mob_dragonflayer_forge_master
@@ -46,13 +46,13 @@ struct MANGOS_DLL_DECL mob_dragonflayer_forge_masterAI : public ScriptedAI
     mob_dragonflayer_forge_masterAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         m_uiForgeEncounterId = 0;
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
 
     uint32 m_uiForgeEncounterId;
     uint32 m_uiBurningBrandTimer;
@@ -130,12 +130,12 @@ struct MANGOS_DLL_DECL mob_dragonflayer_forge_masterAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiBurningBrandTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsHeroicMode ? SPELL_BURNING_BRAND_H : SPELL_BURNING_BRAND);
+            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_BURNING_BRAND : SPELL_BURNING_BRAND_H);
             m_uiBurningBrandTimer = 15000;
         }
         else m_uiBurningBrandTimer -= uiDiff;

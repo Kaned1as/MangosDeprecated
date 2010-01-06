@@ -22,7 +22,7 @@ SDCategory: Magisters' Terrace
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_magisters_terrace.h"
+#include "magisters_terrace.h"
 #include "WorldPacket.h"
 
 #define SAY_AGGRO                   -1585023                //This yell should be done when the room is cleared. For now, set it as a movelineofsight yell.
@@ -79,12 +79,12 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
     boss_felblood_kaelthasAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
 
     uint32 FireballTimer;
     uint32 PhoenixTimer;
@@ -186,9 +186,8 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
         if (!SummonedUnit)
             return;
 
-        std::list<HostilReference*>& m_threatlist = m_creature->getThreatManager().getThreatList();
-        std::list<HostilReference*>::iterator i = m_threatlist.begin();
-        for(i = m_threatlist.begin(); i != m_threatlist.end(); ++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && pUnit->isAlive())
@@ -205,8 +204,8 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
         float y = KaelLocations[0][1];
         m_creature->GetMap()->CreatureRelocation(m_creature, x, y, LOCATION_Z, 0.0f);
         //m_creature->SendMonsterMove(x, y, LOCATION_Z, 0, 0, 0); // causes some issues...
-        std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -217,8 +216,8 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
     void CastGravityLapseKnockUp()
     {
-        std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -229,8 +228,8 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
     void CastGravityLapseFly()                              // Use Fly Packet hack for now as players can't cast "fly" spells unless in map 530. Has to be done a while after they get knocked into the air...
     {
-        std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -249,8 +248,8 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
     void RemoveGravityLapse()
     {
-        std::list<HostilReference*>::iterator i = m_creature->getThreatManager().getThreatList().begin();
-        for (i = m_creature->getThreatManager().getThreatList().begin(); i!= m_creature->getThreatManager().getThreatList().end();++i)
+        ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+        for (ThreatList::const_iterator i = tList.begin();i != tList.end(); ++i)
         {
             Unit* pUnit = Unit::GetUnit((*m_creature), (*i)->getUnitGuid());
             if (pUnit && (pUnit->GetTypeId() == TYPEID_PLAYER))
@@ -269,7 +268,7 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->getVictim() && !m_creature->SelectHostilTarget())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         switch(Phase)
@@ -277,7 +276,7 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
             case 0:
             {
                 // *Heroic mode only:
-                if (m_bIsHeroicMode)
+                if (!m_bIsRegularMode)
                 {
                     if (PyroblastTimer < diff)
                     {
@@ -291,8 +290,8 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
 
                 if (FireballTimer < diff)
                 {
-                    DoCast(m_creature->getVictim(), m_bIsHeroicMode ? SPELL_FIREBALL_HEROIC : SPELL_FIREBALL_NORMAL);
-                    FireballTimer = 2000 + rand()%4000;
+                    DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_FIREBALL_NORMAL : SPELL_FIREBALL_HEROIC);
+                    FireballTimer = urand(2000, 6000);
                 }else FireballTimer -= diff;
 
                 if (PhoenixTimer < diff)
@@ -301,7 +300,7 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
                     Unit* target = NULL;
                     target = SelectUnit(SELECT_TARGET_RANDOM,1);
 
-                    uint32 random = rand()%2 + 1;
+                    uint32 random = urand(1, 2);
                     float x = KaelLocations[random][0];
                     float y = KaelLocations[random][1];
 
@@ -328,7 +327,7 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
                         DoCast(pTarget, SPELL_FLAME_STRIKE);
                         DoScriptText(SAY_FLAMESTRIKE, m_creature);
                     }
-                    FlameStrikeTimer = 15000 + rand()%10000;
+                    FlameStrikeTimer = urand(15000, 25000);
                 }else FlameStrikeTimer -= diff;
 
                 // Below 50%
@@ -405,7 +404,7 @@ struct MANGOS_DLL_DECL boss_felblood_kaelthasAI : public ScriptedAI
                                 if (Orb && target)
                                 {
                                     //SetThreatList(Orb);
-                                    Orb->AddThreat(target, 1.0f);
+                                    Orb->AddThreat(target);
                                     Orb->AI()->AttackStart(target);
                                 }
 
@@ -524,7 +523,7 @@ struct MANGOS_DLL_DECL mob_felkael_phoenixAI : public ScriptedAI
 
         }
 
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (BurnTimer < diff)
@@ -575,7 +574,7 @@ struct MANGOS_DLL_DECL mob_arcane_sphereAI : public ScriptedAI
     void Reset()
     {
         DespawnTimer = 30000;
-        ChangeTargetTimer = 6000 + rand()%6000;
+        ChangeTargetTimer = urand(6000, 12000);
 
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         DoCast(m_creature, SPELL_ARCANE_SPHERE_PASSIVE, true);
@@ -587,7 +586,7 @@ struct MANGOS_DLL_DECL mob_arcane_sphereAI : public ScriptedAI
             m_creature->DealDamage(m_creature, m_creature->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
         else DespawnTimer -= diff;
 
-        if (!m_creature->getVictim() || !m_creature->SelectHostilTarget())
+        if (!m_creature->getVictim() || !m_creature->SelectHostileTarget())
             return;
 
         if (ChangeTargetTimer < diff)
@@ -596,11 +595,11 @@ struct MANGOS_DLL_DECL mob_arcane_sphereAI : public ScriptedAI
             Unit* target = NULL;
             target = SelectUnit(SELECT_TARGET_RANDOM,0);
             if (target)
-                m_creature->AddThreat(target, 1.0f);
+                m_creature->AddThreat(target);
                 m_creature->TauntApply(target);
                 AttackStart(target);
 
-            ChangeTargetTimer = 5000 + rand()%10000;
+            ChangeTargetTimer = urand(5000, 15000);
         }else ChangeTargetTimer -= diff;
     }
 };

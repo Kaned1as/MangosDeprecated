@@ -22,7 +22,7 @@ SDCategory: Magister's Terrace
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_magisters_terrace.h"
+#include "magisters_terrace.h"
 
 #define SAY_AGGRO                       -1585000
 #define SAY_ENERGY                      -1585001
@@ -54,7 +54,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
     boss_selin_fireheartAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
 
         Crystals.clear();
         //GUIDs per instance is static, so we only need to load them once.
@@ -72,7 +72,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
     }
 
     ScriptedInstance* m_pInstance;
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
 
     std::list<uint64> Crystals;
 
@@ -113,11 +113,11 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
             m_pInstance->SetData(DATA_SELIN_EVENT, NOT_STARTED);
         }else error_log(ERROR_INST_DATA);
 
-        DrainLifeTimer = 3000 + rand()%4000;
+        DrainLifeTimer = urand(3000, 7000);
         DrainManaTimer = DrainLifeTimer + 5000;
         FelExplosionTimer = 2100;
-        DrainCrystalTimer = 10000 + rand()%5000;
-        DrainCrystalTimer = 20000 + rand()%5000;
+        DrainCrystalTimer = urand(10000, 15000);
+        DrainCrystalTimer = urand(20000, 25000);
         EmpowerTimer = 10000;
 
         IsDraining = false;
@@ -195,11 +195,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
 
     void KilledUnit(Unit* victim)
     {
-        switch(rand()%2)
-        {
-            case 0: DoScriptText(SAY_KILL_1, m_creature); break;
-            case 1: DoScriptText(SAY_KILL_2, m_creature); break;
-        }
+        DoScriptText(urand(0, 1) ? SAY_KILL_1 : SAY_KILL_2, m_creature);
     }
 
     void MovementInform(uint32 type, uint32 id)
@@ -247,7 +243,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (!DrainingCrystal)
@@ -262,7 +258,7 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
                 }else DrainLifeTimer -= diff;
 
                 // Heroic only
-                if (m_bIsHeroicMode)
+                if (!m_bIsRegularMode)
                 {
                     if (DrainManaTimer < diff)
                     {
@@ -289,10 +285,10 @@ struct MANGOS_DLL_DECL boss_selin_fireheartAI : public ScriptedAI
                 {
                     SelectNearestCrystal();
 
-                    if (m_bIsHeroicMode)
-                        DrainCrystalTimer = 10000 + rand()%5000;
+                    if (m_bIsRegularMode)
+                        DrainCrystalTimer = urand(20000, 25000);
                     else
-                        DrainCrystalTimer = 20000 + rand()%5000;
+                        DrainCrystalTimer = urand(10000, 15000);
 
                 }else DrainCrystalTimer -= diff;
             }

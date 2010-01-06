@@ -104,14 +104,14 @@ struct MANGOS_DLL_DECL npc_kerlonianAI : public FollowerAI
     {
         SetFollowPaused(true);
 
-        switch(rand()%3)
+        switch(urand(0, 2))
         {
             case 0: DoScriptText(EMOTE_KER_SLEEP_1, m_creature); break;
             case 1: DoScriptText(EMOTE_KER_SLEEP_2, m_creature); break;
             case 2: DoScriptText(EMOTE_KER_SLEEP_3, m_creature); break;
         }
 
-        switch(rand()%4)
+        switch(urand(0, 3))
         {
             case 0: DoScriptText(SAY_KER_SLEEP_1, m_creature); break;
             case 1: DoScriptText(SAY_KER_SLEEP_2, m_creature); break;
@@ -135,7 +135,7 @@ struct MANGOS_DLL_DECL npc_kerlonianAI : public FollowerAI
 
     void UpdateFollowerAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (!HasFollowState(STATE_FOLLOW_INPROGRESS))
                 return;
@@ -275,7 +275,7 @@ struct MANGOS_DLL_DECL npc_prospector_remtravelAI : public npc_escortAI
 
     void Aggro(Unit* who)
     {
-        if (rand()%2)
+        if (urand(0, 1))
             DoScriptText(SAY_REM_AGGRO, m_creature, who);
     }
 
@@ -360,7 +360,7 @@ bool GossipHello_npc_threshwackonator(Player* pPlayer, Creature* pCreature)
     if (pPlayer->GetQuestStatus(QUEST_GYROMAST_REV) == QUEST_STATUS_INCOMPLETE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_INSERT_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     return true;
 }
 

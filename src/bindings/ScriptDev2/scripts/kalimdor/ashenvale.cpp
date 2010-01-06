@@ -108,7 +108,7 @@ struct MANGOS_DLL_DECL npc_muglashAI : public npc_escortAI
     {
         if (HasEscortState(STATE_ESCORT_PAUSED))
         {
-            if (rand()%1)
+            if (urand(0, 1))
                 return;
 
             DoScriptText(SAY_MUG_ON_GUARD, m_creature);
@@ -180,7 +180,7 @@ struct MANGOS_DLL_DECL npc_muglashAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (HasEscortState(STATE_ESCORT_PAUSED) && m_bIsBrazierExtinguished)
             {
@@ -375,7 +375,7 @@ struct MANGOS_DLL_DECL npc_torekAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiRend_Timer < uiDiff)

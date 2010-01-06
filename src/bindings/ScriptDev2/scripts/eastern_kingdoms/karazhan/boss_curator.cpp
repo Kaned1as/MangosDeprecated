@@ -69,11 +69,7 @@ struct MANGOS_DLL_DECL boss_curatorAI : public ScriptedAI
 
     void KilledUnit(Unit* pVictim)
     {
-        switch(rand()%2)
-        {
-            case 0: DoScriptText(SAY_KILL1, m_creature); break;
-            case 1: DoScriptText(SAY_KILL2, m_creature); break;
-        }
+        DoScriptText(urand(0, 1) ? SAY_KILL1 : SAY_KILL2, m_creature);
     }
 
     void JustDied(Unit* pKiller)
@@ -88,21 +84,24 @@ struct MANGOS_DLL_DECL boss_curatorAI : public ScriptedAI
 
     void JustSummoned(Creature* pSummoned)
     {
-        // Flare start with agro on it's target, should be immune to arcane
-        pSummoned->CastSpell(pSummoned, SPELL_ASTRAL_FLARE_PASSIVE, false);
-        pSummoned->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, true);
-
-        if (m_creature->getVictim())
+        if (pSummoned->GetEntry() == NPC_ASTRAL_FLARE)
         {
-            Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+            // Flare start with agro on it's target, should be immune to arcane
+            pSummoned->CastSpell(pSummoned, SPELL_ASTRAL_FLARE_PASSIVE, false);
+            pSummoned->ApplySpellImmune(0, IMMUNITY_DAMAGE, SPELL_SCHOOL_MASK_ARCANE, true);
 
-            pSummoned->AddThreat(pTarget ? pTarget : m_creature->getVictim(), 1000.0f);
+            if (m_creature->getVictim())
+            {
+                Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1);
+
+                pSummoned->AddThreat(pTarget ? pTarget : m_creature->getVictim(), 1000.0f);
+            }
         }
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         // always decrease BerserkTimer
@@ -145,11 +144,10 @@ struct MANGOS_DLL_DECL boss_curatorAI : public ScriptedAI
                 // reduce mana by 10% of maximum
                 if (int32 iMana = m_creature->GetMaxPower(POWER_MANA))
                 {
-                    iMana /= 10;
-                    m_creature->ModifyPower(POWER_MANA, -iMana);
+                    m_creature->ModifyPower(POWER_MANA, -(iMana/10));
 
                     //if this get's us below 10%, then we evocate (the 10th should be summoned now
-                    if (m_creature->GetPower(POWER_MANA)*100 < m_creature->GetMaxPower(POWER_MANA)*10)
+                    if (m_creature->GetPower(POWER_MANA)*10 < m_creature->GetMaxPower(POWER_MANA))
                     {
                         DoScriptText(SAY_EVOCATE, m_creature);
 
@@ -164,7 +162,7 @@ struct MANGOS_DLL_DECL boss_curatorAI : public ScriptedAI
                     }
                     else
                     {
-                        switch(rand()%4)
+                        switch(urand(0, 3))
                         {
                             case 0: DoScriptText(SAY_SUMMON1, m_creature); break;
                             case 1: DoScriptText(SAY_SUMMON2, m_creature); break;

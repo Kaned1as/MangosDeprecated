@@ -119,14 +119,14 @@ struct MANGOS_DLL_DECL mob_unkor_the_ruthlessAI : public ScriptedAI
             }
             else
             {
-                if (UnkorUnfriendly_Timer < diff)
+                if (UnkorUnfriendly_Timer <= diff)
                 {
                     EnterEvadeMode();
                 }else UnkorUnfriendly_Timer -= diff;
             }
         }
 
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (Pulverize_Timer < diff)
@@ -158,7 +158,7 @@ struct MANGOS_DLL_DECL mob_infested_root_walkerAI : public ScriptedAI
     {
         if (done_by && done_by->GetTypeId() == TYPEID_PLAYER)
             if (m_creature->GetHealth() <= damage)
-                if (rand()%100 < 75)
+                if (urand(0, 3))
                     //Summon Wood Mites
                     m_creature->CastSpell(m_creature,39130,true);
     }
@@ -182,7 +182,7 @@ struct MANGOS_DLL_DECL mob_rotting_forest_ragerAI : public ScriptedAI
     {
         if (done_by->GetTypeId() == TYPEID_PLAYER)
             if (m_creature->GetHealth() <= damage)
-                if (rand()%100 < 75)
+                if (urand(0, 3))
                     //Summon Lots of Wood Mights
                     m_creature->CastSpell(m_creature,39134,true);
     }
@@ -209,7 +209,11 @@ const uint32 netherwebVictims[6] =
 };
 struct MANGOS_DLL_DECL mob_netherweb_victimAI : public ScriptedAI
 {
-    mob_netherweb_victimAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
+    mob_netherweb_victimAI(Creature* pCreature) : ScriptedAI(pCreature)
+    {
+        SetCombatMovement(false);
+        Reset();
+    }
 
     void Reset() { }
     void MoveInLineOfSight(Unit* pWho) { }
@@ -220,18 +224,13 @@ struct MANGOS_DLL_DECL mob_netherweb_victimAI : public ScriptedAI
         {
             if (((Player*)pKiller)->GetQuestStatus(QUEST_TAKEN_IN_NIGHT) == QUEST_STATUS_INCOMPLETE)
             {
-                if (rand()%100 < 25)
+                if (!urand(0, 3))
                 {
                     m_creature->SummonCreature(NPC_FREED_WARRIOR, 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
                     ((Player*)pKiller)->KilledMonsterCredit(NPC_FREED_WARRIOR, m_creature->GetGUID());
                 }
                 else
                     m_creature->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-
-                if (rand()%100 < 75)
-                    m_creature->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f,0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
-
-                m_creature->SummonCreature(netherwebVictims[rand()%6], 0.0f, 0.0f, 0.0f, 0.0f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 60000);
             }
         }
     }
@@ -310,7 +309,7 @@ struct MANGOS_DLL_DECL npc_akunoAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiChainLightningTimer < uiDiff)
@@ -390,7 +389,7 @@ struct MANGOS_DLL_DECL npc_floonAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_uiSilence_Timer < uiDiff)
@@ -460,7 +459,7 @@ bool GossipHello_npc_skyguard_handler_deesak(Player* pPlayer, Creature* pCreatur
     if (pPlayer->GetReputationRank(1031) >= REP_HONORED)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_SKYGUARD, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
     return true;
 }
@@ -621,7 +620,7 @@ struct MANGOS_DLL_DECL npc_letollAI : public npc_escortAI
 
     void UpdateEscortAI(const uint32 uiDiff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         {
             if (HasEscortState(STATE_ESCORT_PAUSED))
             {

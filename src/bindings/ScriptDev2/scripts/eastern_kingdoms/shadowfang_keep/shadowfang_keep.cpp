@@ -27,7 +27,7 @@ EndContentData */
 
 #include "precompiled.h"
 #include "escort_ai.h"
-#include "def_shadowfang_keep.h"
+#include "shadowfang_keep.h"
 
 /*######
 ## npc_shadowfang_prisoner
@@ -112,7 +112,7 @@ bool GossipHello_npc_shadowfang_prisoner(Player* pPlayer, Creature* pCreature)
     if (pInstance && pInstance->GetData(TYPE_FREE_NPC) != DONE && pInstance->GetData(TYPE_RETHILGORE) == DONE)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_DOOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     return true;
 }
 

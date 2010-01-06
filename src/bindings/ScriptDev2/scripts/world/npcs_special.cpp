@@ -25,19 +25,24 @@ EndScriptData
 #include "precompiled.h"
 #include "escort_ai.h"
 #include "ObjectMgr.h"
+#include "GameEventMgr.h"
 
 /* ContentData
 npc_air_force_bots       80%    support for misc (invisible) guard bots in areas where player allowed to fly. Summon guards after a preset time if tagged by spell
 npc_chicken_cluck       100%    support for quest 3861 (Cluck!)
 npc_dancing_flames      100%    midsummer event NPC
 npc_guardian            100%    guardianAI used to prevent players from accessing off-limits areas. Not in use by SD2
-npc_garments_of_quests  80%     NPC's related to all Garments of-quests 5621, 5624, 5625, 5648, 5650
+npc_garments_of_quests   80%    NPC's related to all Garments of-quests 5621, 5624, 5625, 5648, 5650
 npc_injured_patient     100%    patients for triage-quests (6622 and 6624)
 npc_doctor              100%    Gustaf Vanhowzen and Gregory Victor, quest 6622 and 6624 (Triage)
+npc_innkeeper            25%    Innkeepers in general. A lot do be done here (misc options for events)
 npc_kingdom_of_dalaran_quests   Misc NPC's gossip option related to quests 12791, 12794 and 12796
+npc_lunaclaw_spirit     100%    Appears at two different locations, quest 6001/6002
 npc_mount_vendor        100%    Regular mount vendors all over the world. Display gossip if player doesn't meet the requirements to buy
-npc_rogue_trainer       80%     Scripted trainers, so they are able to offer item 17126 for class quest 6681
+npc_rogue_trainer        80%    Scripted trainers, so they are able to offer item 17126 for class quest 6681
 npc_sayge               100%    Darkmoon event fortune teller, buff player based on answers given
+npc_tabard_vendor        50%    allow recovering quest related tabards, achievement related ones need core support
+npc_locksmith            75%    list of keys needs to be confirmed
 EndContentData */
 
 /*########
@@ -124,8 +129,8 @@ struct MANGOS_DLL_DECL npc_air_force_botsAI : public ScriptedAI
 
             if (!spawnedTemplate)
             {
-                m_pSpawnAssoc = NULL;
                 error_db_log("SD2: Creature template entry %u does not exist in DB, which is required by npc_air_force_bots", m_pSpawnAssoc->m_uiSpawnedCreatureEntry);
+                m_pSpawnAssoc = NULL;
                 return;
             }
         }
@@ -250,62 +255,55 @@ CreatureAI* GetAI_npc_air_force_bots(Creature* pCreature)
 # npc_chicken_cluck
 #########*/
 
-#define EMOTE_A_HELLO       -1000204
-#define EMOTE_H_HELLO       -1000205
-#define EMOTE_CLUCK_TEXT2   -1000206
+enum
+{
+    EMOTE_A_HELLO           = -1000204,
+    EMOTE_H_HELLO           = -1000205,
+    EMOTE_CLUCK_TEXT2       = -1000206,
 
-#define QUEST_CLUCK         3861
-#define FACTION_FRIENDLY    84
-#define FACTION_CHICKEN     31
+    QUEST_CLUCK             = 3861,
+    FACTION_FRIENDLY        = 35,
+    FACTION_CHICKEN         = 31
+};
 
 struct MANGOS_DLL_DECL npc_chicken_cluckAI : public ScriptedAI
 {
     npc_chicken_cluckAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    uint32 ResetFlagTimer;
+    uint32 m_uiResetFlagTimer;
 
     void Reset()
     {
-        ResetFlagTimer = 120000;
+        m_uiResetFlagTimer = 120000;
 
         m_creature->setFaction(FACTION_CHICKEN);
         m_creature->RemoveFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
     }
 
-    void UpdateAI(const uint32 diff)
+    void ReceiveEmote(Player* pPlayer, uint32 uiEmote)
     {
-        // Reset flags after a certain time has passed so that the next player has to start the 'event' again
-        if (m_creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+        if (uiEmote == TEXTEMOTE_CHICKEN)
         {
-            if (ResetFlagTimer < diff)
-                EnterEvadeMode();
-            else ResetFlagTimer -= diff;
-        }
-
-        if (m_creature->SelectHostilTarget() && m_creature->getVictim())
-            DoMeleeAttackIfReady();
-    }
-
-    void ReceiveEmote (Player* pPlayer, uint32 emote)
-    {
-        if (emote == TEXTEMOTE_CHICKEN)
-        {
-            if (pPlayer->GetTeam() == ALLIANCE)
+            if (!urand(0, 29))
             {
-                if (rand()%30 == 1)
+                if (pPlayer->GetQuestStatus(QUEST_CLUCK) == QUEST_STATUS_NONE)
                 {
-                    if (pPlayer->GetQuestStatus(QUEST_CLUCK) == QUEST_STATUS_NONE)
-                    {
-                        m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
-                        m_creature->setFaction(FACTION_FRIENDLY);
+                    m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER);
+                    m_creature->setFaction(FACTION_FRIENDLY);
+
+                    DoScriptText(EMOTE_A_HELLO, m_creature);
+
+                    /* are there any difference in texts, after 3.x ?
+                    if (pPlayer->GetTeam() == HORDE)
+                        DoScriptText(EMOTE_H_HELLO, m_creature);
+                    else
                         DoScriptText(EMOTE_A_HELLO, m_creature);
-                    }
+                    */
                 }
             }
-            else
-                DoScriptText(EMOTE_H_HELLO,m_creature);
         }
-        if (emote == TEXTEMOTE_CHEER && pPlayer->GetTeam() == ALLIANCE)
+
+        if (uiEmote == TEXTEMOTE_CHEER)
         {
             if (pPlayer->GetQuestStatus(QUEST_CLUCK) == QUEST_STATUS_COMPLETE)
             {
@@ -314,6 +312,21 @@ struct MANGOS_DLL_DECL npc_chicken_cluckAI : public ScriptedAI
                 DoScriptText(EMOTE_CLUCK_TEXT2, m_creature);
             }
         }
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+        // Reset flags after a certain time has passed so that the next player has to start the 'event' again
+        if (m_creature->HasFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_QUESTGIVER))
+        {
+            if (m_uiResetFlagTimer < uiDiff)
+                EnterEvadeMode();
+            else
+                m_uiResetFlagTimer -= uiDiff;
+        }
+
+        if (m_creature->SelectHostileTarget() && m_creature->getVictim())
+            DoMeleeAttackIfReady();
     }
 };
 
@@ -325,7 +338,10 @@ CreatureAI* GetAI_npc_chicken_cluck(Creature* pCreature)
 bool QuestAccept_npc_chicken_cluck(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
 {
     if (pQuest->GetQuestId() == QUEST_CLUCK)
-        ((npc_chicken_cluckAI*)pCreature->AI())->Reset();
+    {
+        if (npc_chicken_cluckAI* pChickenAI = dynamic_cast<npc_chicken_cluckAI*>(pCreature->AI()))
+            pChickenAI->Reset();
+    }
 
     return true;
 }
@@ -333,7 +349,10 @@ bool QuestAccept_npc_chicken_cluck(Player* pPlayer, Creature* pCreature, const Q
 bool QuestComplete_npc_chicken_cluck(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
 {
     if (pQuest->GetQuestId() == QUEST_CLUCK)
-        ((npc_chicken_cluckAI*)pCreature->AI())->Reset();
+    {
+        if (npc_chicken_cluckAI* pChickenAI = dynamic_cast<npc_chicken_cluckAI*>(pCreature->AI()))
+            pChickenAI->Reset();
+    }
 
     return true;
 }
@@ -364,14 +383,20 @@ CreatureAI* GetAI_npc_dancing_flames(Creature* pCreature)
 ## Triage quest
 ######*/
 
-#define SAY_DOC1    -1000201
-#define SAY_DOC2    -1000202
-#define SAY_DOC3    -1000203
+enum
+{
+    SAY_DOC1                    = -1000201,
+    SAY_DOC2                    = -1000202,
+    SAY_DOC3                    = -1000203,
 
-#define DOCTOR_ALLIANCE     12939
-#define DOCTOR_HORDE        12920
-#define ALLIANCE_COORDS     7
-#define HORDE_COORDS        6
+    QUEST_TRIAGE_H              = 6622,
+    QUEST_TRIAGE_A              = 6624,
+
+    DOCTOR_ALLIANCE             = 12939,
+    DOCTOR_HORDE                = 12920,
+    ALLIANCE_COORDS             = 7,
+    HORDE_COORDS                = 6
+};
 
 struct Location
 {
@@ -527,7 +552,7 @@ struct MANGOS_DLL_DECL npc_injured_patientAI : public ScriptedAI
             //stand up
             m_creature->SetStandState(UNIT_STAND_STATE_STAND);
 
-            switch(rand()%3)
+            switch(urand(0, 2))
             {
                 case 0: DoScriptText(SAY_DOC1,m_creature); break;
                 case 1: DoScriptText(SAY_DOC2,m_creature); break;
@@ -622,10 +647,10 @@ void npc_doctorAI::PatientDied(Location* Point)
 
         if (PatientDiedCount > 5 && Event)
         {
-            if (pPlayer->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->FailQuest(6624);
-            else if (pPlayer->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE)
-                pPlayer->FailQuest(6622);
+            if (pPlayer->GetQuestStatus(QUEST_TRIAGE_A) == QUEST_STATUS_INCOMPLETE)
+                pPlayer->FailQuest(QUEST_TRIAGE_A);
+            else if (pPlayer->GetQuestStatus(QUEST_TRIAGE_H) == QUEST_STATUS_INCOMPLETE)
+                pPlayer->FailQuest(QUEST_TRIAGE_H);
 
             Reset();
             return;
@@ -642,7 +667,7 @@ void npc_doctorAI::PatientSaved(Creature* soldier, Player* pPlayer, Location* Po
 {
     if (pPlayer && Playerguid == pPlayer->GetGUID())
     {
-        if ((pPlayer->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE) || (pPlayer->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE))
+        if ((pPlayer->GetQuestStatus(QUEST_TRIAGE_A) == QUEST_STATUS_INCOMPLETE) || (pPlayer->GetQuestStatus(QUEST_TRIAGE_H) == QUEST_STATUS_INCOMPLETE))
         {
             ++PatientSavedCount;
 
@@ -658,10 +683,10 @@ void npc_doctorAI::PatientSaved(Creature* soldier, Player* pPlayer, Location* Po
                     }
                 }
 
-                if (pPlayer->GetQuestStatus(6624) == QUEST_STATUS_INCOMPLETE)
-                    pPlayer->AreaExploredOrEventHappens(6624);
-                else if (pPlayer->GetQuestStatus(6622) == QUEST_STATUS_INCOMPLETE)
-                    pPlayer->AreaExploredOrEventHappens(6622);
+                if (pPlayer->GetQuestStatus(QUEST_TRIAGE_A) == QUEST_STATUS_INCOMPLETE)
+                    pPlayer->GroupEventHappens(QUEST_TRIAGE_A, m_creature);
+                else if (pPlayer->GetQuestStatus(QUEST_TRIAGE_H) == QUEST_STATUS_INCOMPLETE)
+                    pPlayer->GroupEventHappens(QUEST_TRIAGE_H, m_creature);
 
                 Reset();
                 return;
@@ -695,8 +720,8 @@ void npc_doctorAI::UpdateAI(const uint32 diff)
 
             switch(m_creature->GetEntry())
             {
-                case DOCTOR_ALLIANCE: patientEntry = AllianceSoldierId[rand()%3]; break;
-                case DOCTOR_HORDE:    patientEntry = HordeSoldierId[rand()%3]; break;
+                case DOCTOR_ALLIANCE: patientEntry = AllianceSoldierId[urand(0, 2)]; break;
+                case DOCTOR_HORDE:    patientEntry = HordeSoldierId[urand(0, 2)]; break;
                 default:
                     error_log("SD2: Invalid entry for Triage doctor. Please check your database");
                     return;
@@ -727,8 +752,11 @@ void npc_doctorAI::UpdateAI(const uint32 diff)
 
 bool QuestAccept_npc_doctor(Player* pPlayer, Creature* pCreature, const Quest* pQuest)
 {
-    if ((pQuest->GetQuestId() == 6624) || (pQuest->GetQuestId() == 6622))
-        ((npc_doctorAI*)pCreature->AI())->BeginEvent(pPlayer);
+    if ((pQuest->GetQuestId() == QUEST_TRIAGE_A) || (pQuest->GetQuestId() == QUEST_TRIAGE_H))
+    {
+        if (npc_doctorAI* pDocAI = dynamic_cast<npc_doctorAI*>(pCreature->AI()))
+            pDocAI->BeginEvent(pPlayer);
+    }
 
     return true;
 }
@@ -913,7 +941,7 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
     {
     }
 
-    void UpdateAI(const uint32 diff)
+    void UpdateEscortAI(const uint32 diff)
     {
         if (bCanRun && !m_creature->isInCombat())
         {
@@ -930,7 +958,7 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
                         case ENTRY_DG_KEL: DoScriptText(SAY_DG_KEL_GOODBYE,m_creature,pUnit); break;
                     }
 
-                    Start(false,true,true);
+                    Start(false,true);
                 }
                 else
                     EnterEvadeMode();                       //something went wrong
@@ -939,7 +967,10 @@ struct MANGOS_DLL_DECL npc_garments_of_questsAI : public npc_escortAI
             }else RunAwayTimer -= diff;
         }
 
-        npc_escortAI::UpdateAI(diff);
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
+            return;
+
+        DoMeleeAttackIfReady();
     }
 };
 
@@ -965,7 +996,7 @@ struct MANGOS_DLL_DECL npc_guardianAI : public ScriptedAI
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (m_creature->isAttackReady())
@@ -979,6 +1010,109 @@ struct MANGOS_DLL_DECL npc_guardianAI : public ScriptedAI
 CreatureAI* GetAI_npc_guardian(Creature* pCreature)
 {
     return new npc_guardianAI(pCreature);
+}
+
+/*########
+# npc_innkeeper
+#########*/
+
+// Script applied to all innkeepers by npcflag.
+// Are there any known innkeepers that does not hape the options in the below?
+// (remember gossipHello is not called unless npcflag|1 is present)
+
+enum
+{
+    TEXT_ID_WHAT_TO_DO              = 1853,
+
+    SPELL_TRICK_OR_TREAT            = 24751,                 // create item or random buff
+    SPELL_TRICK_OR_TREATED          = 24755,                 // buff player get when tricked or treated
+    SPELL_TREAT                     = 24715,
+    SPELL_TRICK_NO_ATTACK           = 24753,
+    SPELL_TRICK_GNOME               = 24713,
+    SPELL_TRICK_GHOST_MALE          = 24735,
+    SPELL_TRICK_GHOST_FEMALE        = 24736,
+    SPELL_TRICK_NINJA_MALE          = 24710,
+    SPELL_TRICK_NINJA_FEMALE        = 24711,
+    SPELL_TRICK_PIRATE_MALE         = 24708,
+    SPELL_TRICK_PIRATE_FEMALE       = 24709,
+    SPELL_TRICK_SKELETON            = 24723,
+    SPELL_TRICK_BAT                 = 24732
+};
+
+#define GOSSIP_ITEM_TRICK_OR_TREAT  "Trick or Treat!"
+#define GOSSIP_ITEM_WHAT_TO_DO      "What can I do at an Inn?"
+
+bool GossipHello_npc_innkeeper(Player* pPlayer, Creature* pCreature)
+{
+    pPlayer->PrepareGossipMenu(pCreature);
+
+    if (IsHolidayActive(HOLIDAY_HALLOWS_END) && !pPlayer->HasAura(SPELL_TRICK_OR_TREATED,0))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TRICK_OR_TREAT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+2);
+
+    // Should only apply to innkeeper close to start areas.
+    if (AreaTableEntry const* pAreaEntry = GetAreaEntryByAreaID(pCreature->GetAreaId()))
+    {
+        if (pAreaEntry->flags & AREA_FLAG_LOWLEVEL)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_WHAT_TO_DO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+    }
+
+    pPlayer->TalkedToCreature(pCreature->GetEntry(), pCreature->GetGUID());
+    pPlayer->SendPreparedGossip(pCreature);
+    return true;
+}
+
+bool GossipSelect_npc_innkeeper(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    switch(uiAction)
+    {
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->SEND_GOSSIP_MENU(TEXT_ID_WHAT_TO_DO, pCreature->GetGUID());
+            break;
+
+        case GOSSIP_ACTION_INFO_DEF+2:
+        {
+            pPlayer->CLOSE_GOSSIP_MENU();
+
+            // either trick or treat, 50% chance
+            if (urand(0, 1))
+            {
+                pPlayer->CastSpell(pPlayer, SPELL_TREAT, true);
+            }
+            else
+            {
+                uint32 uiTrickSpell = 0;
+
+                switch(urand(0, 9))                             // note that female characters can get male costumes and vice versa
+                {
+                    case 0: uiTrickSpell = SPELL_TRICK_NO_ATTACK; break;
+                    case 1: uiTrickSpell = SPELL_TRICK_GNOME; break;
+                    case 2: uiTrickSpell = SPELL_TRICK_GHOST_MALE; break;
+                    case 3: uiTrickSpell = SPELL_TRICK_GHOST_FEMALE; break;
+                    case 4: uiTrickSpell = SPELL_TRICK_NINJA_MALE; break;
+                    case 5: uiTrickSpell = SPELL_TRICK_NINJA_FEMALE; break;
+                    case 6: uiTrickSpell = SPELL_TRICK_PIRATE_MALE; break;
+                    case 7: uiTrickSpell = SPELL_TRICK_PIRATE_FEMALE; break;
+                    case 8: uiTrickSpell = SPELL_TRICK_SKELETON; break;
+                    case 9: uiTrickSpell = SPELL_TRICK_BAT; break;
+                }
+
+                pPlayer->CastSpell(pPlayer, uiTrickSpell, true);
+            }
+
+            pPlayer->CastSpell(pPlayer, SPELL_TRICK_OR_TREATED, true);
+            break;
+        }
+
+        case GOSSIP_OPTION_VENDOR:
+            pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+            break;
+        case GOSSIP_OPTION_INNKEEPER:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->SetBindPoint(pCreature->GetGUID());
+            break;
+    }
+
+    return true;
 }
 
 /*######
@@ -1005,7 +1139,7 @@ bool GossipHello_npc_kingdom_of_dalaran_quests(Player* pPlayer, Creature* pCreat
         !pPlayer->GetQuestRewardStatus(QUEST_MAGICAL_KINGDOM_H) || !pPlayer->GetQuestRewardStatus(QUEST_MAGICAL_KINGDOM_N)))
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_TELEPORT_TO, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
 
-    pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     return true;
 }
 
@@ -1015,6 +1149,40 @@ bool GossipSelect_npc_kingdom_of_dalaran_quests(Player* pPlayer, Creature* pCrea
     {
         pPlayer->CLOSE_GOSSIP_MENU();
         pPlayer->CastSpell(pPlayer,SPELL_TELEPORT_DALARAN,false);
+    }
+    return true;
+}
+
+/*######
+## npc_lunaclaw_spirit
+######*/
+
+enum
+{
+    QUEST_BODY_HEART_A      = 6001,
+    QUEST_BODY_HEART_H      = 6002,
+
+    TEXT_ID_DEFAULT         = 4714,
+    TEXT_ID_PROGRESS        = 4715
+};
+
+#define GOSSIP_ITEM_GRANT   "You have thought well, spirit. I ask you to grant me the strength of your body and the strength of your heart."
+
+bool GossipHello_npc_lunaclaw_spirit(Player* pPlayer, Creature* pCreature)
+{
+    if (pPlayer->GetQuestStatus(QUEST_BODY_HEART_A) == QUEST_STATUS_INCOMPLETE || pPlayer->GetQuestStatus(QUEST_BODY_HEART_H) == QUEST_STATUS_INCOMPLETE)
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_ITEM_GRANT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
+
+    pPlayer->SEND_GOSSIP_MENU(TEXT_ID_DEFAULT, pCreature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_lunaclaw_spirit(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    if (uiAction == GOSSIP_ACTION_INFO_DEF+1)
+    {
+        pPlayer->SEND_GOSSIP_MENU(TEXT_ID_PROGRESS, pCreature->GetGUID());
+        pPlayer->AreaExploredOrEventHappens((pPlayer->GetTeam() == ALLIANCE) ? QUEST_BODY_HEART_A : QUEST_BODY_HEART_H);
     }
     return true;
 }
@@ -1094,7 +1262,7 @@ bool GossipHello_npc_mount_vendor(Player* pPlayer, Creature* pCreature)
     {
         if (pCreature->isVendor())
             pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
-        pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
     }
     return true;
 }
@@ -1127,7 +1295,7 @@ bool GossipHello_npc_rogue_trainer(Player* pPlayer, Creature* pCreature)
         pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, "<Take the letter>", GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+1);
         pPlayer->SEND_GOSSIP_MENU(5996, pCreature->GetGUID());
     } else
-        pPlayer->SEND_GOSSIP_MENU(pCreature->GetNpcTextId(), pCreature->GetGUID());
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
 
     return true;
 }
@@ -1285,9 +1453,284 @@ bool GossipSelect_npc_sayge(Player* pPlayer, Creature* pCreature, uint32 uiSende
     return true;
 }
 
+/*######
+## npc_tabard_vendor
+######*/
+
+enum
+{
+    QUEST_TRUE_MASTERS_OF_LIGHT                = 9737,
+    QUEST_THE_UNWRITTEN_PROPHECY               = 9762,
+    QUEST_INTO_THE_BREACH                      = 10259,
+    QUEST_BATTLE_OF_THE_CRIMSON_WATCH          = 10781,
+    QUEST_SHARDS_OF_AHUNE                      = 11972,
+
+    ACHIEVEMENT_EXPLORE_NORTHREND              = 45,
+    ACHIEVEMENT_TWENTYFIVE_TABARDS             = 1021,
+    ACHIEVEMENT_THE_LOREMASTER_A               = 1681,
+    ACHIEVEMENT_THE_LOREMASTER_H               = 1682,
+
+    ITEM_TABARD_OF_THE_HAND                    = 24344,
+    ITEM_TABARD_OF_THE_BLOOD_KNIGHT            = 25549,
+    ITEM_TABARD_OF_THE_PROTECTOR               = 28788,
+    ITEM_OFFERING_OF_THE_SHATAR                = 31408,
+    ITEM_GREEN_TROPHY_TABARD_OF_THE_ILLIDARI   = 31404,
+    ITEM_PURPLE_TROPHY_TABARD_OF_THE_ILLIDARI  = 31405,
+    ITEM_TABARD_OF_THE_SUMMER_SKIES            = 35279,
+    ITEM_TABARD_OF_THE_SUMMER_FLAMES           = 35280,
+    ITEM_TABARD_OF_THE_ACHIEVER                = 40643,
+    ITEM_LOREMASTERS_COLORS                    = 43300,
+    ITEM_TABARD_OF_THE_EXPLORER                = 43348,
+
+    SPELL_TABARD_OF_THE_BLOOD_KNIGHT           = 54974,
+    SPELL_TABARD_OF_THE_HAND                   = 54976,
+    SPELL_GREEN_TROPHY_TABARD_OF_THE_ILLIDARI  = 54977,
+    SPELL_PURPLE_TROPHY_TABARD_OF_THE_ILLIDARI = 54982,
+    SPELL_TABARD_OF_THE_ACHIEVER               = 55006,
+    SPELL_TABARD_OF_THE_PROTECTOR              = 55008,
+    SPELL_LOREMASTERS_COLORS                   = 58194,
+    SPELL_TABARD_OF_THE_EXPLORER               = 58224,
+    SPELL_TABARD_OF_SUMMER_SKIES               = 62768,
+    SPELL_TABARD_OF_SUMMER_FLAMES              = 62769
+};
+
+#define GOSSIP_LOST_TABARD_OF_BLOOD_KNIGHT               "I've lost my Tabard of Blood Knight."
+#define GOSSIP_LOST_TABARD_OF_THE_HAND                   "I've lost my Tabard of the Hand."
+#define GOSSIP_LOST_TABARD_OF_THE_PROTECTOR              "I've lost my Tabard of the Protector."
+#define GOSSIP_LOST_GREEN_TROPHY_TABARD_OF_THE_ILLIDARI  "I've lost my Green Trophy Tabard of the Illidari."
+#define GOSSIP_LOST_PURPLE_TROPHY_TABARD_OF_THE_ILLIDARI "I've lost my Purple Trophy Tabard of the Illidari."
+#define GOSSIP_LOST_TABARD_OF_SUMMER_SKIES               "I've lost my Tabard of Summer Skies."
+#define GOSSIP_LOST_TABARD_OF_SUMMER_FLAMES              "I've lost my Tabard of Summer Flames."
+#define GOSSIP_LOST_LOREMASTERS_COLORS                   "I've lost my Loremaster's Colors."
+#define GOSSIP_LOST_TABARD_OF_THE_EXPLORER               "I've lost my Tabard of the Explorer."
+#define GOSSIP_LOST_TABARD_OF_THE_ACHIEVER               "I've lost my Tabard of the Achiever."
+
+bool GossipHello_npc_tabard_vendor(Player* pPlayer, Creature* pCreature)
+{
+    bool m_bLostBloodKnight = false;
+    bool m_bLostHand        = false;
+    bool m_bLostProtector   = false;
+    bool m_bLostIllidari    = false;
+    bool m_bLostSummer      = false;
+
+    //Tabard of the Blood Knight
+    if (pPlayer->GetQuestRewardStatus(QUEST_TRUE_MASTERS_OF_LIGHT) && !pPlayer->HasItemCount(ITEM_TABARD_OF_THE_BLOOD_KNIGHT, 1, true))
+        m_bLostBloodKnight = true;
+
+    //Tabard of the Hand
+    if (pPlayer->GetQuestRewardStatus(QUEST_THE_UNWRITTEN_PROPHECY) && !pPlayer->HasItemCount(ITEM_TABARD_OF_THE_HAND, 1, true))
+        m_bLostHand = true;
+
+    //Tabard of the Protector
+    if (pPlayer->GetQuestRewardStatus(QUEST_INTO_THE_BREACH) && !pPlayer->HasItemCount(ITEM_TABARD_OF_THE_PROTECTOR, 1, true))
+        m_bLostProtector = true;
+
+    //Green Trophy Tabard of the Illidari
+    //Purple Trophy Tabard of the Illidari
+    if (pPlayer->GetQuestRewardStatus(QUEST_BATTLE_OF_THE_CRIMSON_WATCH) &&
+        (!pPlayer->HasItemCount(ITEM_GREEN_TROPHY_TABARD_OF_THE_ILLIDARI, 1, true) &&
+        !pPlayer->HasItemCount(ITEM_PURPLE_TROPHY_TABARD_OF_THE_ILLIDARI, 1, true) &&
+        !pPlayer->HasItemCount(ITEM_OFFERING_OF_THE_SHATAR, 1, true)))
+        m_bLostIllidari = true;
+
+    //Tabard of Summer Skies
+    //Tabard of Summer Flames
+    if (pPlayer->GetQuestRewardStatus(QUEST_SHARDS_OF_AHUNE) &&
+        !pPlayer->HasItemCount(ITEM_TABARD_OF_THE_SUMMER_SKIES, 1, true) &&
+        !pPlayer->HasItemCount(ITEM_TABARD_OF_THE_SUMMER_FLAMES, 1, true))
+        m_bLostSummer = true;
+
+    if (m_bLostBloodKnight || m_bLostHand || m_bLostProtector || m_bLostIllidari || m_bLostSummer)
+    {
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_VENDOR, GOSSIP_TEXT_BROWSE_GOODS, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_TRADE);
+
+        if (m_bLostBloodKnight)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_TABARD_OF_BLOOD_KNIGHT, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +1);
+
+        if (m_bLostHand)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_TABARD_OF_THE_HAND, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +2);
+
+        if (m_bLostProtector)
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_TABARD_OF_THE_PROTECTOR, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+3);
+
+        if (m_bLostIllidari)
+        {
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_GREEN_TROPHY_TABARD_OF_THE_ILLIDARI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+4);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_PURPLE_TROPHY_TABARD_OF_THE_ILLIDARI, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+5);
+        }
+
+        if (m_bLostSummer)
+        {
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_TABARD_OF_SUMMER_SKIES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+6);
+            pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_TABARD_OF_SUMMER_FLAMES, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF+7);
+        }
+
+        pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+    }
+    else
+        pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+
+    return true;
+}
+
+bool GossipSelect_npc_tabard_vendor(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    switch(uiAction)
+    {
+        case GOSSIP_ACTION_TRADE:
+            pPlayer->SEND_VENDORLIST(pCreature->GetGUID());
+            break;
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_TABARD_OF_THE_BLOOD_KNIGHT, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_TABARD_OF_THE_HAND, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+3:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_TABARD_OF_THE_PROTECTOR, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+4:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_GREEN_TROPHY_TABARD_OF_THE_ILLIDARI, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+5:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_PURPLE_TROPHY_TABARD_OF_THE_ILLIDARI, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+6:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_TABARD_OF_SUMMER_SKIES, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+7:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_TABARD_OF_SUMMER_FLAMES, false);
+            break;
+    }
+    return true;
+}
+
+/*######
+## npc_locksmith
+######*/
+
+enum
+{
+    QUEST_HOW_TO_BRAKE_IN_TO_THE_ARCATRAZ = 10704,
+    QUEST_DARK_IRON_LEGACY                = 3802,
+    QUEST_THE_KEY_TO_SCHOLOMANCE_A        = 5505,
+    QUEST_THE_KEY_TO_SCHOLOMANCE_H        = 5511,
+    QUEST_HOTTER_THAN_HELL_A              = 10758,
+    QUEST_HOTTER_THAN_HELL_H              = 10764,
+    QUEST_RETURN_TO_KHAGDAR               = 9837,
+    QUEST_SCEPTER_OF_CELEBRAS             = 7046,
+    QUEST_CONTAINMENT                     = 13159,
+
+    ITEM_ARCATRAZ_KEY                     = 31084,
+    ITEM_SHADOWFORGE_KEY                  = 11000,
+    ITEM_SKELETON_KEY                     = 13704,
+    ITEM_SHATTERED_HALLS_KEY              = 28395,
+    ITEM_THE_MASTERS_KEY                  = 24490,
+    ITEM_SCEPTER_OF_CELEBRAS              = 17191,
+    ITEM_VIOLET_HOLD_KEY                  = 42482,
+
+    SPELL_ARCATRAZ_KEY                    = 54881,
+    SPELL_SHADOWFORGE_KEY                 = 54882,
+    SPELL_SKELETON_KEY                    = 54883,
+    SPELL_SHATTERED_HALLS_KEY             = 54884,
+    SPELL_THE_MASTERS_KEY                 = 54885,
+    SPELL_SCEPTER_OF_CELEBRAS             = 56211,
+    SPELL_VIOLET_HOLD_KEY                 = 67253
+};
+
+#define GOSSIP_LOST_ARCATRAZ_KEY         "I've lost my key to the Arcatraz."
+#define GOSSIP_LOST_SHADOWFORGE_KEY      "I've lost my key to the Blackrock Depths."
+#define GOSSIP_LOST_SKELETON_KEY         "I've lost my key to the Scholomance."
+#define GOSSIP_LOST_SHATTERED_HALLS_KEY  "I've lost my key to the Shattered Halls."
+#define GOSSIP_LOST_THE_MASTERS_KEY      "I've lost my key to the Karazhan."
+#define GOSSIP_LOST_SCEPTER              "I've lost my Scepter of Celebras"
+#define GOSSIP_LOST_VIOLET_HOLD_KEY      "I've lost my key to the Violet Hold."
+
+
+bool GossipHello_npc_locksmith(Player* pPlayer, Creature* pCreature)
+{
+
+    // Arcatraz Key
+    if (pPlayer->GetQuestRewardStatus(QUEST_HOW_TO_BRAKE_IN_TO_THE_ARCATRAZ) && !pPlayer->HasItemCount(ITEM_ARCATRAZ_KEY, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_ARCATRAZ_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +1);
+
+    // Shadowforge Key
+    if (pPlayer->GetQuestRewardStatus(QUEST_DARK_IRON_LEGACY) && !pPlayer->HasItemCount(ITEM_SHADOWFORGE_KEY, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SHADOWFORGE_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +2);
+
+    // Skeleton Key
+    if ((pPlayer->GetQuestRewardStatus(QUEST_THE_KEY_TO_SCHOLOMANCE_A) || pPlayer->GetQuestRewardStatus(QUEST_THE_KEY_TO_SCHOLOMANCE_H)) &&
+        !pPlayer->HasItemCount(ITEM_SKELETON_KEY, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SKELETON_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +3);
+
+    // Shatered Halls Key
+    if ((pPlayer->GetQuestRewardStatus(QUEST_HOTTER_THAN_HELL_A) || pPlayer->GetQuestRewardStatus(QUEST_HOTTER_THAN_HELL_H)) &&
+        !pPlayer->HasItemCount(ITEM_SHATTERED_HALLS_KEY, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SHATTERED_HALLS_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +4);
+
+    // Master's Key
+    if (pPlayer->GetQuestRewardStatus(QUEST_RETURN_TO_KHAGDAR) && !pPlayer->HasItemCount(ITEM_THE_MASTERS_KEY, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_THE_MASTERS_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +5);
+
+    // Scepter of Celebras
+    if (pPlayer->GetQuestRewardStatus(QUEST_SCEPTER_OF_CELEBRAS) && !pPlayer->HasItemCount(ITEM_SCEPTER_OF_CELEBRAS, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_SCEPTER, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +6);
+
+    // Violet Hold Key
+    if (pPlayer->GetQuestRewardStatus(QUEST_CONTAINMENT) && !pPlayer->HasItemCount(ITEM_VIOLET_HOLD_KEY, 1, true))
+        pPlayer->ADD_GOSSIP_ITEM(GOSSIP_ICON_CHAT, GOSSIP_LOST_VIOLET_HOLD_KEY, GOSSIP_SENDER_MAIN, GOSSIP_ACTION_INFO_DEF +7);
+
+    pPlayer->SEND_GOSSIP_MENU(pPlayer->GetGossipTextId(pCreature), pCreature->GetGUID());
+
+    return true;
+}
+
+bool GossipSelect_npc_locksmith(Player* pPlayer, Creature* pCreature, uint32 uiSender, uint32 uiAction)
+{
+    switch(uiAction)
+    {
+        case GOSSIP_ACTION_INFO_DEF+1:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_ARCATRAZ_KEY, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+2:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_SHADOWFORGE_KEY, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+3:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_SKELETON_KEY, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+4:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_SHATTERED_HALLS_KEY, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+5:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_THE_MASTERS_KEY, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+6:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_SCEPTER_OF_CELEBRAS, false);
+            break;
+        case GOSSIP_ACTION_INFO_DEF+7:
+            pPlayer->CLOSE_GOSSIP_MENU();
+            pPlayer->CastSpell(pPlayer, SPELL_VIOLET_HOLD_KEY, false);
+            break;
+    }
+    return true;
+}
+
 void AddSC_npcs_special()
 {
-    Script *newscript;
+    Script* newscript;
 
     newscript = new Script;
     newscript->Name = "npc_air_force_bots";
@@ -1328,9 +1771,21 @@ void AddSC_npcs_special()
     newscript->RegisterSelf();
 
     newscript = new Script;
+    newscript->Name = "npc_innkeeper";
+    newscript->pGossipHello = &GossipHello_npc_innkeeper;
+    newscript->pGossipSelect = &GossipSelect_npc_innkeeper;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
     newscript->Name = "npc_kingdom_of_dalaran_quests";
     newscript->pGossipHello =  &GossipHello_npc_kingdom_of_dalaran_quests;
     newscript->pGossipSelect = &GossipSelect_npc_kingdom_of_dalaran_quests;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_lunaclaw_spirit";
+    newscript->pGossipHello =  &GossipHello_npc_lunaclaw_spirit;
+    newscript->pGossipSelect = &GossipSelect_npc_lunaclaw_spirit;
     newscript->RegisterSelf();
 
     newscript = new Script;
@@ -1349,5 +1804,17 @@ void AddSC_npcs_special()
     newscript->Name = "npc_sayge";
     newscript->pGossipHello = &GossipHello_npc_sayge;
     newscript->pGossipSelect = &GossipSelect_npc_sayge;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_tabard_vendor";
+    newscript->pGossipHello =  &GossipHello_npc_tabard_vendor;
+    newscript->pGossipSelect = &GossipSelect_npc_tabard_vendor;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_locksmith";
+    newscript->pGossipHello =  &GossipHello_npc_locksmith;
+    newscript->pGossipSelect = &GossipSelect_npc_locksmith;
     newscript->RegisterSelf();
 }

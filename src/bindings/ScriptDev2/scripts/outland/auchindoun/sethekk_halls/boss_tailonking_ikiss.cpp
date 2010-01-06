@@ -22,7 +22,7 @@ SDCategory: Auchindoun, Sethekk Halls
 EndScriptData */
 
 #include "precompiled.h"
-#include "def_sethekk_halls.h"
+#include "sethekk_halls.h"
 
 #define SAY_INTRO                   -1556007
 #define SAY_AGGRO_1                 -1556008
@@ -53,12 +53,12 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
     boss_talon_king_ikissAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsHeroicMode = pCreature->GetMap()->IsHeroic();
+        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
     ScriptedInstance* m_pInstance;
-    bool m_bIsHeroicMode;
+    bool m_bIsRegularMode;
 
     uint32 ArcaneVolley_Timer;
     uint32 Sheep_Timer;
@@ -74,7 +74,7 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
         ArcaneVolley_Timer = 5000;
         Sheep_Timer = 8000;
         Blink_Timer = 35000;
-        Slow_Timer = 15000+rand()%15000;
+        Slow_Timer = urand(15000, 30000);
         Blink = false;
         Intro = false;
         ManaShield = false;
@@ -104,7 +104,7 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
 
     void Aggro(Unit *who)
     {
-        switch(rand()%3)
+        switch(urand(0, 2))
         {
             case 0: DoScriptText(SAY_AGGRO_1, m_creature); break;
             case 1: DoScriptText(SAY_AGGRO_2, m_creature); break;
@@ -122,38 +122,34 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
 
     void KilledUnit(Unit* victim)
     {
-        switch(rand()%2)
-        {
-            case 0: DoScriptText(SAY_SLAY_1, m_creature); break;
-            case 1: DoScriptText(SAY_SLAY_2, m_creature); break;
-        }
+        DoScriptText(urand(0, 1) ? SAY_SLAY_1 : SAY_SLAY_2, m_creature);
     }
 
     void UpdateAI(const uint32 diff)
     {
-        if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+        if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
         if (Blink)
         {
-            DoCast(m_creature, m_bIsHeroicMode ? H_SPELL_ARCANE_EXPLOSION : SPELL_ARCANE_EXPLOSION);
+            DoCast(m_creature, m_bIsRegularMode ? SPELL_ARCANE_EXPLOSION : H_SPELL_ARCANE_EXPLOSION);
             m_creature->CastSpell(m_creature,SPELL_ARCANE_BUBBLE,true);
             Blink = false;
         }
 
         if (ArcaneVolley_Timer < diff)
         {
-            DoCast(m_creature, m_bIsHeroicMode ? H_SPELL_ARCANE_VOLLEY : SPELL_ARCANE_VOLLEY);
-            ArcaneVolley_Timer = 7000+rand()%5000;
+            DoCast(m_creature, m_bIsRegularMode ? SPELL_ARCANE_VOLLEY : H_SPELL_ARCANE_VOLLEY);
+            ArcaneVolley_Timer = urand(7000, 12000);
         }else ArcaneVolley_Timer -= diff;
 
         if (Sheep_Timer < diff)
         {
             //second top aggro target in normal, random target in heroic correct?
             Unit *target = NULL;
-            if (m_bIsHeroicMode ? target = SelectUnit(SELECT_TARGET_RANDOM,0) : target = SelectUnit(SELECT_TARGET_TOPAGGRO,1))
-                DoCast(target, m_bIsHeroicMode ? H_SPELL_POLYMORPH : SPELL_POLYMORPH);
-            Sheep_Timer = 15000+rand()%2500;
+            if (m_bIsRegularMode ? target = SelectUnit(SELECT_TARGET_TOPAGGRO, 1) : target = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                DoCast(target, m_bIsRegularMode ? SPELL_POLYMORPH : H_SPELL_POLYMORPH);
+            Sheep_Timer = urand(15000, 17500);
         }else Sheep_Timer -= diff;
 
         //may not be correct time to cast
@@ -163,12 +159,12 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
             ManaShield = true;
         }
 
-        if (m_bIsHeroicMode)
+        if (!m_bIsRegularMode)
         {
             if (Slow_Timer < diff)
             {
                 DoCast(m_creature,H_SPELL_SLOW);
-                Slow_Timer = 15000+rand()%25000;
+                Slow_Timer = urand(15000, 40000);
             }else Slow_Timer -= diff;
         }
 
@@ -194,7 +190,7 @@ struct MANGOS_DLL_DECL boss_talon_king_ikissAI : public ScriptedAI
                 DoCast(target,SPELL_BLINK_TELEPORT);
                 Blink = true;
             }
-            Blink_Timer = 35000+rand()%5000;
+            Blink_Timer = urand(35000, 40000);
         }else Blink_Timer -= diff;
 
         if (!Blink)

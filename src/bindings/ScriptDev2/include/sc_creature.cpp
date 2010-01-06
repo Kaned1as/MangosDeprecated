@@ -46,7 +46,7 @@ void ScriptedAI::MoveInLineOfSight(Unit* pWho)
             else if (m_creature->GetMap()->IsDungeon())
             {
                 pWho->SetInCombatWith(m_creature);
-                m_creature->AddThreat(pWho, 0.0f);
+                m_creature->AddThreat(pWho);
             }
         }
     }
@@ -59,7 +59,7 @@ void ScriptedAI::AttackStart(Unit* pWho)
 
     if (m_creature->Attack(pWho, true))
     {
-        m_creature->AddThreat(pWho, 0.0f);
+        m_creature->AddThreat(pWho);
         m_creature->SetInCombatWith(pWho);
         pWho->SetInCombatWith(m_creature);
 
@@ -83,7 +83,7 @@ void ScriptedAI::Aggro(Unit* pEnemy)
 void ScriptedAI::UpdateAI(const uint32 uiDiff)
 {
     //Check if we have a current target
-    if (!m_creature->SelectHostilTarget() || !m_creature->getVictim())
+    if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
         return;
 
     if (m_creature->isAttackReady())
@@ -192,29 +192,29 @@ Creature* ScriptedAI::DoSpawnCreature(uint32 uiId, float fX, float fY, float fZ,
 Unit* ScriptedAI::SelectUnit(SelectAggroTarget target, uint32 uiPosition)
 {
     //ThreatList m_threatlist;
-    std::list<HostilReference*>& threatlist = m_creature->getThreatManager().getThreatList();
-    std::list<HostilReference*>::iterator itr = threatlist.begin();
-    std::list<HostilReference*>::reverse_iterator ritr = threatlist.rbegin();
+    ThreatList const& threatlist = m_creature->getThreatManager().getThreatList();
+    ThreatList::const_iterator itr = threatlist.begin();
+    ThreatList::const_reverse_iterator ritr = threatlist.rbegin();
 
-    if (uiPosition >= threatlist.size() || !threatlist.size())
+    if (uiPosition >= threatlist.size() || threatlist.empty())
         return NULL;
 
     switch (target)
     {
-    case SELECT_TARGET_RANDOM:
-        advance(itr, uiPosition +  (rand() % (threatlist.size() - uiPosition)));
-        return Unit::GetUnit((*m_creature),(*itr)->getUnitGuid());
-        break;
+        case SELECT_TARGET_RANDOM:
+            advance(itr, uiPosition +  (rand() % (threatlist.size() - uiPosition)));
+            return Unit::GetUnit((*m_creature),(*itr)->getUnitGuid());
+            break;
 
-    case SELECT_TARGET_TOPAGGRO:
-        advance(itr, uiPosition);
-        return Unit::GetUnit((*m_creature),(*itr)->getUnitGuid());
-        break;
+        case SELECT_TARGET_TOPAGGRO:
+            advance(itr, uiPosition);
+            return Unit::GetUnit((*m_creature),(*itr)->getUnitGuid());
+            break;
 
-    case SELECT_TARGET_BOTTOMAGGRO:
-        advance(ritr, uiPosition);
-        return Unit::GetUnit((*m_creature),(*ritr)->getUnitGuid());
-        break;
+        case SELECT_TARGET_BOTTOMAGGRO:
+            advance(ritr, uiPosition);
+            return Unit::GetUnit((*m_creature),(*ritr)->getUnitGuid());
+            break;
     }
 
     return NULL;
@@ -426,9 +426,8 @@ void ScriptedAI::DoResetThreat()
         return;
     }
 
-    std::list<HostilReference*>& threatlist = m_creature->getThreatManager().getThreatList();
-
-    for(std::list<HostilReference*>::iterator itr = threatlist.begin(); itr != threatlist.end(); ++itr)
+    ThreatList const& tList = m_creature->getThreatManager().getThreatList();
+    for (ThreatList::const_iterator itr = tList.begin();itr != tList.end(); ++itr)
     {
         Unit* pUnit = Unit::GetUnit((*m_creature), (*itr)->getUnitGuid());
 
@@ -469,7 +468,7 @@ Unit* ScriptedAI::DoSelectLowestHpFriendly(float fRange, uint32 uiMinHPDiff)
     TypeContainerVisitor<MaNGOS::UnitLastSearcher<MaNGOS::MostHPMissingInRange>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_unit_searcher, *(m_creature->GetMap()));
+    cell_lock->Visit(cell_lock, grid_unit_searcher, *(m_creature->GetMap()), *m_creature, fRange);
 
     return pUnit;
 }
@@ -489,7 +488,7 @@ std::list<Creature*> ScriptedAI::DoFindFriendlyCC(float fRange)
     TypeContainerVisitor<MaNGOS::CreatureListSearcher<MaNGOS::FriendlyCCedInRange>, GridTypeMapContainer >  grid_creature_searcher(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_creature_searcher, *(m_creature->GetMap()));
+    cell_lock->Visit(cell_lock, grid_creature_searcher, *(m_creature->GetMap()), *m_creature, fRange);
 
     return pList;
 }
@@ -509,7 +508,7 @@ std::list<Creature*> ScriptedAI::DoFindFriendlyMissingBuff(float fRange, uint32 
     TypeContainerVisitor<MaNGOS::CreatureListSearcher<MaNGOS::FriendlyMissingBuffInRange>, GridTypeMapContainer >  grid_creature_searcher(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_creature_searcher, *(m_creature->GetMap()));
+    cell_lock->Visit(cell_lock, grid_creature_searcher, *(m_creature->GetMap()), *m_creature, fRange);
 
     return pList;
 }
@@ -528,7 +527,10 @@ Player* ScriptedAI::GetPlayerAtMinimumRange(float fMinimumRange)
     TypeContainerVisitor<MaNGOS::PlayerSearcher<PlayerAtMinimumRangeAway>, GridTypeMapContainer> visitor(searcher);
 
     CellLock<GridReadGuard> cell_lock(cell, pair);
-    cell_lock->Visit(cell_lock, visitor, *(m_creature->GetMap()));
+    Map * map = m_creature->GetMap();
+    //lets limit the maximum player search distance to speed up calculations...
+    const float fMaxSearchDst = map->GetVisibilityDistance() > MAX_PLAYER_STEALTH_DETECT_RANGE ? MAX_PLAYER_STEALTH_DETECT_RANGE : map->GetVisibilityDistance();
+    cell_lock->Visit(cell_lock, visitor, *map, *m_creature, fMaxSearchDst);
 
     return pPlayer;
 }
@@ -617,7 +619,7 @@ void Scripted_NoMovementAI::AttackStart(Unit* pWho)
 
     if (m_creature->Attack(pWho, true))
     {
-        m_creature->AddThreat(pWho, 0.0f);
+        m_creature->AddThreat(pWho);
         m_creature->SetInCombatWith(pWho);
         pWho->SetInCombatWith(m_creature);
 
