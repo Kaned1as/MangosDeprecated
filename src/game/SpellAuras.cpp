@@ -938,6 +938,10 @@ bool Aura::IsNeedVisibleSlot(Unit const* caster) const
 {
     bool totemAura = caster && caster->GetTypeId() == TYPEID_UNIT && ((Creature*)caster)->isTotem();
 
+    //exclusive case!
+    if(m_spellProto->EffectApplyAuraName[GetEffIndex()] == SPELL_AURA_262)
+        return true;
+
     // passive auras (except totem auras) do not get placed in the slots
     if (m_isPassive && !totemAura)
         return false;
