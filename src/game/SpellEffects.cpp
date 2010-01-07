@@ -2236,6 +2236,11 @@ void Spell::EffectTriggerMissileSpell(uint32 effect_idx)
     // normal case
     SpellEntry const *spellInfo = sSpellStore.LookupEntry( triggered_spell_id );
 
+    // Fix Freezing Arrow
+    if (m_caster->GetTypeId() == TYPEID_PLAYER)
+        ((Player*)m_caster)->RemoveSpellCooldown(triggered_spell_id);
+   //end
+
     if(!spellInfo)
     {
         sLog.outError("EffectTriggerMissileSpell of spell %u (eff: %u): triggering unknown spell id %u",
@@ -5242,6 +5247,19 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                         return;
 
                     ((Player*)unitTarget)->ModifyMoney(50000000);
+
+                    break;
+                }
+                // Surge Needle Teleporter
+                case 47097:
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    if (unitTarget->GetAreaId() == 4156)
+                        unitTarget->CastSpell(unitTarget, 47324, true);
+                    else if (unitTarget->GetAreaId() == 4157)
+                        unitTarget->CastSpell(unitTarget, 47325, true);
 
                     break;
                 }
