@@ -9316,6 +9316,10 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
     if (spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE)
         return healamount;
 
+    //Ranger: bugged spell 31024 - TEMP!!!
+    if (spellProto->Id == 31024)
+        return healamount;
+
     // For totems get healing bonus from owner (statue isn't totem in fact)
     if( GetTypeId()==TYPEID_UNIT && ((Creature*)this)->isTotem() && ((Totem*)this)->GetTotemType()!=TOTEM_STATUE)
         if(Unit* owner = GetOwner())
@@ -9365,24 +9369,6 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                     DoneTotalMod *= ((*i)->GetModifier()->m_amount+100.0f)/100.0f;
                 break;
             }
-            case 8477: // Nourish Heal Boost
-            {
-                int32 stepPercent = (*i)->GetModifier()->m_amount;
-                int32 modPercent = 0;
-                AuraMap const& victimAuras = pVictim->GetAuras();
-                for (AuraMap::const_iterator itr = victimAuras.begin(); itr != victimAuras.end(); ++itr)
-                {
-                    if (itr->second->GetCasterGUID()!=GetGUID())
-                        continue;
-                    SpellEntry const* m_spell = itr->second->GetSpellProto();
-                    if (m_spell->SpellFamilyName != SPELLFAMILY_DRUID ||
-                        !(m_spell->SpellFamilyFlags & UI64LIT(0x0000001000000050)))
-                        continue;
-                    modPercent += stepPercent * itr->second->GetStackAmount();
-                }
-                DoneTotalMod *= (modPercent+100.0f)/100.0f;
-                break;
-            }
             case 7871: // Glyph of Lesser Healing Wave
             {
                 if (pVictim->GetAura(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, UI64LIT(0x0000040000000000), 0, GetGUID()))
@@ -9392,6 +9378,51 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             default:
                 break;
         }
+    }
+
+    //Ranger: custom case
+    switch(spellProto->SpellFamilyName)
+    {
+        case SPELLFAMILY_DRUID:
+        {
+            if (spellProto->SpellFamilyFlags & UI64LIT(0x0200000000000000))
+            {
+                    int32 stepPercent = 20;
+                    int32 modPercent = 0;
+    
+                    bool HoT_found = false;
+                    bool glyph_found = false;
+    
+                    // Glyph of Nourish
+                    if (owner->GetDummyAura(62971))
+                           glyph_found = true;
+    
+                    Unit::AuraList const& HoTAuras = pVictim->GetAurasByType(SPELL_AURA_PERIODIC_HEAL);
+                    for (Unit::AuraList::const_iterator itr = HoTAuras.begin(); itr != HoTAuras.end(); ++itr)
+                    {
+                        if ((*itr)->GetCasterGUID()!=GetGUID())
+                            continue;
+                        SpellEntry const* HoT_spell = (*itr)->GetSpellProto();
+                        if (HoT_spell->SpellFamilyName != SPELLFAMILY_DRUID ||
+                            !(HoT_spell->SpellFamilyFlags & UI64LIT(0x0400001000000050)))
+                            continue;
+                        if (glyph_found)
+                            stepPercent += 6;
+                        HoT_found = true;
+                    }
+    
+                    if(HoT_found)
+                    {
+                        modPercent += stepPercent;
+                        DoneTotalMod *= (modPercent + 100.0f) / 100.0f;
+                    }
+    
+                    break;
+                }
+                break;
+        }
+        default:
+            break;
     }
 
     // Taken/Done fixed damage bonus auras
