@@ -8810,6 +8810,14 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             }
             break;
         }
+        case SPELLFAMILY_PRIEST:
+        {
+            //vampiric touch
+            if (spellProto->Id == 64085) 
+                return pdamage;
+
+            break;
+        }
         case SPELLFAMILY_WARLOCK:
         {
             // Drain Soul
