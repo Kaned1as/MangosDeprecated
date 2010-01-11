@@ -1013,10 +1013,10 @@ void AuthSocket::LoadRealmlist(ByteBuffer &pkt, uint32 acctid)
                 pkt << float(i->second.populationLevel);
                 pkt << uint8(AmountOfCharacters);
                 pkt << uint8(i->second.timezone);                   // realm category
-                pkt << uint8(0x2C);                                 // unk, may be realm number/id?
+                pkt << uint8(i->second.m_ID);                                 // unk, may be realm number/id? megai2: yep!
             }
             
-            pkt << uint8(0x10);
+            pkt << uint8(0x17);//megai2: 0x17 or 0x10 hmmm... 
             pkt << uint8(0x00);
             break;
         }
