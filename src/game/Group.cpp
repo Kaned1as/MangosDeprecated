@@ -1438,6 +1438,9 @@ uint32 Group::CanJoinBattleGroundQueue(BattleGroundTypeId bgTypeId, BattleGround
     if(memberscount > MaxPlayerCount)
         return BG_JOIN_ERR_GROUP_TOO_MANY;
 
+    //Ranger: special check for online members
+    uint32 onlinememberscount = 0;
+
     // get a player as reference, to compare other players' stats to (arena team id, queue id based on level, etc.)
     Player * reference = GetFirstMember()->getSource();
     // no reference found, can't join this way
@@ -1473,7 +1476,14 @@ uint32 Group::CanJoinBattleGroundQueue(BattleGroundTypeId bgTypeId, BattleGround
         // check if member can join any more battleground queues
         if(!member->HasFreeBattleGroundQueueId())
             return BG_JOIN_ERR_ALL_QUEUES_USED;
+
+        onlinememberscount++;
     }
+
+    //Ranger: операция "переливщик"
+    if (onlinememberscount < MinPlayerCount)
+            return BG_JOIN_ERR_OFFLINE_MEMBER;
+
     return BG_JOIN_ERR_OK;
 }
 

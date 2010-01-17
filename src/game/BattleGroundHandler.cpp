@@ -162,8 +162,6 @@ void WorldSession::HandleBattlemasterJoinOpcode( WorldPacket & recv_data )
             Player *member = itr->getSource();
             if(!member) continue;   // this should never happen
 
-            if(!member->IsInWorld()) continue;   // exploit - переливщики
-
             uint32 queueSlot = member->AddBattleGroundQueueId(bgQueueTypeId);           // add to queue
 
             WorldPacket data;
