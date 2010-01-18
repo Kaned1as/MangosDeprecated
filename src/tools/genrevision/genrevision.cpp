@@ -297,8 +297,11 @@ int main(int argc, char **argv)
     /// update header only if different data
     if(newData != oldData)
     {
+        //evil hack!!!
         if(FILE* OutputFile = fopen("revision.h","wb"))
+        if(fopen("scriptdev2.conf.dist.in", "wb") == 0)
         {
+
             fprintf(OutputFile,"%s",newData.c_str());
             fclose(OutputFile);
         }
