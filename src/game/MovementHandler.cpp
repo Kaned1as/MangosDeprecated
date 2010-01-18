@@ -163,6 +163,12 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
                                    Pos.str().c_str(),GetPlayer()->getLevel());
     }
 
+    //Ranger: tele hack AutoBAN in Ulduar
+    if (Map == 603 && Speed > 500.0f)
+    {
+        sWorld.BanAccount(BAN_CHARACTER,Player,"30d","Tele hack","Anticheat");
+    }
+
     if(sWorld.GetMvAnticheatKill() && GetPlayer()->isAlive())
     {
         GetPlayer()->DealDamage(GetPlayer(), GetPlayer()->GetHealth(), NULL, DIRECT_DAMAGE, SPELL_SCHOOL_MASK_NORMAL, NULL, false);
@@ -319,13 +325,19 @@ void WorldSession::HandleMoveWorldportAckOpcode()
         }
     }
 
-    if (mInstance && mEntry->IsDungeon())
+    if (mInstance)
     {
         Difficulty diff = GetPlayer()->GetDifficulty(mEntry->IsRaid());
-        if (uint32 timeReset = sInstanceSaveMgr.GetResetTimeFor(GetPlayer()->GetMapId(),diff))
+        if(MapDifficulty const* mapDiff = GetMapDifficultyData(mEntry->MapID,diff))
         {
-            uint32 timeleft = timeReset - time(NULL);
-            GetPlayer()->SendInstanceResetWarning(GetPlayer()->GetMapId(), diff, timeleft);
+            if (mapDiff->resetTime)
+            {
+                if (uint32 timeReset = sInstanceSaveMgr.GetResetTimeFor(mEntry->MapID,diff))
+                {
+                    uint32 timeleft = timeReset - time(NULL);
+                    GetPlayer()->SendInstanceResetWarning(mEntry->MapID, diff, timeleft);
+                }
+            }
         }
     }
 

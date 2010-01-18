@@ -1481,7 +1481,7 @@ uint32 Group::CanJoinBattleGroundQueue(BattleGroundTypeId bgTypeId, BattleGround
     }
 
     //Ranger: операция "переливщик"
-    if (onlinememberscount < MinPlayerCount)
+    if (onlinememberscount < memberscount)
             return BG_JOIN_ERR_OFFLINE_MEMBER;
 
     return BG_JOIN_ERR_OK;
