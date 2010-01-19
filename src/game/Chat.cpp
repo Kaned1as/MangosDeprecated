@@ -893,11 +893,11 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, co
                         fullcmd.c_str(),p->GetName(),m_session->GetAccountId(),p->GetPositionX(),p->GetPositionY(),p->GetPositionZ(),p->GetMapId(),
                         GetLogNameForGuid(sel_guid),GUID_LOPART(sel_guid));
 
-                    if(m_session->GetSecurity() <= SEC_ADMINISTRATOR)
+                    if(m_session->GetSecurity() < SEC_ADMINISTRATOR)
                     {
-                        //                                             дата : время : команда : игрок : его акк : selected : x : y : z : map                                 Time  Comm  Pl-r  Acc    X     Y     Z   sType   sId   Map
-                        CharacterDatabase.PExecute("INSERT INTO gmlog_commands (command, account, player, posX, posY, posZ, selected_type, selected_guid, map, time) VALUES ('%s', '%s', '%u', '%f', '%f', '%f', '%s', '%u', '%u', NOW())",
-                                        fullcmd.c_str(), p->GetName(), m_session->GetAccountId(), p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), GetLogNameForGuid(sel_guid), GUID_LOPART(sel_guid), p->GetMapId());
+                        //                                             дата : время : команда : игрок : его акк : selected : x : y : z : map                                 Comm  ACC  Pl-r    X     Y     Z   sType   sId   Map
+                        CharacterDatabase.PExecute("INSERT INTO gmlog_commands (command, account, player, posX, posY, posZ, selected_type, selected_guid, map, time) VALUES ('%s', '%u', '%s', '%f', '%f', '%f', '%s', '%u', '%u', NOW())",
+                                        fullcmd.c_str(), m_session->GetAccountId(), p->GetName(), p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), GetLogNameForGuid(sel_guid), GUID_LOPART(sel_guid), p->GetMapId());
                     }
                 }
             }
