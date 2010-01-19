@@ -297,9 +297,11 @@ int main(int argc, char **argv)
     /// update header only if different data
     if(newData != oldData)
     {
+        //evil hack!!!
         if(FILE* OutputFile = fopen("revision.h","wb"))
         {
-            fprintf(OutputFile,"%s",newData.c_str());
+            //fprintf(OutputFile,"%s",newData.c_str());
+            fprintf(OutputFile,"%s",oldData.c_str());
             fclose(OutputFile);
         }
     }
