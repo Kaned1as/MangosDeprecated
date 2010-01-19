@@ -117,6 +117,10 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         return false;
     }
 
+    //Ranger: skip map 369 - metro
+    if (Map == 369 && Reason == "Tele hack")
+        return false;
+
     QueryResult *Res=CharacterDatabase.PQuery("SELECT speed,Val1 FROM cheaters WHERE player='%s' AND reason LIKE '%s' AND Map='%u' AND last_date >= NOW()-300",Player,Reason,Map);
     if(Res)
     {
