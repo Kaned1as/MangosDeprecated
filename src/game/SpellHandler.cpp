@@ -548,11 +548,11 @@ void WorldSession::HandleSpellClick( WorldPacket & recv_data )
     uint64 guid;
     recv_data >> guid;
 
-    if (_player->isInCombat())                              // client prevent click and set different icon at combat state
+    if (!_player || !_player->IsInWorld() || _player->isInCombat())                              // client prevent click and set different icon at combat state
         return;
 
     Creature *unit = _player->GetMap()->GetCreatureOrPetOrVehicle(guid);
-    if (!unit || unit->isInCombat())                        // client prevent click and set different icon at combat state
+    if (!unit || !unit->IsInWorld() || unit->isInCombat())                        // client prevent click and set different icon at combat state
         return;
 
     SpellClickInfoMapBounds clickPair = sObjectMgr.GetSpellClickInfoMapBounds(unit->GetEntry());
