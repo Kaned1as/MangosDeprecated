@@ -484,7 +484,6 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
     if (this && this->GetTypeId() == TYPEID_PLAYER && (damage < 0 || damage > 55000))
     {
         sLog.outError("Unit::DealDamage - Crazy damage found: damage = %d", damage);
-        //MovementHandler::Anti__ReportCheat("Crazy damage", float(damage), "Unit::DealDamage");
         damage = 1;
     }
 
@@ -7942,7 +7941,7 @@ bool Unit::IsHostileTo(Unit const* unit) const
             return false;
 
         // PvP FFA state
-        if(pTester->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP) && pTarget->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP))
+        if(pTester->IsFFAPvP() && pTarget->IsFFAPvP())
             return true;
 
         //= PvP states
@@ -8054,7 +8053,7 @@ bool Unit::IsFriendlyTo(Unit const* unit) const
             return true;
 
         // PvP FFA state
-        if(pTester->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP) && pTarget->HasByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP))
+         if(pTester->IsFFAPvP() && pTarget->IsFFAPvP())
             return false;
 
         //= PvP states
@@ -12917,6 +12916,9 @@ Pet* Unit::CreateTamedPetFrom(Creature* creatureTarget,uint32 spell_id)
     if(IsPvP())
         pet->SetPvP(true);
 
+    if(IsFFAPvP())
+        pet->SetFFAPvP(true);
+
     uint32 level = (creatureTarget->getLevel() < (getLevel() - 5)) ? (getLevel() - 5) : creatureTarget->getLevel();
 
     if(!pet->InitStatsForLevel(level))
@@ -13146,6 +13148,23 @@ void Unit::SetPvP( bool state )
         if(m_TotemSlot[i])
             if(Creature *totem = GetMap()->GetCreature(m_TotemSlot[i]))
                 totem->SetPvP(state);
+}
+
+struct SetFFAPvPHelper
+{
+    explicit SetFFAPvPHelper(bool _state) : state(_state) {}
+    void operator()(Unit* unit) const { unit->SetFFAPvP(state); }
+    bool state;
+};
+
+void Unit::SetFFAPvP( bool state )
+{
+    if(state)
+        SetByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+    else
+        RemoveByteFlag(UNIT_FIELD_BYTES_2, 1, UNIT_BYTE2_FLAG_FFA_PVP);
+
+    //CallForAllControlledUnits(SetFFAPvPHelper(state),true,true,true);
 }
 
 void Unit::KnockBackFrom(Unit* target, float horizintalSpeed, float verticalSpeed)
