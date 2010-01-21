@@ -4048,6 +4048,13 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
             }
         }
     }
+    else if (spellEntry->SpellFamilyName == SPELLFAMILY_SHAMAN && spellEntry->SpellFamilyFlags & UI64LIT(0x40000000000))
+    {
+        if (Aura* shAura = GetAura(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, UI64LIT(0x40000000000), 0x00000000, casterGUID))
+            if (shAura->DropAuraCharge())
+                RemoveSingleSpellAurasFromStack(spellId);
+        return;
+    }
 
     RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
 }
@@ -4070,7 +4077,7 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             const int32 max_dur = 2*MINUTE*IN_MILISECONDS;
             new_aur->SetAuraMaxDuration( max_dur > dur ? dur : max_dur );
             new_aur->SetAuraDuration( max_dur > dur ? dur : max_dur );
-
+            
             // Unregister _before_ adding to stealer
             aur->UnregisterSingleCastAura();
 
@@ -4081,7 +4088,14 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             stealer->AddAura(new_aur);
 
             // Remove aura as dispel
-            RemoveAura(iter, AURA_REMOVE_BY_DISPEL);
+            if (aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellFamilyFlags & UI64LIT(0x40000000000))
+            {
+                if (aur->DropAuraCharge())
+                    RemoveSingleSpellAurasFromStack(spellId);
+                iter++;
+            }
+            else
+                RemoveAura(iter, AURA_REMOVE_BY_DISPEL);
         }
         else
             ++iter;
@@ -6585,8 +6599,9 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     {
                         uint32 spell = (*itr)->GetSpellProto()->EffectTriggerSpell[(*itr)->GetEffIndex()];
                         CastSpell(this, spell, true, castItem, triggeredByAura);
-                        if ((*itr)->DropAuraCharge())
-                            RemoveSingleSpellAurasFromStack((*itr)->GetId());
+                    // no more consumes one stack
+                        // if ((*itr)->DropAuraCharge())
+                        //     RemoveSingleSpellAurasFromStack((*itr)->GetId());
                         return true;
                     }
                 }
