@@ -4088,13 +4088,13 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             stealer->AddAura(new_aur);
 
             // Remove aura as dispel
-            if (aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellFamilyFlags & UI64LIT(0x40000000000))
+            /*if (aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellFamilyFlags & UI64LIT(0x40000000000))
             {
                 if (aur->DropAuraCharge())
                     RemoveSingleSpellAurasFromStack(spellId);
                 iter++;
             }
-            else
+            else*/
                 RemoveAura(iter, AURA_REMOVE_BY_DISPEL);
         }
         else
