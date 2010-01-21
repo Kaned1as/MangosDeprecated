@@ -437,6 +437,7 @@ class ChatHandler
         bool HandleWpExportCommand(const char* args);
         bool HandleWpImportCommand(const char* args);
 
+        bool HandleGetFromBackupCommand(const char* args);
         bool HandleHelpCommand(const char* args);
         bool HandleCommandsCommand(const char* args);
         bool HandleStartCommand(const char* args);
@@ -455,7 +456,6 @@ class ChatHandler
         bool HandleModifyDrunkCommand(const char* args);
 
         bool HandleLoadScriptsCommand(const char* args);
-
         bool HandleGUIDCommand(const char* args);
         bool HandleItemMoveCommand(const char* args);
         bool HandleDeMorphCommand(const char* args);

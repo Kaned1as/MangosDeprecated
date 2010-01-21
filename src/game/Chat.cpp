@@ -584,6 +584,7 @@ ChatCommand * ChatHandler::getCommandTable()
 
     static ChatCommand commandTable[] =
     {
+        { "getfrombackup",  SEC_PLAYER,         false, &ChatHandler::HandleGetFromBackupCommand,       "", NULL                 },
         { "account",        SEC_PLAYER,         true,  NULL,                                           "", accountCommandTable  },
         { "gm",             SEC_MODERATOR,      true,  NULL,                                           "", gmCommandTable       },
         { "npc",            SEC_MODERATOR,      false, NULL,                                           "", npcCommandTable      },
