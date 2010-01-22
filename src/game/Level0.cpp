@@ -205,7 +205,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         CharacterDatabase.PExecute("UPDATE charactersBckp SET restored = 1 WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
 
         PSendSysMessage("Персонаж восстановлен. Удачной игры");
-	player->SaveToDB();
+	//player->SaveToDB();
     } else {
         PSendSysMessage("Персонаж с таким именем классом и рассой не найден в бэкапе");
         return true;
