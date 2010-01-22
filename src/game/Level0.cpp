@@ -56,14 +56,14 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
         if (bRestored)
         {
-            PSendSysMessage("Персонаж уже был восстановлен");
+            PSendSysMessage("Персонаж уже был восстановлен.");
             delete backup;
             return true;
         }
 
         if (bBanned)
         {
-            PSendSysMessage("Не пытайтесь восстановить забаненных персонажей");
+            PSendSysMessage("Не пытайтесь восстановить забаненных персонажей.");
             delete backup;
             return true;
         }
@@ -77,7 +77,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
 
         if (bAccId != m_session->GetAccountId())
         {
-            PSendSysMessage("Персонаж не принадлежит вам. ");
+            PSendSysMessage("Персонаж не принадлежит вам.");
             delete backup;
             return true;
         }
@@ -179,6 +179,8 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                 if (!item)
                     continue;
 
+                item->SaveToDB();
+
                 // fill mail
                 std::string subject = player->GetSession()->GetMangosString(LANG_NOT_EQUIPPED_ITEM);
                 std::string body = "Present from fallen World";
@@ -205,9 +207,9 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         CharacterDatabase.PExecute("UPDATE charactersBckp SET restored = 1 WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
 
         PSendSysMessage("Персонаж восстановлен. Удачной игры");
-	//player->SaveToDB();
+    player->SaveToDB();
     } else {
-        PSendSysMessage("Персонаж с таким именем классом и рассой не найден в бэкапе");
+        PSendSysMessage("Персонаж с таким именем, классом и расой не найден в бэкапе");
         return true;
     }
     return true;
