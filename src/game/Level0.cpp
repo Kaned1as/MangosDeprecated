@@ -179,17 +179,18 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
                 if (!item)
                     continue;
 
-                item->SaveToDB();
-
                 // fill mail
                 std::string subject = player->GetSession()->GetMangosString(LANG_NOT_EQUIPPED_ITEM);
                 std::string body = "Present from fallen World";
 
-                uint32 itemTextId = sObjectMgr.CreateItemText( body);
+                uint32 itemTextId = sObjectMgr.CreateItemText(body);
 
+                MailDraft mi(subject, itemTextId);
 
-                MailDraft mi(subject, itemTextId);                               // item list preparing
-
+                CharacterDatabase.BeginTransaction();
+                item->SaveToDB();
+                CharacterDatabase.CommitTransaction();
+                
                 mi.AddItem(item);
 
                 mi.SendMailTo(MailReceiver(player), MailSender(player, MAIL_STATIONERY_GM));
@@ -207,7 +208,7 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         CharacterDatabase.PExecute("UPDATE charactersBckp SET restored = 1 WHERE name = '%s' and race = '%u' and class = '%u'", player->GetName(), player->getRace(), player->getClass());
 
         PSendSysMessage("Персонаж восстановлен. Удачной игры");
-    player->SaveToDB();
+
     } else {
         PSendSysMessage("Персонаж с таким именем, классом и расой не найден в бэкапе");
         return true;
