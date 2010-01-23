@@ -481,7 +481,7 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
     DEBUG_LOG("DealDamageStart");
 
     //Ranger: crazy damage? w00t!
-    if (this && this->GetTypeId() == TYPEID_PLAYER && (damage < 0 || damage > 55000))
+    if (this && this->GetTypeId() == TYPEID_PLAYER && !((Player *)this)->isGameMaster() && (damage < 0 || damage > 55000))
     {
         sLog.outError("Unit::DealDamage - Crazy damage found: damage = %d", damage);
         damage = 1;
