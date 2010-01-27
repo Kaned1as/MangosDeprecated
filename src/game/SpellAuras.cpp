@@ -3753,29 +3753,55 @@ void Aura::HandleAuraModDisarm(bool apply, bool Real)
     if(!Real)
         return;
 
-    if(!apply && m_target->HasAuraType(SPELL_AURA_MOD_DISARM))
+    AuraType type = AuraType(m_modifier.m_auraname);
+
+    //Prevent handling aura twice
+    if(apply ? m_target->GetAurasByType(type).size() > 1 : m_target->HasAuraType(type))
         return;
 
-    // not sure for it's correctness
+    uint32 field, flag, slot;
+    WeaponAttackType attType;
+    switch (type)
+    {
+    case SPELL_AURA_MOD_DISARM:
+        field=UNIT_FIELD_FLAGS;
+        flag=UNIT_FLAG_DISARMED;
+        slot=EQUIPMENT_SLOT_MAINHAND;
+        attType=BASE_ATTACK;
+        break;
+    case SPELL_AURA_MOD_DISARM_OFFHAND:
+        field=UNIT_FIELD_FLAGS_2;
+        flag=UNIT_FLAG2_DISARM_OFFHAND;
+        slot=EQUIPMENT_SLOT_OFFHAND;
+        attType=OFF_ATTACK;
+        break;
+    case SPELL_AURA_MOD_DISARM_RANGED:
+        field=UNIT_FIELD_FLAGS_2;
+        flag=UNIT_FLAG2_DISARM_RANGED;
+        slot=EQUIPMENT_SLOT_RANGED;
+        attType=RANGED_ATTACK;
+        break;
+    default:
+        return;
+    }
+
+    if(!apply)
+        m_target->RemoveFlag(field, flag);
+
+    if (m_target->GetTypeId() == TYPEID_PLAYER)
+    {
+        // This is between the two because there is a check in _ApplyItemMods
+        // we must make sure that flag is always removed when call that function
+        // refer to DurabilityPointsLoss
+        if(Item *pItem = ((Player*)m_target)->GetItemByPos( INVENTORY_SLOT_BAG_0, slot ))
+            ((Player*)m_target)->_ApplyItemMods(pItem, slot, !apply);
+    }
+
     if(apply)
-        m_target->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED);
-    else
-        m_target->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_DISARMED);
+        m_target->SetFlag(field, flag);
 
-    // only at real add/remove aura
-    if (m_target->GetTypeId() != TYPEID_PLAYER)
-        return;
-
-    // main-hand attack speed already set to special value for feral form already and don't must change and reset at remove.
-    if (m_target->IsInFeralForm())
-        return;
-
-    if (apply)
-        m_target->SetAttackTime(BASE_ATTACK,BASE_ATTACK_TIME);
-    else
-        ((Player *)m_target)->SetRegularAttackTime();
-
-    m_target->UpdateDamagePhysical(BASE_ATTACK);
+    if (m_target->GetTypeId() == TYPEID_UNIT && ((Creature*)m_target)->GetCurrentEquipmentId())
+        m_target->UpdateDamagePhysical(attType);
 }
 
 void Aura::HandleAuraModStun(bool apply, bool Real)
@@ -6444,6 +6470,12 @@ void Aura::HandleSpiritOfRedemption( bool apply, bool Real )
 
 void Aura::CleanupTriggeredSpells()
 {
+    // King of the Jungle, trigger of increase damage is remove with remove Enrage
+    if (m_spellProto->SpellFamilyName == SPELLFAMILY_DRUID && (m_spellProto->SpellFamilyFlags & UI64LIT(0x0000000000080000)))
+    {
+        m_target->RemoveAurasDueToSpell(51185);
+    }
+
     uint32 tSpellId = m_spellProto->EffectTriggerSpell[GetEffIndex()];
     if(!tSpellId)
         return;

@@ -292,7 +292,8 @@ void Player::UpdateAttackPowerAndDamage(bool ranged )
             case CLASS_DRUID:
             {
                 //Check if Predatory Strikes is skilled
-                float mLevelMult = 0.0;
+                float mLevelMult = 0.0f;
+                float mBonusWeaponAtt = 0.0f;
                 switch(m_form)
                 {
                     case FORM_CAT:
@@ -304,9 +305,12 @@ void Player::UpdateAttackPowerAndDamage(bool ranged )
                         for(Unit::AuraList::const_iterator itr = mDummy.begin(); itr != mDummy.end(); ++itr)
                         {
                             // Predatory Strikes (effect 0)
-                            if ((*itr)->GetEffIndex()==0 && (*itr)->GetSpellProto()->SpellIconID == 1563)
+                            if ((*itr)->GetSpellProto()->SpellIconID == 1563 && (*itr)->GetEffIndex() == 0 && IsInFeralForm())
+                                mLevelMult = getLevel() * (*itr)->GetModifier()->m_amount / 100.0f;
+                            // Predatory Strikes (effect 1)
+                            else if ((*itr)->GetSpellProto()->SpellIconID == 1563 && (*itr)->GetEffIndex() == 1)
                             {
-                                mLevelMult = (*itr)->GetModifier()->m_amount / 100.0f;
+                                mBonusWeaponAtt = (*itr)->GetModifier()->m_amount * m_baseFeralAP / 100.0f;
                                 break;
                             }
                         }
@@ -318,12 +322,12 @@ void Player::UpdateAttackPowerAndDamage(bool ranged )
                 switch(m_form)
                 {
                     case FORM_CAT:
-                        val2 = getLevel()*(mLevelMult+2.0f) + GetStat(STAT_STRENGTH)*2.0f + GetStat(STAT_AGILITY) - 20.0f + m_baseFeralAP; break;
+                        val2 = GetStat(STAT_STRENGTH)*2.0f + GetStat(STAT_AGILITY) - 20.0f + mLevelMult + m_baseFeralAP + mBonusWeaponAtt; break;
                     case FORM_BEAR:
                     case FORM_DIREBEAR:
-                        val2 = getLevel()*(mLevelMult+3.0f) + GetStat(STAT_STRENGTH)*2.0f - 20.0f + m_baseFeralAP; break;
+                        val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f + mLevelMult + m_baseFeralAP + mBonusWeaponAtt; break;
                     case FORM_MOONKIN:
-                        val2 = getLevel()*(mLevelMult+1.5f) + GetStat(STAT_STRENGTH)*2.0f - 20.0f + m_baseFeralAP; break;
+                        val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f + m_baseFeralAP + mBonusWeaponAtt; break;
                     default:
                         val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f; break;
                 }
@@ -427,11 +431,18 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, fl
         uint32 lvl = getLevel();
         if ( lvl > 60 ) lvl = 60;
 
-        weapon_mindamage = lvl*0.85*att_speed;
-        weapon_maxdamage = lvl*1.25*att_speed;
+        weapon_mindamage = lvl*0.714*att_speed;
+        weapon_maxdamage = lvl*1.114*att_speed;
     }
-    else if(!IsUseEquipedWeapon(attType==BASE_ATTACK))      //check if player not in form but still can't use weapon (broken/etc)
+    else if(!CanUseAttackType(attType))      //check if player not in form but still can't use (disarm case)
     {
+        //cannot use ranged/off attack, set values to 0
+        if (attType != BASE_ATTACK)
+        {
+            min_damage = 0;
+            max_damage = 0;
+            return;
+        }
         weapon_mindamage = BASE_MINDAMAGE;
         weapon_maxdamage = BASE_MAXDAMAGE;
     }
@@ -842,6 +853,12 @@ void Creature::UpdateDamagePhysical(WeaponAttackType attType)
 
     float weapon_mindamage = GetWeaponDamageRange(BASE_ATTACK, MINDAMAGE);
     float weapon_maxdamage = GetWeaponDamageRange(BASE_ATTACK, MAXDAMAGE);
+
+    if(!CanUseAttackType(attType))
+    {
+        weapon_mindamage = 0;
+        weapon_maxdamage = 0;
+    }
 
     float mindamage = ((base_value + weapon_mindamage) * dmg_multiplier * base_pct + total_value) * total_pct;
     float maxdamage = ((base_value + weapon_maxdamage) * dmg_multiplier * base_pct + total_value) * total_pct;

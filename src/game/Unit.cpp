@@ -4077,7 +4077,7 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             const int32 max_dur = 2*MINUTE*IN_MILISECONDS;
             new_aur->SetAuraMaxDuration( max_dur > dur ? dur : max_dur );
             new_aur->SetAuraDuration( max_dur > dur ? dur : max_dur );
-            
+
             // Unregister _before_ adding to stealer
             aur->UnregisterSingleCastAura();
 
@@ -5860,6 +5860,28 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 {
                     // Deadly Interrupt Effect
                     triggered_spell_id = 32747;
+                    break;
+                }
+            }
+            // King of the Jungle
+            if (dummySpell->SpellIconID == 2850)
+            {
+                if (!procSpell)
+                    return false;
+
+                if (effIndex!=0)
+                    return true;
+
+                if (procSpell->SpellFamilyFlags & UI64LIT(0x0000000000080000))
+                {
+                    triggered_spell_id = 51185;
+                    basepoints0 = triggerAmount;
+                    break;
+                }
+                if (procSpell->SpellFamilyFlags2 & UI64LIT(0x00000800))
+                {
+                    triggered_spell_id = 51178;
+                    basepoints0 = 4*triggerAmount;
                     break;
                 }
             }
@@ -8837,6 +8859,19 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
             //vampiric touch
             if (spellProto->Id == 64085) 
                 return pdamage;
+
+            //Ranger: Glyph of Smite
+            if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000000000080))
+            {
+                if (Aura* GoSaur = owner->GetDummyAura(55692))
+                {
+                    if (pVictim->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_PRIEST, UI64LIT(0x40000100000)))
+                    {
+                            DoneTotalMod *= (GoSaur->GetModifier()->m_amount + 100.0f) / 100.0f;
+                            break;
+                    }
+                }
+            }
 
             break;
         }

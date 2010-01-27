@@ -95,7 +95,7 @@ bool ChatHandler::HandleReloadAllLootCommand(const char*)
 {
     sLog.outString( "Re-Loading Loot Tables..." );
     LoadLootTables();
-    SendGlobalSysMessage("DB tables `*_loot_template` reloaded.");
+    PSendSysMessage("DB tables `*_loot_template` reloaded.");
     return true;
 }
 
@@ -116,7 +116,7 @@ bool ChatHandler::HandleReloadAllQuestCommand(const char* /*args*/)
 
     sLog.outString( "Re-Loading Quests Relations..." );
     sObjectMgr.LoadQuestRelations();
-    SendGlobalSysMessage("DB tables `*_questrelation` and `*_involvedrelation` reloaded.");
+    PSendSysMessage("DB tables `*_questrelation` and `*_involvedrelation` reloaded.");
     return true;
 }
 
@@ -135,7 +135,7 @@ bool ChatHandler::HandleReloadAllScriptsCommand(const char*)
     HandleReloadQuestEndScriptsCommand("a");
     HandleReloadQuestStartScriptsCommand("a");
     HandleReloadSpellScriptsCommand("a");
-    SendGlobalSysMessage("DB tables `*_scripts` reloaded.");
+    PSendSysMessage("DB tables `*_scripts` reloaded.");
     HandleReloadDbScriptStringCommand("a");
     return true;
 }
@@ -200,7 +200,7 @@ bool ChatHandler::HandleReloadAchievementCriteriaRequirementCommand(const char*)
 {
     sLog.outString( "Re-Loading Additional Achievement Criteria Requirements Data..." );
     sAchievementMgr.LoadAchievementCriteriaRequirements();
-    SendGlobalSysMessage("DB table `achievement_criteria_requirement` reloaded.");
+    PSendSysMessage("DB table `achievement_criteria_requirement` reloaded.");
     return true;
 }
 
