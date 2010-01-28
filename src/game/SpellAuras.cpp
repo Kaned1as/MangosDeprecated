@@ -45,6 +45,7 @@
 #include "GridNotifiersImpl.h"
 #include "Vehicle.h"
 #include "CellImpl.h"
+#include "Chat.h"
 
 #define NULL_AURA_SLOT 0xFF
 
@@ -1347,6 +1348,21 @@ void Aura::ReapplyAffectedPassiveAuras( Unit* target, bool owner_mode )
             // and affected by aura
             isAffectedOnSpell(itr->second->GetSpellProto()))
         {
+            //Ranger: self by self? wtf mangos?? TEMP CHECK!!! Kill me after a PROPER FIX!
+            if (isAffectedOnSpell(itr->second->GetSpellProto()) && itr->second->isAffectedOnSpell(GetSpellProto()))
+            {
+                sLog.outError("WARNING!! Spell %u reapply spell %u - DANGER!! Circle away to CRASH!", GetId(), itr->second->GetId());
+                if (target && target->IsInWorld() && target->GetTypeId() == TYPEID_PLAYER)
+                {
+                    Player* plr = (Player*)target;
+                    ChatHandler(plr).PSendSysMessage("WARNING!! A serious problem has been found! Please report about this on the forum http://forum.wow-russian.ru/index.php?showforum=278");
+                    ChatHandler(plr).PSendSysMessage("Information: first - %u, second - %u", GetId(), itr->second->GetId());
+                    ChatHandler(plr).PSendSysMessage("Please make logout and do not repeat the given actions");
+                    ChatHandler(plr).PSendSysMessage("Thanks for your help");
+                }
+                return;
+            }
+
             // only applied by self or aura caster
             if (itr->second->GetCasterGUID() == target->GetGUID())
                 affectedSelf.insert(itr->second->GetId());
