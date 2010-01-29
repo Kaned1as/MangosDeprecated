@@ -385,7 +385,25 @@ void Unit::RemoveSpellbyDamageTaken(AuraType auraType, uint32 damage)
     if(auraType == SPELL_AURA_MOD_ROOT && GetMaxHealth() > 4)
         max_dmg = GetMaxHealth()/4;
     else
-        max_dmg = getLevel() > 8 ? 25 * getLevel() - 150 : 50;    float chance = float(damage) / max_dmg * 100.0f;
+        max_dmg = getLevel() > 8 ? 25 * getLevel() - 150 : 50;
+
+    AuraList const& typeAuras = GetAurasByType(auraType);
+    for (AuraList::const_iterator iter = typeAuras.begin(); iter != typeAuras.end(); ++iter)
+    {
+        Unit *caster = (*iter)->GetCaster();
+
+        if (!caster)
+            continue;
+
+        AuraList const& mOverrideClassScript = caster->GetAurasByType(SPELL_AURA_OVERRIDE_CLASS_SCRIPTS);
+        for(AuraList::const_iterator i = mOverrideClassScript.begin(); i != mOverrideClassScript.end(); ++i)
+        {
+            if ((*i)->GetModifier()->m_miscvalue == 7801 && (*i)->isAffectedOnSpell((*iter)->GetSpellProto()))
+                max_dmg += (*i)->GetModifier()->m_amount * max_dmg / 100;
+        }
+    }
+
+    float chance = float(damage) / max_dmg * 100.0f;
     if (roll_chance_f(chance))
         RemoveSpellsCausingAura(auraType);
 }
