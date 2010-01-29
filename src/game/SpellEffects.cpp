@@ -6299,42 +6299,42 @@ void Spell::EffectLeapForward(uint32 i)
     if(unitTarget->isInFlight())
         return;
 
-	bool fall = false;
-	// Cast checks from spell.cpp
-	float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
-	float fx = m_caster->GetPositionX() + dis * cos(m_caster->GetOrientation());
-	float fy = m_caster->GetPositionY() + dis * sin(m_caster->GetOrientation());
-	// teleport a bit above terrain level to avoid falling below it
-	float fz = m_caster->GetBaseMap()->GetHeight(fx,fy,m_caster->GetPositionZ(),true);
-	if(fz <= INVALID_HEIGHT)                    // note: this also will prevent use effect in instances without vmaps height enabled
-		fall = true;
+    bool fall = false;
+    // Cast checks from spell.cpp
+    float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+    float fx = m_caster->GetPositionX() + dis * cos(m_caster->GetOrientation());
+    float fy = m_caster->GetPositionY() + dis * sin(m_caster->GetOrientation());
+    // teleport a bit above terrain level to avoid falling below it
+    float fz = m_caster->GetBaseMap()->GetHeight(fx,fy,m_caster->GetPositionZ(),true);
+    if(fz <= INVALID_HEIGHT)                    // note: this also will prevent use effect in instances without vmaps height enabled
+        fall = true;
 
-	float caster_pos_z = m_caster->GetPositionZ();
-	// Control the caster to not climb or drop when +-fz > 8
-	if(!(fz <= caster_pos_z + 8 && fz >= caster_pos_z - 8))
-		fall = true;
+    float caster_pos_z = m_caster->GetPositionZ();
+    // Control the caster to not climb or drop when +-fz > 8
+    if(!(fz <= caster_pos_z + 8 && fz >= caster_pos_z - 8))
+        fall = true;
 
-	// not allow use this effect at battleground until battleground start
-	if(m_caster->GetTypeId() == TYPEID_PLAYER)
-		if(BattleGround const *bg = ((Player*)m_caster)->GetBattleGround())
-			if(bg->GetStatus() != STATUS_IN_PROGRESS)
-				fall = true;
+    // not allow use this effect at battleground until battleground start
+    if(m_caster->GetTypeId() == TYPEID_PLAYER)
+        if(BattleGround const *bg = ((Player*)m_caster)->GetBattleGround())
+            if(bg->GetStatus() != STATUS_IN_PROGRESS)
+                fall = true;
      
 
-	if(fall && unitTarget->GetTypeId() == TYPEID_PLAYER)
-	{
-		float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
+    if(fall && unitTarget->GetTypeId() == TYPEID_PLAYER)
+    {
+        float radius = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
 
-		((Player*)unitTarget)->SetMovement(MOVE_UNROOT);
-		WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
-		data.appendPackGUID(unitTarget->GetGUID());
-		data << getMSTime();
-		data << cosf(((Player*)unitTarget)->GetOrientation()) << sinf(((Player*)unitTarget)->GetOrientation());
-		data << radius;
-		data << float(-10.0f);
-		((Player*)unitTarget)->GetSession()->SendPacket(&data);
-	}
-	else
+        ((Player*)unitTarget)->SetMovement(MOVE_UNROOT);
+        WorldPacket data(SMSG_MOVE_KNOCK_BACK, 50);
+        data.appendPackGUID(unitTarget->GetGUID());
+        data << getMSTime();
+        data << cosf(((Player*)unitTarget)->GetOrientation()) << sinf(((Player*)unitTarget)->GetOrientation());
+        data << radius;
+        data << float(-10.0f);
+        ((Player*)unitTarget)->GetSession()->SendPacket(&data);
+    }
+    else
     if( m_spellInfo->rangeIndex == 1)                       //self range
     {
         float dis = GetSpellRadius(sSpellRadiusStore.LookupEntry(m_spellInfo->EffectRadiusIndex[i]));
@@ -7105,7 +7105,7 @@ void Spell::EffectTitanGrip(uint32 /*eff_idx*/)
 {
     if (unitTarget && unitTarget->GetTypeId() == TYPEID_PLAYER)
         ((Player*)unitTarget)->SetCanTitanGrip(true);
-	 // titans grip dmg penalty for 2h weapons
+     // titans grip dmg penalty for 2h weapons
     if (!unitTarget->HasAura(49152))
     {
         if(((Player*)unitTarget)->IsTwoHandUsedInDualWield())
@@ -7156,104 +7156,113 @@ void Spell::EffectSummonSpecialPets(uint32 i)
         return;
 
     uint32 level = m_caster->getLevel();
-	int32 amount = damage > 0 ? damage : 1;
+    int32 amount = damage > 0 ? damage : 1;
 
     if( amount > 10 )
          amount = 1;
 
-	for(uint8 count = 0; count < amount; ++count)
-	{
-		Pet* spawnCreature = new Pet(SUMMON_PET);
+    for(uint8 count = 0; count < amount; ++count)
+    {
+        Pet* spawnCreature = new Pet(SUMMON_PET);
 
-		Map *map = m_caster->GetMap();
-		uint32 pet_number = sObjectMgr.GeneratePetNumber();
-		if (!spawnCreature->Create(map->GenerateLocalLowGuid(HIGHGUID_PET), map, m_caster->GetPhaseMask(),
-		    m_spellInfo->EffectMiscValue[i], pet_number))
-		{
-		    sLog.outErrorDb("Spell::EffectSummon: no such creature entry %u",m_spellInfo->EffectMiscValue[i]);
-		    delete spawnCreature;
-		    return;
-		}
+        Map *map = m_caster->GetMap();
+        uint32 pet_number = sObjectMgr.GeneratePetNumber();
+        if (!spawnCreature->Create(map->GenerateLocalLowGuid(HIGHGUID_PET), map, m_caster->GetPhaseMask(),
+            m_spellInfo->EffectMiscValue[i], pet_number))
+        {
+            sLog.outErrorDb("Spell::EffectSummon: no such creature entry %u",m_spellInfo->EffectMiscValue[i]);
+            delete spawnCreature;
+            return;
+        }
 
-		// Summon in dest location
-		float x, y, z;
-		if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
-		{
-		    x = m_targets.m_destX;
-		    y = m_targets.m_destY;
-		    z = m_targets.m_destZ;
-		}
-		else
-		    m_caster->GetClosePoint(x, y, z, spawnCreature->GetObjectSize());
+        // Summon in dest location
+        float x, y, z;
+        if (m_targets.m_targetMask & TARGET_FLAG_DEST_LOCATION)
+        {
+            x = m_targets.m_destX;
+            y = m_targets.m_destY;
+            z = m_targets.m_destZ;
+        }
+        else
+            m_caster->GetClosePoint(x, y, z, spawnCreature->GetObjectSize());
 
-		spawnCreature->Relocate(x, y, z, -m_caster->GetOrientation());
+        spawnCreature->Relocate(x, y, z, -m_caster->GetOrientation());
 
-		if (!spawnCreature->IsPositionValid())
-		{
-		    sLog.outError("Pet (guidlow %d, entry %d) not summoned. Suggested coordinates isn't valid (X: %f Y: %f)",
-		        spawnCreature->GetGUIDLow(), spawnCreature->GetEntry(), spawnCreature->GetPositionX(), spawnCreature->GetPositionY());
-		    delete spawnCreature;
-		    return;
-		}
+        if (!spawnCreature->IsPositionValid())
+        {
+            sLog.outError("Pet (guidlow %d, entry %d) not summoned. Suggested coordinates isn't valid (X: %f Y: %f)",
+                spawnCreature->GetGUIDLow(), spawnCreature->GetEntry(), spawnCreature->GetPositionX(), spawnCreature->GetPositionY());
+            delete spawnCreature;
+            return;
+        }
 
-		// set timer for unsummon
-		int32 duration = GetSpellDuration(m_spellInfo);
+        // set timer for unsummon
+        int32 duration = GetSpellDuration(m_spellInfo);
         if(Player* modOwner = m_caster->GetSpellModOwner())
             modOwner->ApplySpellMod(m_spellInfo->Id, SPELLMOD_DURATION, duration);
 
-		if (duration > 0)
-		    spawnCreature->SetDuration(duration);
+        if (duration > 0)
+            spawnCreature->SetDuration(duration);
 
-		spawnCreature->SetOwnerGUID(m_caster->GetGUID());
-		spawnCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
-		spawnCreature->setPowerType(POWER_MANA);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_BYTES_0, 2048);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, 1000);
-		spawnCreature->SetCreatorGUID(m_caster->GetGUID());
-		spawnCreature->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
+        spawnCreature->SetOwnerGUID(m_caster->GetGUID());
+        spawnCreature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
+        spawnCreature->setPowerType(POWER_MANA);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, 0);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_BYTES_0, 2048);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_BYTES_1, 0);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_PET_NAME_TIMESTAMP, 0);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_PETEXPERIENCE, 0);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_PETNEXTLEVELEXP, 1000);
+        spawnCreature->SetCreatorGUID(m_caster->GetGUID());
+        spawnCreature->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
-		spawnCreature->setFaction(m_caster->getFaction());
-		spawnCreature->SetSheath(SHEATH_STATE_MELEE);
-		spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        spawnCreature->setFaction(m_caster->getFaction());
+        spawnCreature->SetSheath(SHEATH_STATE_MELEE);
+        spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
-		spawnCreature->InitStatsForLevel(level, m_caster);
-		if(pet_entry == 29264) //spirit wolf + from shaman stats
-		{
-			spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, spawnCreature->GetCreatureInfo()->mindmg);
-			spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, spawnCreature->GetCreatureInfo()->maxdmg);
-			spawnCreature->SetCreateHealth(spawnCreature->GetCreatureInfo()->maxhealth);
-			spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, (uint32)m_caster->GetTotalAttackPowerValue(BASE_ATTACK)/3);
-			spawnCreature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor()+m_caster->GetUInt32Value(UNIT_FIELD_RESISTANCES)/3);
+        spawnCreature->InitStatsForLevel(level, m_caster);
+        if(pet_entry == 29264) //spirit wolf + from shaman stats
+        {
+            float coef_ap = 0.30f;
+            //Ranger: Glyph of Feral Spirit
+            if (m_caster->GetDummyAura(63271))
+                coef_ap = 0.60f;
 
-			spawnCreature->UpdateMaxHealth();
-			spawnCreature->SetHealth(spawnCreature->GetMaxHealth());
-			spawnCreature->UpdateDamagePhysical(BASE_ATTACK);
-			spawnCreature->UpdateArmor();
-		}
+            uint32 bonus_ap = uint32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * coef_ap);
+            uint32 bonus_armor = uint32(m_caster->GetUInt32Value(UNIT_FIELD_RESISTANCES) * 0.35f);
+            uint32 wolf_health = uint32(spawnCreature->GetCreatureInfo()->maxhealth + m_caster->GetMaxHealth() * 0.30f);
 
-		//spawnCreature->SetFollowAngle(count*2*M_PI/amount);
-		spawnCreature->GetCharmInfo()->SetPetNumber(pet_number, false);
+            spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, uint32(spawnCreature->GetCreatureInfo()->mindmg * spawnCreature->GetCreatureInfo()->dmg_multiplier));
+            spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, uint32(spawnCreature->GetCreatureInfo()->maxdmg * spawnCreature->GetCreatureInfo()->dmg_multiplier));
+            spawnCreature->SetCreateHealth(wolf_health);
+            spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, spawnCreature->GetCreatureInfo()->attackpower + bonus_ap);
+            spawnCreature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor() + bonus_armor);
 
-		spawnCreature->AIM_Initialize();
-		spawnCreature->InitPetCreateSpells();
-		spawnCreature->InitLevelupSpellsForLevel();
+            spawnCreature->UpdateMaxHealth();
+            spawnCreature->SetHealth(spawnCreature->GetMaxHealth());
+            spawnCreature->UpdateDamagePhysical(BASE_ATTACK);
+            spawnCreature->UpdateArmor();
+        }
 
-		//spawnCreature
+        //spawnCreature->SetFollowAngle(count*2*M_PI/amount);
+        spawnCreature->GetCharmInfo()->SetPetNumber(pet_number, false);
 
-		std::string name = m_caster->GetName();
-		name.append(petTypeSuffix[spawnCreature->getPetType()]);
-		spawnCreature->SetName( name );
-		map->Add((Creature*)spawnCreature);
-		m_caster->SetPet(spawnCreature);
-		
-		if (m_caster->GetTypeId() == TYPEID_PLAYER)
-		{
-		    spawnCreature->GetCharmInfo()->SetReactState( REACT_DEFENSIVE );
-		    ((Player*)m_caster)->PetSpellInitialize();
-		}
-	}
+        spawnCreature->AIM_Initialize();
+        spawnCreature->InitPetCreateSpells();
+        spawnCreature->InitLevelupSpellsForLevel();
+
+        //spawnCreature
+
+        std::string name = m_caster->GetName();
+        name.append(petTypeSuffix[spawnCreature->getPetType()]);
+        spawnCreature->SetName( name );
+        map->Add((Creature*)spawnCreature);
+        m_caster->SetPet(spawnCreature);
+        
+        if (m_caster->GetTypeId() == TYPEID_PLAYER)
+        {
+            spawnCreature->GetCharmInfo()->SetReactState( REACT_DEFENSIVE );
+            ((Player*)m_caster)->PetSpellInitialize();
+        }
+    }
 }
