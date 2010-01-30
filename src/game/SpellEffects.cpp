@@ -7230,16 +7230,17 @@ void Spell::EffectSummonSpecialPets(uint32 i)
 
             uint32 bonus_ap = uint32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * coef_ap);
             uint32 bonus_armor = uint32(m_caster->GetUInt32Value(UNIT_FIELD_RESISTANCES) * 0.35f);
-            uint32 wolf_health = uint32(spawnCreature->GetCreatureInfo()->maxhealth + m_caster->GetMaxHealth() * 0.30f);
+            uint32 base_hp = spawnCreature->GetCreatureInfo()->maxhealth;
+            uint32 bonus_health = uint32(((Player*)m_caster)->GetHealthBonusFromStamina() * 0.30f);
 
             spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, uint32(spawnCreature->GetCreatureInfo()->mindmg * spawnCreature->GetCreatureInfo()->dmg_multiplier));
             spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, uint32(spawnCreature->GetCreatureInfo()->maxdmg * spawnCreature->GetCreatureInfo()->dmg_multiplier));
-            spawnCreature->SetCreateHealth(wolf_health);
+            spawnCreature->SetCreateHealth(base_hp + bonus_health);
             spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, spawnCreature->GetCreatureInfo()->attackpower + bonus_ap);
             spawnCreature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor() + bonus_armor);
 
-            spawnCreature->UpdateMaxHealth();
-            spawnCreature->SetHealth(spawnCreature->GetMaxHealth());
+            spawnCreature->SetMaxHealth(base_hp + bonus_health);
+            spawnCreature->SetHealth(base_hp + bonus_health);
             spawnCreature->UpdateDamagePhysical(BASE_ATTACK);
             spawnCreature->UpdateArmor();
         }
