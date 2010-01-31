@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -118,13 +118,13 @@ void hyjalAI::Reset()
     // Flags
     m_creature->SetFlag(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_GOSSIP);
 
-    if (!m_pInstance)
-        return;
-
     // Reset World States
     m_pInstance->DoUpdateWorldState(WORLD_STATE_WAVES, 0);
     m_pInstance->DoUpdateWorldState(WORLD_STATE_ENEMY, 0);
     m_pInstance->DoUpdateWorldState(WORLD_STATE_ENEMYCOUNT, 0);
+
+    if (!m_pInstance)
+        return;
 
     m_bIsFirstBossDead = m_uiBase ? m_pInstance->GetData(TYPE_KAZROGAL) : m_pInstance->GetData(TYPE_WINTERCHILL);
     m_bIsSecondBossDead = m_uiBase ? m_pInstance->GetData(TYPE_AZGALOR) : m_pInstance->GetData(TYPE_ANETHERON);

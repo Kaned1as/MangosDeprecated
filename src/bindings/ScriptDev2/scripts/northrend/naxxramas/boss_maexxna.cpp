@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 - 2009 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
+/* Copyright (C) 2006 - 2010 ScriptDev2 <https://scriptdev2.svn.sourceforge.net/>
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -24,22 +24,19 @@ EndScriptData */
 #include "precompiled.h"
 #include "naxxramas.h"
 
-enum
-{
-    SPELL_WEBWRAP           = 28622,                        //Spell is normally used by the webtrap on the wall NOT by Maexxna
+#define SPELL_WEBTRAP           28622                       //Spell is normally used by the webtrap on the wall NOT by Maexxna
 
-    SPELL_WEBSPRAY          = 29484,
-    H_SPELL_WEBSPRAY        = 54125,
-    SPELL_POISONSHOCK       = 28741,
-    H_SPELL_POISONSHOCK     = 54122,
-    SPELL_NECROTICPOISON    = 28776,
-    H_SPELL_NECROTICPOISON  = 54121,
-    SPELL_FRENZY            = 54123,
-    H_SPELL_FRENZY          = 54124,
+#define SPELL_WEBSPRAY          29484
+#define H_SPELL_WEBSPRAY        54125
+#define SPELL_POISONSHOCK       28741
+#define H_SPELL_POISONSHOCK     54122
+#define SPELL_NECROTICPOISON    28776
+#define H_SPELL_NECROTICPOISON  54121
+#define SPELL_FRENZY            54123
+#define H_SPELL_FRENZY          54124
 
-    //spellId invalid
-    SPELL_SUMMON_SPIDERLING = 29434,
-};
+//spellId invalid
+#define SPELL_SUMMON_SPIDERLING 29434
 
 #define LOC_X1    3546.796
 #define LOC_Y1    -3869.082
@@ -57,83 +54,78 @@ struct MANGOS_DLL_DECL mob_webwrapAI : public ScriptedAI
 {
     mob_webwrapAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
-    uint64 m_uiVictimGUID;
+    uint64 victimGUID;
 
     void Reset()
     {
-        m_uiVictimGUID = 0;
+        victimGUID = 0;
     }
 
-    void SetVictim(Unit* pVictim)
+    void SetVictim(Unit* victim)
     {
-        if (pVictim)
+        if (victim)
         {
-            m_uiVictimGUID = pVictim->GetGUID();
-            pVictim->CastSpell(pVictim, SPELL_WEBWRAP, true);
+            victimGUID = victim->GetGUID();
+            victim->CastSpell(victim, SPELL_WEBTRAP, true);
         }
     }
 
-    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
+    void DamageTaken(Unit *done_by, uint32 &damage)
     {
-        if (uiDamage > m_creature->GetHealth())
+        if (damage > m_creature->GetHealth())
         {
-            if (m_uiVictimGUID)
+            if (victimGUID)
             {
-                if (Unit* pVictim = Unit::GetUnit((*m_creature), m_uiVictimGUID))
-                    pVictim->RemoveAurasDueToSpell(SPELL_WEBWRAP);
+                Unit* victim = NULL;
+                victim = Unit::GetUnit((*m_creature), victimGUID);
+                if (victim)
+                    victim->RemoveAurasDueToSpell(SPELL_WEBTRAP);
             }
         }
     }
 
-    void MoveInLineOfSight(Unit* pWho) { }
-    void UpdateAI(const uint32 uiDiff) { }
+    void MoveInLineOfSight(Unit *who) { }
+    void UpdateAI(const uint32 diff) { }
 };
 
 struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
 {
     boss_maexxnaAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        pInstance = ((ScriptedInstance*)pCreature->GetInstanceData());
+        Regular = pCreature->GetMap()->IsRegularDifficulty();
         Reset();
     }
 
-    ScriptedInstance* m_pInstance;
-    bool m_bIsRegularMode;
-
-    uint32 m_uiWebWrapTimer;
-    uint32 m_uiWebSprayTimer;
-    uint32 m_uiPoisonShockTimer;
-    uint32 m_uiNecroticPoisonTimer;
-    uint32 m_uiSummonSpiderlingTimer;
-    bool   m_bEnraged;
+    ScriptedInstance *pInstance;
+    bool Regular;
+    uint32 WebTrap_Timer;
+    uint32 WebSpray_Timer;
+    uint32 PoisonShock_Timer;
+    uint32 NecroticPoison_Timer;
+    uint32 SummonSpiderling_Timer;
+    bool Enraged;
 
     void Reset()
     {
-        m_uiWebWrapTimer = 20000;                           //20 sec init, 40 sec normal
-        m_uiWebSprayTimer = 40000;                          //40 seconds
-        m_uiPoisonShockTimer = 20000;                       //20 seconds
-        m_uiNecroticPoisonTimer = 30000;                    //30 seconds
-        m_uiSummonSpiderlingTimer = 30000;                  //30 sec init, 40 sec normal
-        m_bEnraged = false;
+        WebTrap_Timer = 20000;                              //20 sec init, 40 sec normal
+        WebSpray_Timer = 40000;                             //40 seconds
+        PoisonShock_Timer = 20000;                          //20 seconds
+        NecroticPoison_Timer = 30000;                       //30 seconds
+        SummonSpiderling_Timer = 30000;                     //30 sec init, 40 sec normal
+        Enraged = false;
+
+        if(pInstance) pInstance->SetData(TYPE_MAEXXNA, NOT_STARTED);
     }
 
-    void Aggro(Unit* pWho)
+    void Aggro(Unit *who)
     {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_MAEXXNA, IN_PROGRESS);
+        if(pInstance) pInstance->SetData(TYPE_MAEXXNA, IN_PROGRESS);
     }
 
-    void JustDied(Unit* pKiller)
+    void JustDied(Unit *killer)
     {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_MAEXXNA, DONE);
-    }
-
-    void JustReachedHome()
-    {
-        if (m_pInstance)
-            m_pInstance->SetData(TYPE_MAEXXNA, FAIL);
+        if(pInstance) pInstance->SetData(TYPE_MAEXXNA, DONE);
     }
 
     void DoCastWebWrap()
@@ -189,61 +181,51 @@ struct MANGOS_DLL_DECL boss_maexxnaAI : public ScriptedAI
         }
     }
 
-    void UpdateAI(const uint32 uiDiff)
+    void UpdateAI(const uint32 diff)
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        // Web Wrap
-        if (m_uiWebWrapTimer < uiDiff)
+        //WebTrap_Timer
+        if (WebTrap_Timer < diff)
         {
             DoCastWebWrap();
-            m_uiWebWrapTimer = 40000;
-        }
-        else
-            m_uiWebWrapTimer -= uiDiff;
+            WebTrap_Timer = 40000;
+        }else WebTrap_Timer -= diff;
 
-        // Web Spray
-        if (m_uiWebSprayTimer < uiDiff)
+        //WebSpray_Timer
+        if (WebSpray_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_WEBSPRAY);
-            m_uiWebSprayTimer = 40000;
-        }
-        else
-            m_uiWebSprayTimer -= uiDiff;
+            DoCast(m_creature->getVictim(), Regular ? SPELL_WEBSPRAY : H_SPELL_WEBSPRAY);
+            WebSpray_Timer = 40000;
+        }else WebSpray_Timer -= diff;
 
-        // Poison Shock
-        if (m_uiPoisonShockTimer < uiDiff)
+        //PoisonShock_Timer
+        if (PoisonShock_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_POISONSHOCK);
-            m_uiPoisonShockTimer = 20000;
-        }
-        else
-            m_uiPoisonShockTimer -= uiDiff;
+            DoCast(m_creature->getVictim(), Regular ? SPELL_POISONSHOCK : H_SPELL_POISONSHOCK);
+            PoisonShock_Timer = 20000;
+        }else PoisonShock_Timer -= diff;
 
-        // Necrotic Poison
-        if (m_uiNecroticPoisonTimer < uiDiff)
+        //NecroticPoison_Timer
+        if (NecroticPoison_Timer < diff)
         {
-            DoCast(m_creature->getVictim(), SPELL_NECROTICPOISON);
-            m_uiNecroticPoisonTimer = 30000;
-        }
-        else
-            m_uiNecroticPoisonTimer -= uiDiff;
+            DoCast(m_creature->getVictim(), Regular ? SPELL_NECROTICPOISON : H_SPELL_NECROTICPOISON);
+            NecroticPoison_Timer = 30000;
+        }else NecroticPoison_Timer -= diff;
 
-        // Summon Spiderling
-        if (m_uiSummonSpiderlingTimer < uiDiff)
+        //SummonSpiderling_Timer
+        if (SummonSpiderling_Timer < diff)
         {
             DoCast(m_creature, SPELL_SUMMON_SPIDERLING);
-            m_uiSummonSpiderlingTimer = 40000;
-        }
-        else
-            m_uiSummonSpiderlingTimer -= uiDiff;
+            SummonSpiderling_Timer = 40000;
+        }else SummonSpiderling_Timer -= diff;
 
         //Enrage if not already enraged and below 30%
-        if (!m_bEnraged && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 30)
+        if (!Enraged && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 30)
         {
-            DoCast(m_creature, SPELL_FRENZY);
-            m_bEnraged = true;
+            DoCast(m_creature, Regular ? SPELL_FRENZY : H_SPELL_FRENZY);
+            Enraged = true;
         }
 
         DoMeleeAttackIfReady();
@@ -262,15 +244,15 @@ CreatureAI* GetAI_boss_maexxna(Creature* pCreature)
 
 void AddSC_boss_maexxna()
 {
-    Script* NewScript;
+    Script *newscript;
 
-    NewScript = new Script;
-    NewScript->Name = "boss_maexxna";
-    NewScript->GetAI = &GetAI_boss_maexxna;
-    NewScript->RegisterSelf();
+    newscript = new Script;
+    newscript->Name = "boss_maexxna";
+    newscript->GetAI = &GetAI_boss_maexxna;
+    newscript->RegisterSelf();
 
-    NewScript = new Script;
-    NewScript->Name = "mob_webwrap";
-    NewScript->GetAI = &GetAI_mob_webwrap;
-    NewScript->RegisterSelf();
+    newscript = new Script;
+    newscript->Name = "mob_webwrap";
+    newscript->GetAI = &GetAI_mob_webwrap;
+    newscript->RegisterSelf();
 }

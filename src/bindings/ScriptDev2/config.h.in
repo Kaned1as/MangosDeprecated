@@ -20,7 +20,7 @@
 #define SC_CONFIG_H
 
 #include "Platform/CompilerDefs.h"
-#include "revision.h"
+#include "../../shared/revision.h"
 
 // Format is YYYYMMDDRR where RR is the change in the conf file
 // for that day.
