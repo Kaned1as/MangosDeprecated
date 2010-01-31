@@ -2200,7 +2200,8 @@ void Aura::TriggerSpell()
         if (Unit* caster = GetCaster())
         {
             if(target->GetTypeId() != TYPEID_UNIT || !Script->EffectDummyCreature(caster, GetId(), GetEffIndex(), (Creature*)target))
-                sLog.outError("Aura::TriggerSpell: Spell %u have 0 in EffectTriggered[%d], not handled custom case?",GetId(),GetEffIndex());
+                if (GetId() != 39140)   //Ranger: ignoring spells
+                    sLog.outError("Aura::TriggerSpell: Spell %u have 0 in EffectTriggered[%d], not handled custom case?",GetId(),GetEffIndex());
         }
     }
 }
@@ -4429,6 +4430,11 @@ void Aura::HandleModMechanicImmunity(bool apply, bool /*Real*/)
             }
         }
     }
+
+    //Ranger: Heroic Fury - Intercept cooldown remove
+    if (apply && GetSpellProto()->Id == 60970 && m_target->GetTypeId() == TYPEID_PLAYER)
+        ((Player*)m_target)->RemoveSpellCooldown(20252, true);
+
 }
 
 void Aura::HandleModMechanicImmunityMask(bool apply, bool /*Real*/)
