@@ -610,7 +610,7 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
 
     QuestItemMap::const_iterator Qitr = PlayerQuestItems.find(player->GetGUIDLow());
 
-    if (lootSlot >= items.size() || lootSlot >= 15 - Qitr->second->size())
+    if (lootSlot >= items.size() ||(Qitr != PlayerQuestItems.end() && lootSlot >= 15 - Qitr->second->size()))
     {
         uint32 questSlot = 0;
         if(lootSlot >= items.size())
