@@ -728,7 +728,8 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
                     b << uint8(i) << l.items[i];            //send the index and the item if it's not looted, and blocked or under threshold, free for all items will be sent later, only one-player loots here
                     b << uint8(slot_type);                  // 0 - get 1 - look only
                     ++itemsShown;
-                    if(itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
+                    if(q_itr != lootPlayerQuestItems.end())
+                        if(itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
                 }
             }
             break;
@@ -744,7 +745,8 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
                     b << uint8(i) << l.items[i];            //only send one-player loot items now, free for all will be sent later
                     b << uint8(slot_type);                  // 0 - get 2 - master selection
                     ++itemsShown;
-                    if(itemsShown >= 15 - q_itr->second->size()) break; //leave at least one for questitems
+                     if(q_itr != lootPlayerQuestItems.end())
+                        if(itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
                 }
             }
             break;
