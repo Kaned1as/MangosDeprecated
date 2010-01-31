@@ -610,7 +610,7 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
 
     QuestItemMap::const_iterator Qitr = PlayerQuestItems.find(player->GetGUIDLow());
 
-    if (Qitr != PlayerQuestItems.end() &&(lootSlot >= items.size() || lootSlot >= 15 - Qitr->second->size()))     
+    if (Qitr != PlayerQuestItems.end() && (lootSlot >= items.size() || lootSlot >= 15 - Qitr->second->size()))     
     {
         uint32 questSlot = 0;
         if(lootSlot >= items.size())
@@ -728,8 +728,8 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
                     b << uint8(i) << l.items[i];            //send the index and the item if it's not looted, and blocked or under threshold, free for all items will be sent later, only one-player loots here
                     b << uint8(slot_type);                  // 0 - get 1 - look only
                     ++itemsShown;
-                    if(q_itr != lootPlayerQuestItems.end())
-                        if(itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
+
+                    if(q_itr != lootPlayerQuestItems.end() && itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
                 }
             }
             break;
@@ -745,8 +745,8 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
                     b << uint8(i) << l.items[i];            //only send one-player loot items now, free for all will be sent later
                     b << uint8(slot_type);                  // 0 - get 2 - master selection
                     ++itemsShown;
-                     if(q_itr != lootPlayerQuestItems.end())
-                        if(itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
+
+                    if(q_itr != lootPlayerQuestItems.end() && itemsShown >= 15 - q_itr->second->size()) break; //leave for questitems
                 }
             }
             break;
@@ -770,37 +770,40 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
             }
         }
     }
-
-    QuestItemMap const& lootPlayerFFAItems = l.GetPlayerFFAItems();
-    QuestItemMap::const_iterator ffa_itr = lootPlayerFFAItems.find(lv.viewer->GetGUIDLow());
-    if (ffa_itr != lootPlayerFFAItems.end())
+    
+    if(q_itr != lootPlayerQuestItems.end() && itemsShown < 15 - q_itr->second->size())
     {
-        QuestItemList *ffa_list = ffa_itr->second;
-        for (QuestItemList::const_iterator fi = ffa_list->begin() ; fi != ffa_list->end(); ++fi)
+        QuestItemMap const& lootPlayerFFAItems = l.GetPlayerFFAItems();
+        QuestItemMap::const_iterator ffa_itr = lootPlayerFFAItems.find(lv.viewer->GetGUIDLow());
+        if (ffa_itr != lootPlayerFFAItems.end())
         {
-            LootItem &item = l.items[fi->index];
-            if (!fi->is_looted && !item.is_looted)
+            QuestItemList *ffa_list = ffa_itr->second;
+            for (QuestItemList::const_iterator fi = ffa_list->begin() ; fi != ffa_list->end(); ++fi)
             {
-                b << uint8(fi->index) << item;
-                b << uint8(0);                              // allow loot
-                ++itemsShown;
+                LootItem &item = l.items[fi->index];
+                if (!fi->is_looted && !item.is_looted)
+                {
+                    b << uint8(fi->index) << item;
+                    b << uint8(0);                              // allow loot
+                    ++itemsShown;
+                }
             }
         }
-    }
 
-    QuestItemMap const& lootPlayerNonQuestNonFFAConditionalItems = l.GetPlayerNonQuestNonFFAConditionalItems();
-    QuestItemMap::const_iterator nn_itr = lootPlayerNonQuestNonFFAConditionalItems.find(lv.viewer->GetGUIDLow());
-    if (nn_itr != lootPlayerNonQuestNonFFAConditionalItems.end())
-    {
-        QuestItemList *conditional_list =  nn_itr->second;
-        for (QuestItemList::const_iterator ci = conditional_list->begin() ; ci != conditional_list->end(); ++ci)
+        QuestItemMap const& lootPlayerNonQuestNonFFAConditionalItems = l.GetPlayerNonQuestNonFFAConditionalItems();
+        QuestItemMap::const_iterator nn_itr = lootPlayerNonQuestNonFFAConditionalItems.find(lv.viewer->GetGUIDLow());
+        if (nn_itr != lootPlayerNonQuestNonFFAConditionalItems.end())
         {
-            LootItem &item = l.items[ci->index];
-            if (!ci->is_looted && !item.is_looted)
+            QuestItemList *conditional_list =  nn_itr->second;
+            for (QuestItemList::const_iterator ci = conditional_list->begin() ; ci != conditional_list->end(); ++ci)
             {
-                b << uint8(ci->index) << item;
-                b << uint8(0);                              // allow loot
-                ++itemsShown;
+                LootItem &item = l.items[ci->index];
+                if (!ci->is_looted && !item.is_looted)
+                {
+                    b << uint8(ci->index) << item;
+                    b << uint8(0);                              // allow loot
+                    ++itemsShown;
+                }
             }
         }
     }
