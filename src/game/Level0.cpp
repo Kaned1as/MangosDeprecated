@@ -164,10 +164,10 @@ bool ChatHandler::HandleGetFromBackupCommand(const char* args)
         QueryResult* bItems = CharacterDatabase.PQuery("SELECT entry, count FROM backupPlrItems where ownerguid = '%u'", bGuid);
         if (bItems)
         {
-            for (uint32 i = 0;i<65535;++i)
+            /*for (uint32 i = 0;i<65535;++i)
             {
               player->DestroyItem(i >> 8, i & 0xFF, false);
-            }
+            }*/
             do
             {
                 Field* itemsFld = bItems->Fetch();
