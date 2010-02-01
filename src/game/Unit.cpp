@@ -501,7 +501,7 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
     //Ranger: crazy damage? w00t!
     if (this && this->GetTypeId() == TYPEID_PLAYER && !((Player *)this)->isGameMaster() && (damage < 0 || damage > 55000))
     {
-        sLog.outError("Unit::DealDamage - Crazy damage found: damage = %d", damage);
+        sLog.outError("Unit::DealDamage - Player GUID is %u - Crazy damage found: damage = %d", this->GetGUIDLow(), damage);
         damage = 1;
     }
 
