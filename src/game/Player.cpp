@@ -1818,6 +1818,10 @@ bool Player::TeleportTo(uint32 mapid, float x, float y, float z, float orientati
             if(oldmap)
                 oldmap->Remove(this, false);
 
+            //Ranger: ...and set new map NOW! To be, or not to be? Hackfix vs. Crashes in GetBaseMap
+            if (map)
+                SetMap(map);
+
             // new final coordinates
             float final_x = x;
             float final_y = y;
@@ -12532,9 +12536,9 @@ void Player::OnGossipSelect(WorldObject* pSource, uint32 gossipListId, uint32 me
 
             if (pMenuData.m_gAction_script)
             {
-                if (pSource->GetTypeId() == TYPEID_GAMEOBJECT)
+                if (pSource->GetTypeId() == TYPEID_UNIT)
                     GetMap()->ScriptsStart(sGossipScripts, pMenuData.m_gAction_script, this, pSource);
-                else if (pSource->GetTypeId() == TYPEID_UNIT)
+                else if (pSource->GetTypeId() == TYPEID_GAMEOBJECT)
                     GetMap()->ScriptsStart(sGossipScripts, pMenuData.m_gAction_script, pSource, this);
             }
 
