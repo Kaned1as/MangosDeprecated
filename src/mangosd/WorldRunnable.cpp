@@ -65,7 +65,7 @@ void WorldRunnable::run()
         if(currDiffTime > 60000)
         {
             currDiffTime = 0;
-            WorldDatabase.PExecute("INSERT INTO world_statistics (unixtime, latency) VALUES ('%u', '%u')", realCurrTime, maxlatency);
+            CharacterDatabase.PExecute("INSERT INTO world_statistics (unixtime, latency) VALUES ('%u', '%u')", realCurrTime, maxlatency);
             maxlatency = 0;
         }
 
