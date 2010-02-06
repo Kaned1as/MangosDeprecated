@@ -8203,6 +8203,13 @@ bool Unit::Attack(Unit *victim, bool meleeAttack)
     if(GetTypeId()==TYPEID_PLAYER && IsMounted())
         return false;
 
+    //don't subjugate your friends ;)
+    if(victim->getFaction() == getFaction())
+    {
+        AttackStop();
+        return false;
+    }
+
     // nobody can attack GM in GM-mode
     if(victim->GetTypeId()==TYPEID_PLAYER)
     {

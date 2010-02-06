@@ -3623,9 +3623,6 @@ void Spell::EffectSummon(uint32 i)
         spawnCreature->SavePetToDB(PET_SAVE_AS_CURRENT);
         ((Player*)m_caster)->PetSpellInitialize();
     }
-
-    if(m_caster->GetOwner() && m_caster->GetOwner()->GetTypeId() == TYPEID_PLAYER) //summoned by player object tries to summon another (elementals+snake traps)
-        spawnCreature->setFaction(m_caster->GetOwner()->getFaction());
 }
 
 void Spell::EffectLearnSpell(uint32 i)
@@ -3915,6 +3912,9 @@ void Spell::EffectSummonWild(uint32 i, uint32 forceFaction)
 
             if(forceFaction)
                summon->setFaction(forceFaction);
+
+            if(m_spellInfo->Id == 57879)
+                summon->setFaction(m_caster->getFaction()); //hackfix for Snake Trap
         }
     }
 }
