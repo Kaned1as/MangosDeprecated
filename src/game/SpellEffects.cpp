@@ -3623,6 +3623,9 @@ void Spell::EffectSummon(uint32 i)
         spawnCreature->SavePetToDB(PET_SAVE_AS_CURRENT);
         ((Player*)m_caster)->PetSpellInitialize();
     }
+
+    if(m_caster->GetOwner() && m_caster->GetOwner()->GetTypeId() == TYPEID_PLAYER) //summoned by player object tries to summon another (elementals+snake traps)
+        spawnCreature->setFaction(m_caster->GetOwner()->getFaction());
 }
 
 void Spell::EffectLearnSpell(uint32 i)
