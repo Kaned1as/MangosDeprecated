@@ -6516,8 +6516,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
 
                     if(GetOwner() && pVictim != GetOwner())
 						HandleDummyAuraProc(GetOwner(), damage, triggeredByAura, procSpell, procFlag, procEx, cooldown);
-					
-					if(target != GetOwner()) 
+
+					if(target != GetOwner())
 						target = this;
 
                     basepoints0 = triggerAmount * damage / 100;
@@ -8204,7 +8204,7 @@ bool Unit::Attack(Unit *victim, bool meleeAttack)
         return false;
 
     //don't subjugate your friends ;)
-    if(victim->getFaction() == getFaction())
+    if(victim->getFaction() == getFaction() && GetTypeId() != TYPEID_PLAYER && victim->GetTypeId() != TYPEID_PLAYER)
     {
         AttackStop();
         return false;
@@ -8885,7 +8885,7 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         case SPELLFAMILY_PRIEST:
         {
             //vampiric touch
-            if (spellProto->Id == 64085) 
+            if (spellProto->Id == 64085)
                 return pdamage;
 
             //Ranger: Glyph of Smite
@@ -9483,14 +9483,14 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
             {
                     int32 stepPercent = 20;
                     int32 modPercent = 0;
-    
+
                     bool HoT_found = false;
                     bool glyph_found = false;
-    
+
                     // Glyph of Nourish
                     if (owner->GetDummyAura(62971))
                            glyph_found = true;
-    
+
                     Unit::AuraList const& HoTAuras = pVictim->GetAurasByType(SPELL_AURA_PERIODIC_HEAL);
                     for (Unit::AuraList::const_iterator itr = HoTAuras.begin(); itr != HoTAuras.end(); ++itr)
                     {
@@ -9504,13 +9504,13 @@ uint32 Unit::SpellHealingBonus(Unit *pVictim, SpellEntry const *spellProto, uint
                             stepPercent += 6;
                         HoT_found = true;
                     }
-    
+
                     if(HoT_found)
                     {
                         modPercent += stepPercent;
                         DoneTotalMod *= (modPercent + 100.0f) / 100.0f;
                     }
-    
+
                     break;
                 }
                 break;
