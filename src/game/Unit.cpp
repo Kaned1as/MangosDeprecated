@@ -8469,6 +8469,9 @@ Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself()
 
 Pet* Unit::GetPet() const
 {
+    if (!this || !this->IsInWorld())
+        return NULL;
+
     if(uint64 pet_guid = GetPetGUID())
     {
         if(Pet* pet = GetMap()->GetPet(pet_guid))
