@@ -4845,7 +4845,7 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
             {
                 // Blood Plague
                 // Frost Fever
-                if (m_spellProto->Id == 59921 || m_spellProto->Id == 59879)
+                if (m_spellProto->Id == 55078 || m_spellProto->Id == 55095)
                 {
                     // AP * 0.055 * 1.15 bonus per tick
                     m_modifier.m_amount += int32(caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.055 * 1.15);
