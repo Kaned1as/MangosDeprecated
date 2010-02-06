@@ -4841,6 +4841,17 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 }
                 break;
             }
+            case  SPELLFAMILY_DEATHKNIGHT:
+            {
+                // Blood Plague
+                // Frost Fever
+                if (m_spellProto->Id == 59921 || m_spellProto->Id == 59879)
+                {
+                    // AP * 0.055 * 1.15 bonus per tick
+                    m_modifier.m_amount += int32(caster->GetTotalAttackPowerValue(BASE_ATTACK) * 0.055 * 1.15);
+                    return;
+                }
+            }
             default:
                 break;
         }
