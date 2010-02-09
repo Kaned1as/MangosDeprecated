@@ -168,9 +168,15 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
     }
 
     //Ranger: tele hack AutoBAN in Ulduar
-    if (Map == 603 && Reason == "Tele hack" && Speed > 500.0f)
+    if (Map == 603 && Reason == "Tele hack" && Speed > 300.0f)
     {
         sWorld.BanAccount(BAN_CHARACTER,Player,"30d","Tele hack","Anticheat");
+    }
+
+    //Ranger: tele hack AutoBAN in Ulduar
+    if ((Map == 0 || Map == 1) && Reason == "Tele hack" && Speed > 300.0f)
+    {
+        sWorld.BanAccount(BAN_CHARACTER,Player,"7d","Tele hack","Anticheat");
     }
 
     if(sWorld.GetMvAnticheatKill() && GetPlayer()->isAlive())
