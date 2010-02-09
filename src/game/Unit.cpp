@@ -8500,6 +8500,10 @@ Unit* Unit::GetCharm() const
 
         sLog.outError("Unit::GetCharm: Charmed creature %u not exist.",GUID_LOPART(charm_guid));
         const_cast<Unit*>(this)->SetCharm(NULL);
+
+        //Ranger: чудо-юдо-мега-крашхакфикс! о!
+        if (GetTypeId() == TYPEID_PLAYER)
+            ((Player*)this)->SetMover(NULL);
     }
 
     return NULL;
