@@ -1775,6 +1775,15 @@ bool ChatHandler::HandleTeleCommand(const char * args)
         return false;
     }
 
+    //Ranger: crashfix?
+    if (_player && _player->IsInWorld())
+        if (_player->GetMapId() == tele->mapId && _player->GetMap()->IsBattleGroundOrArena())
+        {
+            SendSysMessage(LANG_CANNOT_GO_TO_BG_FROM_BG);
+            SetSentErrorMessage(true);
+            return false;
+        }
+
     // stop flight if need
     if(_player->isInFlight())
     {
