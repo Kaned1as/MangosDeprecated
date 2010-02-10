@@ -180,7 +180,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
     }
 
     //Ranger: Speed hack AutoBAN in maps 0 & 1
-    if ((Map == 0 || Map == 1) && Reason == "Speed hack" && Speed > 500.0f)
+    if ((Map == 0 || Map == 1) && Reason == "Speed hack" && Val2 > 600)
     {
         sWorld.BanAccount(BAN_CHARACTER,Player,"1d","Speed hack","Anticheat");
     }
