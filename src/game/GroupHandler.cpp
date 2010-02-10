@@ -314,6 +314,16 @@ void WorldSession::HandleGroupSetLeaderOpcode( WorldPacket & recv_data )
         return;
     /********************/
 
+    for (GroupReference *itr = group->GetFirstMember(); itr != NULL; itr = itr->next())
+    {
+        Map *map = itr->getSource()->GetMap();
+        if (map && map->IsDungeon() && (player->GetBoundInstance(itr->getSource()->GetMapId(),itr->getSource()->GetDifficulty(true)) && !itr->getSource()->GetBoundInstance(itr->getSource()->GetMapId(),itr->getSource()->GetDifficulty(true)) || player->GetBoundInstance(itr->getSource()->GetMapId(),itr->getSource()->GetDifficulty(false)) && !itr->getSource()->GetBoundInstance(itr->getSource()->GetMapId(),itr->getSource()->GetDifficulty(false))))
+        {
+            sLog.outError("WorldSession::HandleGroupSetLeaderOpcode: Cannot set player %d to Leader. Maybe exploiting??", player->GetGUIDLow());
+            return;
+        }
+    }
+
     // everything's fine, do it
     group->ChangeLeader(guid);
 }

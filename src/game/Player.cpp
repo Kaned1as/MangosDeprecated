@@ -18808,6 +18808,10 @@ void Player::AddComboPoints(Unit* target, int8 count)
     if(!count)
         return;
 
+    //Ranger: not apply on totems?
+    if (target && target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->isTotem())
+        return;
+
     // without combo points lost (duration checked in aura)
     RemoveSpellsCausingAura(SPELL_AURA_RETAIN_COMBO_POINTS);
 
