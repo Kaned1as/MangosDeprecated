@@ -117,8 +117,15 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         return false;
     }
 
+    /*Ranger: need more reseach!
+    if (GetPlayer()->GetTransport())
+    {
+        sLog.outDebug("Anti__ReportCheat: Player on transport, skipping report...");
+        return false;
+    }*/
+
     //Ranger: skip map 369 - metro
-    if (Map == 369 && (Reason == "Tele hack" || Reason == "Speed hack"))
+    if (Map == 369 && (Reason == "Tele hack" || Reason == "Speed hack") && !GetPlayer()->GetTransport())
         return false;
 
     QueryResult *Res=CharacterDatabase.PQuery("SELECT speed,Val1 FROM cheaters WHERE player='%s' AND reason LIKE '%s' AND Map='%u' AND last_date >= NOW()-300",Player,Reason,Map);
@@ -168,19 +175,19 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
     }
 
     //Ranger: Tele hack AutoBAN in Ulduar
-    if (Map == 603 && Reason == "Tele hack" && Speed > 300.0f)
+    if (Map == 603 && Reason == "Tele hack" && Speed > 400.0f && !GetPlayer()->GetTransport())
     {
         sWorld.BanAccount(BAN_CHARACTER,Player,"30d","Tele hack","Anticheat");
     }
 
     //Ranger: Tele hack AutoBAN in maps 0 & 1
-    if ((Map == 0 || Map == 1) && Reason == "Tele hack" && Speed > 300.0f)
+    if ((Map == 0 || Map == 1) && Reason == "Tele hack" && Speed > 300.0f && !GetPlayer()->GetTransport())
     {
         sWorld.BanAccount(BAN_CHARACTER,Player,"7d","Tele hack","Anticheat");
     }
 
     //Ranger: Speed hack AutoBAN in maps 0 & 1
-    if ((Map == 0 || Map == 1) && Reason == "Speed hack" && Val2 > 600)
+    if ((Map == 0 || Map == 1) && Reason == "Speed hack" && Val2 > 600 && !GetPlayer()->GetTransport())
     {
         sWorld.BanAccount(BAN_CHARACTER,Player,"1d","Speed hack","Anticheat");
     }
