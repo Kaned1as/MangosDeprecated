@@ -5429,7 +5429,7 @@ SpellCastResult Spell::CheckItems()
     Player* p_caster = (Player*)m_caster;
 
     // cast item checks
-    if(m_CastItem)
+    if(m_CastItem && m_CastItem->IsInWorld())
     {
         uint32 itemid = m_CastItem->GetEntry();
         if( !p_caster->HasItemCount(itemid, 1) )
