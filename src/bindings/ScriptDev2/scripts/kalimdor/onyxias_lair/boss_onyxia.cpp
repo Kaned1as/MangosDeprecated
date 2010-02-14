@@ -359,7 +359,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
                 {
                     m_bIsSummoningWhelps = false;
                     m_uiSummonCount = 0;
-                    m_uiSummonWhelpsTimer = 85000;
+                    m_uiSummonWhelpsTimer = 300000;
                 }
             }
             else
@@ -373,7 +373,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
             if(SummonGuardTimer < uiDiff)
             {
                 m_creature->SummonCreature(NPC_GUARD, SpawnLocs[2][0], SpawnLocs[2][1], SpawnLocs[2][2], 0.0f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000);
-                SummonGuardTimer = 30000;
+                SummonGuardTimer = 360000;
             }
             else 
                 SummonGuardTimer -= uiDiff;

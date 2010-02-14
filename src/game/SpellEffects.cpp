@@ -328,7 +328,7 @@ void Spell::EffectSchoolDMG(uint32 effect_idx)
                             if(ihit->effectMask & (1<<effect_idx))
                                 ++count;
 
-                        damage /= count;                    // divide to all targets
+                        m_damage /= count;                    // divide to all targets
                         break;
                     }
                     // percent from health with min
@@ -4579,6 +4579,15 @@ void Spell::EffectWeaponDmg(uint32 i)
         return;
     if(!unitTarget->isAlive())
         return;
+
+    if(m_spellInfo->Id == 68868)
+    {
+        uint32 count = 0;
+        for(std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin();ihit != m_UniqueTargetInfo.end();++ihit)
+            if(ihit->effectMask & (1<<effect_idx))
+                ++count;
+        m_damage /= count;                    // divide to all targets
+    }
 
     // multiple weapon dmg effect workaround
     // execute only the last weapon damage
