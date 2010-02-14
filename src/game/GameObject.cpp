@@ -65,7 +65,7 @@ GameObject::~GameObject()
 void GameObject::AddToWorld()
 {
     ///- Register the gameobject for guid lookup
-    if(!IsInWorld())
+    if(!IsInWorld() && GetGUID() && IS_GAMEOBJECT_GUID(GetGUID()))
         GetMap()->GetObjectsStore().insert<GameObject>(GetGUID(), (GameObject*)this);
 
     Object::AddToWorld();
