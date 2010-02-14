@@ -4584,7 +4584,7 @@ void Spell::EffectWeaponDmg(uint32 i)
     {
         uint32 count = 0;
         for(std::list<TargetInfo>::iterator ihit= m_UniqueTargetInfo.begin();ihit != m_UniqueTargetInfo.end();++ihit)
-            if(ihit->effectMask & (1<<effect_idx))
+            if(ihit->effectMask & (1<<i))
                 ++count;
         m_damage /= count;                    // divide to all targets
     }
