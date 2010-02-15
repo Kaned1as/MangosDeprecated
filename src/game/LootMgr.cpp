@@ -611,7 +611,7 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
     uint16 QI_Count = 0;
     QuestItemMap::const_iterator q_itr = PlayerQuestItems.find(player->GetGUIDLow());
     if (q_itr != PlayerQuestItems.end())
-        QI_Count += q_itr->second->size();
+        QI_Count = q_itr->second->size();
 
     sLog.outDebug("QI: %u, lootSlot: %u", QI_Count, lootSlot);
         
@@ -627,7 +627,7 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
             is_looted = qitem2->is_looted;
         }
     }
-    else
+    else if(lootSlot < items.size() + QI_Count)
     {
         lootSlot -= QI_Count;
 
