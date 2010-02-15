@@ -607,13 +607,20 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
 {
     LootItem* item = NULL;
     bool is_looted = true;
-    if (lootSlot >= items.size())
+
+    uint16 QI_Count = 0;
+    QuestItemMap::const_iterator q_itr = PlayerQuestItems.find(player->GetGUIDLow());
+    if (q_itr != PlayerQuestItems.end())
+        QI_Count += q_itr->second->size();
+
+    sLog.outDetail("QI: %u, lootSlot: %u", QI_Count, lootSlot);
+        
+    if (lootSlot < QI_Count)
     {
-        uint32 questSlot = lootSlot - items.size();
         QuestItemMap::const_iterator itr = PlayerQuestItems.find(player->GetGUIDLow());
-        if (itr != PlayerQuestItems.end() && questSlot < itr->second->size())
+        if (itr != PlayerQuestItems.end() && lootSlot < itr->second->size())
         {
-            QuestItem *qitem2 = &itr->second->at(questSlot);
+            QuestItem *qitem2 = &itr->second->at(lootSlot);
             if(qitem)
                 *qitem = qitem2;
             item = &quest_items[qitem2->index];
@@ -622,6 +629,8 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
     }
     else
     {
+        lootSlot -= QI_Count;
+
         item = &items[lootSlot];
         is_looted = item->is_looted;
         if(item->freeforall)
@@ -702,6 +711,28 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
     size_t count_pos = b.wpos();                            // pos of item count byte
     b << uint8(0);                                          // item count placeholder
 
+    uint16 QI_Count = 0;
+    QuestItemMap const& lootPlayerQuestItems = l.GetPlayerQuestItems();
+    QuestItemMap::const_iterator q_itr = lootPlayerQuestItems.find(lv.viewer->GetGUIDLow());
+    if (q_itr != lootPlayerQuestItems.end())
+    {
+        QI_Count = q_itr->second->size();
+        QuestItemList *q_list = q_itr->second;
+        for (QuestItemList::const_iterator qi = q_list->begin() ; qi != q_list->end(); ++qi)
+        {
+            LootItem &item = l.quest_items[qi->index];
+            if (!qi->is_looted && !item.is_looted)
+            {
+                b << uint8(qi - q_list->begin());
+                b << item;
+                b << uint8(0);                              // allow loot
+                ++itemsShown;
+            }
+        }
+    }
+
+    sLog.outDetail("QuestItemsCount: %u", QI_Count);
+
     switch (lv.permission)
     {
         case GROUP_PERMISSION:
@@ -714,7 +745,7 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
                 {
                     uint8 slot_type = (l.items[i].is_blocked || l.items[i].is_underthreshold) ? 0 : 1;
 
-                    b << uint8(i) << l.items[i];            //send the index and the item if it's not looted, and blocked or under threshold, free for all items will be sent later, only one-player loots here
+                    b << uint8(i + QI_Count) << l.items[i];            //send the index and the item if it's not looted, and blocked or under threshold, free for all items will be sent later, only one-player loots here
                     b << uint8(slot_type);                  // 0 - get 1 - look only
                     ++itemsShown;
                 }
@@ -729,7 +760,7 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
             {
                 if (!l.items[i].is_looted && !l.items[i].freeforall && !l.items[i].conditionId && l.items[i].AllowedForPlayer(lv.viewer))
                 {
-                    b << uint8(i) << l.items[i];            //only send one-player loot items now, free for all will be sent later
+                    b << uint8(i + QI_Count) << l.items[i];            //only send one-player loot items now, free for all will be sent later
                     b << uint8(slot_type);                  // 0 - get 2 - master selection
                     ++itemsShown;
                 }
@@ -738,24 +769,6 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
         }
         default:
             return b;                                       // nothing output more
-    }
-
-    QuestItemMap const& lootPlayerQuestItems = l.GetPlayerQuestItems();
-    QuestItemMap::const_iterator q_itr = lootPlayerQuestItems.find(lv.viewer->GetGUIDLow());
-    if (q_itr != lootPlayerQuestItems.end())
-    {
-        QuestItemList *q_list = q_itr->second;
-        for (QuestItemList::const_iterator qi = q_list->begin() ; qi != q_list->end(); ++qi)
-        {
-            LootItem &item = l.quest_items[qi->index];
-            if (!qi->is_looted && !item.is_looted)
-            {
-                b << uint8(l.items.size() + (qi - q_list->begin()));
-                b << item;
-                b << uint8(0);                              // allow loot
-                ++itemsShown;
-            }
-        }
     }
 
     QuestItemMap const& lootPlayerFFAItems = l.GetPlayerFFAItems();
@@ -768,7 +781,7 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
             LootItem &item = l.items[fi->index];
             if (!fi->is_looted && !item.is_looted)
             {
-                b << uint8(fi->index) << item;
+                b << uint8(fi->index+QI_Count) << item;
                 b << uint8(0);                              // allow loot
                 ++itemsShown;
             }
@@ -785,7 +798,7 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
             LootItem &item = l.items[ci->index];
             if (!ci->is_looted && !item.is_looted)
             {
-                b << uint8(ci->index) << item;
+                b << uint8(ci->index+QI_Count) << item;
                 b << uint8(0);                              // allow loot
                 ++itemsShown;
             }
