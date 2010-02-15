@@ -613,7 +613,7 @@ LootItem* Loot::LootItemInSlot(uint32 lootSlot, Player* player, QuestItem **qite
     if (q_itr != PlayerQuestItems.end())
         QI_Count += q_itr->second->size();
 
-    sLog.outDetail("QI: %u, lootSlot: %u", QI_Count, lootSlot);
+    sLog.outDebug("QI: %u, lootSlot: %u", QI_Count, lootSlot);
         
     if (lootSlot < QI_Count)
     {
@@ -731,7 +731,7 @@ ByteBuffer& operator<<(ByteBuffer& b, LootView const& lv)
         }
     }
 
-    sLog.outDetail("QuestItemsCount: %u", QI_Count);
+    sLog.outDebug("QuestItemsCount: %u", QI_Count);
 
     switch (lv.permission)
     {
