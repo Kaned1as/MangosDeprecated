@@ -210,7 +210,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         }
 
         //second step...
-        QueryResult *dbRes = CharacterDatabase.PQuery("SELECT count(acctid) FROM cheaters WHERE acctid = '%u' AND Map NOT IN ('530', '571') AND last_date >= NOW()-900 ORDER BY entry DESC", Acc);
+        QueryResult *dbRes = CharacterDatabase.PQuery("SELECT count(acctid) FROM cheaters WHERE acctid = '%u' AND Map NOT IN ('530', '571') AND last_date >= NOW()-1200 ORDER BY entry DESC", Acc);
         if (dbRes)
         {
             sum_count = (*dbRes)[0].GetUInt32();
