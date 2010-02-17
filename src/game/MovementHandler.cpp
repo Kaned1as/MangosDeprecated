@@ -186,7 +186,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         //sWorld.BanAccount(BAN_CHARACTER, Player, "1d", "Speed hack", "Anticheat");
     }
 
-    /*
+    
     //Ranger: autoban system
     if (Map != 530 && Map !=571)                    //exception: map 530 & 571 (Outland and Northland)
     {
@@ -194,7 +194,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         uint32 alarm_count = 0;
         uint32 sum_count = 0;
 
-        Map *mymap = GetPlayer()->GetMap();
+        ::Map *mymap = GetPlayer()->GetMap();
     
         if (mymap && mymap->IsDungeon())
             isRaid = true;
@@ -215,7 +215,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
             delete dbRes;
         }
 
-        if ((alarm_count > 0 && alarm_count =< 2) || (sum_count < 3 && sum_count >= 1))
+        if ((alarm_count > 0 && alarm_count <= 2) || (sum_count < 3 && sum_count >= 1))
             GetPlayer()->TeleportToHomebind();            //teleport him to homebind... maybe false detection...
 
         if (alarm_count > 2 || sum_count > 2)
@@ -232,7 +232,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         }
 
     }
-    */
+    
 
 
     if(sWorld.GetMvAnticheatKill() && GetPlayer()->isAlive())
