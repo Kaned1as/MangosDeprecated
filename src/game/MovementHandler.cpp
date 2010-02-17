@@ -163,26 +163,77 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
                                    Pos.str().c_str(),GetPlayer()->getLevel());
     }
 
-    //Ranger: Tele hack AutoBAN in Ulduar
+    //Ranger: Tele hack autoban in Ulduar
     if (Map == 603 && Reason == "Tele hack" && Speed > 300.0f)
     {
         GetPlayer()->TeleportToHomebind();
-        sWorld.BanAccount(BAN_CHARACTER,Player,"30d","Tele hack","Anticheat");
+        sWorld.BanAccount(BAN_CHARACTER, Player,"30d", "Tele hack", "Anticheat");
+        return true;
     }
 
-    //Ranger: Tele hack AutoBAN in maps 0 & 1
+    //Ranger: Tele hack autoban in maps 0 & 1
     if ((Map == 0 || Map == 1) && Reason == "Tele hack" && Speed > 300.0f)
     {
         GetPlayer()->TeleportToHomebind();
-        sWorld.BanAccount(BAN_CHARACTER,Player,"7d","Tele hack","Anticheat");
+        sWorld.BanAccount(BAN_CHARACTER, Player, "7d", "Tele hack", "Anticheat");
+        return true;
     }
 
-    //Ranger: Speed hack AutoBAN in maps 0 & 1
+    //Ranger: Speed hack autoban in maps 0 & 1
     if ((Map == 0 || Map == 1) && Reason == "Speed hack" && Val2 > 600)
     {
         GetPlayer()->TeleportToHomebind();
-        //sWorld.BanAccount(BAN_CHARACTER,Player,"1d","Speed hack","Anticheat");
+        //sWorld.BanAccount(BAN_CHARACTER, Player, "1d", "Speed hack", "Anticheat");
     }
+
+    /*
+    //Ranger: autoban system
+    if (Map != 530 && Map !=571)                    //exception: map 530 & 571 (Outland and Northland)
+    {
+        bool isRaid = false;
+        uint32 alarm_count = 0;
+        uint32 sum_count = 0;
+
+        Map *mymap = GetPlayer()->GetMap();
+    
+        if (mymap && mymap->IsDungeon())
+            isRaid = true;
+
+        //first step...
+        QueryResult *countRes = CharacterDatabase.PQuery("SELECT count FROM cheaters WHERE player='%s' AND reason LIKE '%s' AND Map='%u' AND last_date >= NOW()-300", Player, Reason, Map);
+        if (countRes)
+        {
+            alarm_count = (*countRes)[0].GetUInt32();
+            delete countRes;
+        }
+
+        //second step...
+        QueryResult *dbRes = CharacterDatabase.PQuery("SELECT count(acctid) FROM cheaters WHERE acctid = '%u' AND Map NOT IN ('530', '571') AND last_date >= NOW()-900 ORDER BY entry DESC", Player);
+        if (dbRes)
+        {
+            sum_count = (*dbRes)[0].GetUInt32();
+            delete dbRes;
+        }
+
+        if (alarm_count =< 2 || (sum_count < 3 && sum_count >= 1))
+            GetPlayer()->TeleportToHomebind();            //teleport him to homebind... maybe false detection...
+
+        if (alarm_count > 2 || sum_count > 2)
+        {
+            GetPlayer()->TeleportToHomebind();            //teleport him to homebind...
+    
+            //...and ban!!!
+            if (isRaid)
+                sWorld.BanAccount(BAN_CHARACTER, Player, "30d", Reason, "Anticheat");
+            else
+                sWorld.BanAccount(BAN_CHARACTER, Player, "1d", Reason, "Anticheat");
+
+            return true;
+        }
+
+    }
+    */
+
 
     if(sWorld.GetMvAnticheatKill() && GetPlayer()->isAlive())
     {
@@ -804,6 +855,7 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket &recv_data)
     if(_player->m_mover->GetGUID() != guid)
     {
         sLog.outError("HandleSetActiveMoverOpcode: incorrect mover guid: mover is " I64FMT " and should be " I64FMT, _player->m_mover->GetGUID(), guid);
+        _player->GetSession()->KickPlayer();                    //Ranger: kick is good?
         return;
     }
 }
