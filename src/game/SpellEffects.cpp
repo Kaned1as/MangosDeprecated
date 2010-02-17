@@ -1865,8 +1865,24 @@ void Spell::EffectDummy(uint32 i)
             if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0000000000002000))
             {
                 if (unitTarget)
-                    m_caster->CastCustomSpell(unitTarget, 52042, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
-                return;
+               {
+                   if (Unit *owner = m_caster->GetOwner())
+                   damage += int32(owner->SpellBaseHealingBonus(GetSpellSchoolMask(m_spellInfo)) * 0.045f);
+                   // Restorative Totems (Healing Stream Totem)
+                   if (Unit *owner = m_caster->GetOwner())
+                  {
+                       Unit::AuraList const& mDummyAuras = owner->GetAurasByType(SPELL_AURA_DUMMY);
+                       for(Unit::AuraList::const_iterator i = mDummyAuras.begin(); i != mDummyAuras.end(); ++i)
+                           if (((*i)->GetId() == 16187) || ((*i)->GetId() == 16205) || ((*i)->GetId() == 16206) )
+                           damage+=(*i)->GetModifier()->m_amount * damage / 100;
+                   }  
+                   // Glyph Healing Stream Totem
+                   if (Unit *owner = m_caster->GetOwner())
+                       if (Aura *dummy = owner->GetDummyAura(55456))
+                           damage+=dummy->GetModifier()->m_amount * damage / 100;
+                     m_caster->CastCustomSpell(unitTarget, 52042, &damage, 0, 0, true, 0, 0, m_originalCasterGUID);
+               }
+               return;
             }
             // Mana Spring Totem
             if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0000000000004000))
