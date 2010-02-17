@@ -179,14 +179,16 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         return true;
     }
 
+    /*
     //Ranger: Speed hack autoban in maps 0 & 1
     if ((Map == 0 || Map == 1) && Reason == "Speed hack" && Val2 > 600)
     {
         GetPlayer()->TeleportToHomebind();
         //sWorld.BanAccount(BAN_CHARACTER, Player, "1d", "Speed hack", "Anticheat");
     }
+    */
 
-    
+
     //Ranger: autoban system
     if (Map != 530 && Map !=571)                    //exception: map 530 & 571 (Outland and Northland)
     {
