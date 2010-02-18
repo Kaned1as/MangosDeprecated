@@ -5428,6 +5428,9 @@ SpellCastResult Spell::CheckItems()
 
     Player* p_caster = (Player*)m_caster;
 
+    if (!p_caster || !p_caster->IsInWorld())
+        return SPELL_FAILED_DONT_REPORT;
+
     // cast item checks
     if(m_CastItem && m_CastItem->IsInWorld())
     {
