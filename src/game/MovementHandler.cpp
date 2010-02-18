@@ -248,6 +248,9 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
             return true;
         }
 
+        if (isRaid)
+            GetPlayer()->TeleportToHomebind();            //teleport him to homebind...
+
     }
     
 
