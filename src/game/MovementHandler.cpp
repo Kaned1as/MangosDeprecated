@@ -196,6 +196,9 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         uint32 alarm_count = 0;
         uint32 sum_count = 0;
 
+        uint32 count_ban = 0;
+        std::stringstream banduration;
+
         ::Map *mymap = GetPlayer()->GetMap();
     
         if (mymap && mymap->IsDungeon())
@@ -222,13 +225,25 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
 
         if (alarm_count > 1 || sum_count > 2)
         {
+            QueryResult *loginres = loginDatabase.PQuery("SELECT count(id) FROM account_banned WHERE id = '%u' AND bannedby = 'Anticheat'", Acc);
+            if (loginres)
+            {
+                count_ban = (*loginres)[0].GetUInt32();
+                delete loginres;
+            }
+
+            if (count_ban > 0)
+                banduration << (1 + count_ban) << "d";
+            else
+                banduration << "1d";
+
             GetPlayer()->TeleportToHomebind();            //teleport him to homebind...
     
             //...and ban!!!
             if (isRaid)
                 sWorld.BanAccount(BAN_CHARACTER, Player, "30d", Reason, "Anticheat");
             else
-                sWorld.BanAccount(BAN_CHARACTER, Player, "1d", Reason, "Anticheat");
+                sWorld.BanAccount(BAN_CHARACTER, Player, banduration.str().c_str(), Reason, "Anticheat");
 
             return true;
         }
