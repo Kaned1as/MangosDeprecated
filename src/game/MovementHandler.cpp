@@ -872,6 +872,12 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket &recv_data)
     uint64 guid;
     recv_data >> guid;
 
+    //Ranger: temp! only for debug!
+    if (!_player || !_player->IsInWorld() || !_player->m_mover || !_player->m_mover->IsInWorld())
+    {
+        sLog.outError("HandleSetActiveMoverOpcode: _player or _player->m_mover is NULL or not present in world! Crash???");
+    }
+
     if(_player->m_mover->GetGUID() != guid)
     {
         sLog.outError("HandleSetActiveMoverOpcode: incorrect mover guid: mover is " I64FMT " and should be " I64FMT, _player->m_mover->GetGUID(), guid);
