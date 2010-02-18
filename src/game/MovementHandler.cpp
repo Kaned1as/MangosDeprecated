@@ -217,10 +217,10 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
             delete dbRes;
         }
 
-        if ((alarm_count > 0 && alarm_count <= 2) || (sum_count < 3 && sum_count >= 1))
+        if ((alarm_count > 0 && alarm_count < 2) || (sum_count < 3 && sum_count >= 1))
             GetPlayer()->TeleportToHomebind();            //teleport him to homebind... maybe false detection...
 
-        if (alarm_count > 2 || sum_count > 2)
+        if (alarm_count > 1 || sum_count > 2)
         {
             GetPlayer()->TeleportToHomebind();            //teleport him to homebind...
     
