@@ -3436,9 +3436,8 @@ void Spell::EffectApplyAreaAura(uint32 i)
 void Spell::EffectSummonType(uint32 i)
 {
     //Ranger: temp!
-    int32 amount = damage > 0 ? damage : 1;
-    if( amount > 10 )
-         amount = 1;
+    if( damage > 10 )
+         damage = 1;
 
     uint32 prop_id = m_spellInfo->EffectMiscValueB[i];
     SummonPropertiesEntry const *summon_prop = sSummonPropertiesStore.LookupEntry(prop_id);
