@@ -258,7 +258,7 @@ int WorldSocket::open (void *a)
     // Register with ACE Reactor
     if (reactor ()->register_handler(this, ACE_Event_Handler::READ_MASK | ACE_Event_Handler::WRITE_MASK) == -1)
     {
-        sLog.outError ("WorldSocket::open: unable to register client handler errno = %s", ACE_OS::strerror (errno));
+        sLog.outError ("WorldSocket::open: unable to register client handler errno = %s, FDSIZE: %u", ACE_OS::strerror (errno), FD_SETSIZE);
         return -1;
     }
 

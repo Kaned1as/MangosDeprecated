@@ -730,6 +730,11 @@ void Spell::prepareDataForTriggerSystem()
                 if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0001000900B80400))
                     m_canTrigger = true;
                 break;
+            case SPELLFAMILY_SHAMAN:
+                // Windfury proc
+                if(m_spellInfo->SpellFamilyFlags & UI64LIT(0x0000000000800000))
+                    m_canTrigger = true;
+                break;
             default:
                 break;
         }
