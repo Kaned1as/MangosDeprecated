@@ -170,6 +170,10 @@ uint32 GetExplicitDiscoverySpell(uint32 spellId, Player* player)
     SkillLineAbilityMapBounds bounds = sSpellMgr.GetSkillLineAbilityMapBounds(spellId);
     uint32 skillvalue = bounds.first != bounds.second ? player->GetSkillValue(bounds.first->second->skillId) : 0;
 
+    //Ranger: hackfix for Book of Glyph Mastery
+    if( spellId == 64323 )
+        skillvalue = player->GetSkillValue(SKILL_INSCRIPTION);
+
     float full_chance = 0;
     for(SkillDiscoveryList::const_iterator item_iter = tab->second.begin(); item_iter != tab->second.end(); ++item_iter)
         if (item_iter->reqSkillValue <= skillvalue)
