@@ -49,6 +49,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace SOCKETS_NAMESPACE {
 #endif
 
+#define MAX_SIZE_SOCKET 20642
 
 //#ifdef _DEBUG
 //#define DEB(x) x; fflush(stderr);
@@ -322,9 +323,9 @@ int SocketHandler::Select(struct timeval *tsel)
 	size_t ignore = 0;
 	while (m_add.size() > ignore)
 	{
-		if (m_sockets.size() >= FD_SETSIZE)
+		 if (m_sockets.size() >= MAX_SIZE_SOCKET)
 		{
-			LogError(NULL, "Select", (int)m_sockets.size(), "FD_SETSIZE reached", LOG_LEVEL_WARNING);
+			LogError(NULL, "Select", (int)m_sockets.size(), "MAX_SIZE_SOCKET reached", LOG_LEVEL_WARNING);
 			break;
 		}
 		socket_m::iterator it = m_add.begin();

@@ -46,6 +46,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #include <map>
 
+#define MAX_SIZE_SOCKET 20642
+
 #include "TcpSocket.h"
 #include "Utility.h"
 #include "Ipv4Address.h"
@@ -202,7 +204,7 @@ bool TcpSocket::Open(SocketAddress& ad,SocketAddress& bind_ad,bool skip_socks)
 		SetCloseAndDelete();
 		return false;
 	}
-	if (Handler().GetCount() >= FD_SETSIZE)
+	if (Handler().GetCount() >= MAX_SIZE_SOCKET)
 	{
 		Handler().LogError(this, "Open", 0, "no space left in fd_set", LOG_LEVEL_FATAL);
 		SetCloseAndDelete();
