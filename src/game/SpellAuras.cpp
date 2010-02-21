@@ -4668,7 +4668,7 @@ void Aura::HandlePeriodicEnergize(bool apply, bool Real)
                     if (caster->HasAura(54832))
                         caster->CastSpell(caster,54833,true,NULL,this);
 
-                    m_modifier.m_amount = int32(caster->GetCreateMana() * GetBasePoints() / (100 * GetAuraMaxTicks()));
+                    m_modifier.m_amount = GetAuraMaxTicks() ? int32(caster->GetCreateMana() * GetBasePoints() / (100 * GetAuraMaxTicks())) : 0;
                 }
                 break;
             }
