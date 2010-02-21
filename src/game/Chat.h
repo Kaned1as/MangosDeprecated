@@ -68,6 +68,8 @@ class ChatHandler
         void PSendSysMessage(         const char *format, ...) ATTR_PRINTF(2,3);
         void PSendSysMessage(         int32     entry, ...  );
 
+        void SendGMSysMessage(const char *str, AccountTypes sec);
+
         int ParseCommands(const char* text);
 
         bool isValidChatMessage(const char* msg);

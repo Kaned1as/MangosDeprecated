@@ -32,6 +32,7 @@
 #include "InstanceSaveMgr.h"
 #include "ObjectMgr.h"
 #include "World.h"
+#include "Chat.h"
 
 //#define __ANTI_DEBUG__
 
@@ -117,11 +118,13 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         return false;
     }
 
+    bool isFirstAlarm = false;
+
     QueryResult *Res=CharacterDatabase.PQuery("SELECT speed,Val1 FROM cheaters WHERE player='%s' AND reason LIKE '%s' AND Map='%u' AND last_date >= NOW()-300",Player,Reason,Map);
     if(Res)
     {
         Field* Fields = Res->Fetch();
-        
+
         std::stringstream Query;
         Query << "UPDATE cheaters SET count=count+1,last_date=NOW()";
         Query.precision(5);
@@ -161,6 +164,8 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
                                    "VALUES ('%s','%u','%s','%f','1',NOW(),NOW(),'%s','%f','%u','%u','%s','%u')",
                                    Player,Acc,Reason,Speed,Op,Val1,Val2,Map,
                                    Pos.str().c_str(),GetPlayer()->getLevel());
+
+        isFirstAlarm = true;
     }
 
     //Ranger: Tele hack autoban in Ulduar
@@ -204,6 +209,14 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         if (mymap && mymap->IsDungeon())
             isRaid = true;
 
+        if (isFirstAlarm)
+        {
+            GetPlayer()->Anti__SetLastTeleTime(time(NULL));
+            std::stringstream anticheatmessage;
+            anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r Вниманию всех сотрудников технической поддержки! Обнаружен читер, ник: " << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ", причина: " << Reason << ". Требуется проверка/наблюдение. Возможен факт ложного срабатывания. Удачной охоты.";
+            ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
+        }
+
         //first step...
         QueryResult *countRes = CharacterDatabase.PQuery("SELECT count FROM cheaters WHERE player='%s' AND reason LIKE '%s' AND Map='%u' AND last_date >= NOW()-300", Player, Reason, Map);
         if (countRes)
@@ -221,7 +234,10 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         }
 
         if ((alarm_count > 0 && alarm_count < 2) || (sum_count < 3 && sum_count > 1))
+        {
+            GetPlayer()->Anti__SetLastTeleTime(time(NULL));
             GetPlayer()->TeleportToHomebind();            //teleport him to homebind... maybe false detection...
+        }
 
         if (alarm_count > 1 || sum_count > 2)
         {
@@ -249,7 +265,10 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         }
 
         if (isRaid)
-            GetPlayer()->TeleportToHomebind();            //teleport him to homebind...
+        {
+            GetPlayer()->Anti__SetLastTeleTime(time(NULL));
+            GetPlayer()->TeleportToHomebind();            //teleport him to homebind... maybe false detection...
+        }
 
     }
     

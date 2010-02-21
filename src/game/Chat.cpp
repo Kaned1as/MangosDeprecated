@@ -815,6 +815,24 @@ void ChatHandler::SendGlobalSysMessage(const char *str)
     delete [] buf;
 }
 
+void ChatHandler::SendGMSysMessage(const char *str, AccountTypes sec)
+{
+    // Chat output
+    WorldPacket data;
+
+    // need copy to prevent corruption by strtok call in LineFromMessage original string
+    char* buf = mangos_strdup(str);
+    char* pos = buf;
+
+    while(char* line = LineFromMessage(pos))
+    {
+        FillSystemMessageData(&data, line);
+        sWorld.SendGMGlobalMessage(&data, sec);
+    }
+
+    delete [] buf;
+}
+
 void ChatHandler::SendSysMessage(int32 entry)
 {
     SendSysMessage(GetMangosString(entry));

@@ -1742,6 +1742,23 @@ void World::SendGlobalMessage(WorldPacket *packet, WorldSession *self, uint32 te
     }
 }
 
+/// Send a packet to all GMs (except self if mentioned)
+void World::SendGMGlobalMessage(WorldPacket *packet, AccountTypes sec, WorldSession *self)
+{
+    SessionMap::const_iterator itr;
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    {
+        if (itr->second &&
+            itr->second->GetPlayer() &&
+            itr->second->GetPlayer()->IsInWorld() &&
+            itr->second != self &&
+            itr->second->GetSecurity() >= sec)
+        {
+            itr->second->SendPacket(packet);
+        }
+    }
+}
+
 namespace MaNGOS
 {
     class WorldWorldTextBuilder
