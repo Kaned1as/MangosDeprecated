@@ -2178,6 +2178,10 @@ Creature* Player::GetNPCIfCanInteractWith(uint64 guid, uint32 npcflagmask)
     if(!unit->IsWithinDistInMap(this,INTERACTION_DISTANCE))
         return NULL;
 
+    //Ranger: 
+    if (!isAlive() && !(unit->isSpiritHealer() || unit->isSpiritGuide()))
+        return NULL;
+
     return unit;
 }
 
