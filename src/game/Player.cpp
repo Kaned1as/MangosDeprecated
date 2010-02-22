@@ -2180,7 +2180,10 @@ Creature* Player::GetNPCIfCanInteractWith(uint64 guid, uint32 npcflagmask)
 
     //Ranger: 
     if (!isAlive() && !(unit->isSpiritHealer() || unit->isSpiritGuide()))
+    {
+        SendEquipError( EQUIP_ERR_YOU_ARE_DEAD, NULL, NULL );
         return NULL;
+    }
 
     return unit;
 }
