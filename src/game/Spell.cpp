@@ -3141,6 +3141,11 @@ void Spell::SendCastResult(Player* caster, SpellEntry const* spellInfo, uint8 ca
                     break;
             }
             break;
+        case SPELL_FAILED_REAGENTS:
+            // normally client checks reagents, just some script effects here
+            if(spellInfo->Id == 46584)                      // Raise Dead
+                data << uint32(37201);                      // Corpse Dust
+            break;
         case SPELL_FAILED_TOTEMS:
             if(spellInfo->Totem[0])
                 data << uint32(spellInfo->Totem[0]);
