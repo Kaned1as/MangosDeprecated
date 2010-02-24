@@ -189,6 +189,21 @@ bool ChatHandler::HandleGMCommand(const char* args)
     return false;
 }
 
+// Ranger: GM messages staff
+bool ChatHandler::HandleGMAnnounceCommand(const char* args)
+{
+    const char* Player = m_session ? m_session->GetPlayer()->GetName() : "CONSOLE";
+
+    if(!*args)
+        return false;
+
+    std::stringstream argstr;
+    argstr << "|c0000FF00[Сообщение команды]|r<" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ">: " << args;
+
+    SendGMSysMessage(argstr.str().c_str(), SEC_MODERATOR);
+    return true;
+}
+
 // Enables or disables hiding of the staff badge
 bool ChatHandler::HandleGMChatCommand(const char* args)
 {
