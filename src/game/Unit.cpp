@@ -8490,7 +8490,7 @@ Unit* Unit::GetCharm() const
 
         //Ranger: чудо-юдо-мега-крашхакфикс! о!
         if (GetTypeId() == TYPEID_PLAYER)
-            ((Player*)this)->SetMover(this);
+            ((Player*)this)->SetMover((Player*)this);
     }
 
     return NULL;
