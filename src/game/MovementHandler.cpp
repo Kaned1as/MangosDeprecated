@@ -888,6 +888,7 @@ void WorldSession::HandleSetActiveMoverOpcode(WorldPacket &recv_data)
     if (!_player || !_player->IsInWorld() || !_player->m_mover || !_player->m_mover->IsInWorld())
     {
         sLog.outError("HandleSetActiveMoverOpcode: _player or _player->m_mover is NULL or not present in world!");
+        _player->GetSession()->KickPlayer();                    //Ranger: kick is good?
         return;
     }
 
