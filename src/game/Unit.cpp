@@ -2833,7 +2833,12 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
 
     // Check for immune
     if (pVictim->IsImmunedToSpell(spell))
-        return SPELL_MISS_IMMUNE;
+    {
+        if (spell->Id == 64382)
+            pVictim->RemoveAurasAtMechanicImmunity(MECHANIC_IMMUNE_SHIELD, 64382, true);    //Ranger: Shattering Throw - removing any invulnerabilities
+        else
+            return SPELL_MISS_IMMUNE;
+    }
 
     // All positive spells can`t miss
     // TODO: client not show miss log for this spells - so need find info for this in dbc and use it!
