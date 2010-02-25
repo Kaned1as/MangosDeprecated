@@ -5394,6 +5394,17 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                         ((Player*)m_caster)->learnSpell(discoveredSpell, false);
                     return;
                 }
+                case 65917:                                 // Magic Rooster
+                {
+                    if(!m_caster || !m_caster->IsInWorld() || m_caster->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    m_caster->RemoveAurasDueToSpell(65917);
+                    uint32 spells[3] = { 66122, 66123, 66124 };
+                    uint8 random = urand(0,2);
+                    m_caster->CastSpell(m_caster, spells[random], true);
+                    return;
+                }
             }
             break;
         }
