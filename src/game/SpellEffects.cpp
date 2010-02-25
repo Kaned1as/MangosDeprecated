@@ -6083,8 +6083,16 @@ void Spell::EffectSummonTotem(uint32 i, uint8 slot)
 
     if (damage)                                             // if not spell info, DB values used
     {
-        pTotem->SetMaxHealth(damage);
-        pTotem->SetHealth(damage);
+        if (m_caster && m_caster->IsInWorld() && m_caster->GetTypeId()==TYPEID_PLAYER && m_spellInfo->Id == 16190)          //Ranger: Mana Tide Totem - health based on caster's health
+        {
+            pTotem->SetMaxHealth(uint32(m_caster->GetHealth() * 0.10f));
+            pTotem->SetHealth(uint32(m_caster->GetHealth() * 0.10f));
+        } 
+        else
+        {
+            pTotem->SetMaxHealth(damage);
+            pTotem->SetHealth(damage);
+        }
     }
 
     pTotem->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
