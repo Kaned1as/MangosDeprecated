@@ -75,6 +75,10 @@ class ReactorRunnable : protected ACE_Task_Base
             #endif
 
             m_Reactor = new ACE_Reactor (imp, 1);
+
+            sLog.outError("ACE MAXHANDLES = %i", ACE::max_handles());
+            ACE::set_handle_limit(8096);
+
         }
 
         virtual ~ReactorRunnable ()
@@ -260,7 +264,7 @@ WorldSocketMgr::StartReactiveIO (ACE_UINT16 port, const char* address)
 
     ACE_INET_Addr listen_addr (port, address);
 
-    if (acc->open (listen_addr, m_NetThreads[0].GetReactor (), ACE_NONBLOCK) == -1)
+    if (acc->open (listen_addr, m_NetThreads[0].GetReactor (), ACE_NONBLOCK, 0) == -1)
     {
         sLog.outError ("Failed to open acceptor ,check if the port is free");
         return -1;
