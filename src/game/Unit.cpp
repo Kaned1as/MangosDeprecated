@@ -2835,7 +2835,7 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
     if (pVictim->IsImmunedToSpell(spell))
     {
         if (spell->Id == 64382)
-            pVictim->RemoveAurasAtMechanicImmunity(MECHANIC_IMMUNE_SHIELD, 64382, false);    //Ranger: Shattering Throw - removing any invulnerabilities
+            pVictim->RemoveAurasByMechanic(MECHANIC_IMMUNE_SHIELD);    //Ranger: Shattering Throw - removing any invulnerabilities
         else
             return SPELL_MISS_IMMUNE;
     }
@@ -13172,6 +13172,25 @@ void Unit::RemoveAurasAtMechanicImmunity(uint32 mechMask, uint32 exceptSpellId, 
         else if (spell->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY)
             ++iter;
         else if (GetSpellMechanicMask(spell, iter->second->GetEffIndex()) & mechMask)
+        {
+            RemoveAurasDueToSpell(spell->Id);
+            if(auras.empty())
+                break;
+            else
+                iter = auras.begin();
+        }
+        else
+            ++iter;
+    }
+}
+
+void Unit::RemoveAurasByMechanic(uint32 mechMask)
+{
+    Unit::AuraMap& auras = GetAuras();
+    for(Unit::AuraMap::iterator iter = auras.begin(); iter != auras.end();)
+    {
+        SpellEntry const *spell = iter->second->GetSpellProto();
+        if (spell->Mechanic & mechMask)
         {
             RemoveAurasDueToSpell(spell->Id);
             if(auras.empty())
