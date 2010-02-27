@@ -228,6 +228,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(time(NULL));
             //GetPlayer()->TeleportToHomebind();            //teleport him to homebind... maybe false detection...
+            return true;
         }
 
         if (alarm_count > 1 || sum_count > 2)
