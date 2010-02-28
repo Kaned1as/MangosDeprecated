@@ -501,7 +501,7 @@ uint32 Unit::DealDamage(Unit *pVictim, uint32 damage, CleanDamage const* cleanDa
     //Ranger: crazy damage? w00t!
     if (this && this->GetTypeId() == TYPEID_PLAYER && !((Player *)this)->isGameMaster() && (damage < 0 || damage > 55000))
     {
-        sLog.outError("Unit::DealDamage - Player GUID is %u - Crazy damage found: damage = %d", this->GetGUIDLow(), damage);
+        sLog.outError("Unit::DealDamage - Player GUID is %u - Crazy damage found: damage = %d, spell: %u", this->GetGUIDLow(), damage, spellProto ? spellProto->Id : 0);
         damage = 1;
     }
 
@@ -2835,7 +2835,7 @@ SpellMissInfo Unit::SpellHitResult(Unit *pVictim, SpellEntry const *spell, bool 
     if (pVictim->IsImmunedToSpell(spell))
     {
         if (spell->Id == 64382)
-            pVictim->RemoveAurasByMechanic(MECHANIC_IMMUNE_SHIELD);    //Ranger: Shattering Throw - removing any invulnerabilities
+            pVictim->RemoveAurasBySpellMechanic(MECHANIC_IMMUNE_SHIELD);    //Ranger: Shattering Throw - removing any invulnerabilities
         else
             return SPELL_MISS_IMMUNE;
     }
@@ -13184,7 +13184,7 @@ void Unit::RemoveAurasAtMechanicImmunity(uint32 mechMask, uint32 exceptSpellId, 
     }
 }
 
-void Unit::RemoveAurasByMechanic(uint32 mechMask)
+void Unit::RemoveAurasBySpellMechanic(uint32 mechMask)
 {
     Unit::AuraMap& auras = GetAuras();
     for(Unit::AuraMap::iterator iter = auras.begin(); iter != auras.end();)
