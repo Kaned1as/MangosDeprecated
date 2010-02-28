@@ -176,17 +176,8 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         return true;
     }
 
-    if (isFirstAlarm && Map == 530)
-    {
-        GetPlayer()->Anti__SetLastTeleTime(time(NULL));
-        std::stringstream anticheatmessage;
-        anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r |c00F074FEВниманию всех сотрудников технической поддержки! Обнаружен читер, ник: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c00F074FE, причина: " << Reason << ". Требуется проверка/наблюдение. ВНИМАНИЕ! Большая вероятность ложного срабатывания!|r";
-        ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
-        return true;
-    }
-
     //Ranger: autoban system
-    if (Map != 530 && Map !=571)                    //exception: map 530 & 571 (Outland and Northland)
+    if (GetPlayer())
     {
         bool isRaid = false;
         uint32 alarm_count = 0;
@@ -200,12 +191,30 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         if (mymap && mymap->IsDungeon())
             isRaid = true;
 
-        if (isFirstAlarm)
+        if (isFirstAlarm && (Map != 530 && Map !=571))
         {
             GetPlayer()->Anti__SetLastTeleTime(time(NULL));
             std::stringstream anticheatmessage;
             anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r |c0000FF00Вниманию всех сотрудников технической поддержки! Обнаружен читер, ник: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, причина: " << Reason << ". Требуется проверка/наблюдение. Возможен факт ложного срабатывания. Удачной охоты.|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
+        }
+
+        if (isFirstAlarm && Map == 530)
+        {
+            GetPlayer()->Anti__SetLastTeleTime(time(NULL));
+            std::stringstream anticheatmessage;
+            anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r |c00F074FEВниманию всех сотрудников технической поддержки! Обнаружен читер, ник: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c00F074FE, причина: " << Reason << ". Требуется проверка/наблюдение. ВНИМАНИЕ! Высокая вероятность ложного срабатывания!|r";
+            ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
+            return true;
+        }
+
+        if (isFirstAlarm && Map == 571)
+        {
+            GetPlayer()->Anti__SetLastTeleTime(time(NULL));
+            std::stringstream anticheatmessage;
+            anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r Вниманию всех сотрудников технической поддержки! Обнаружен читер, ник: " << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ", причина: " << Reason << ". Требуется проверка/наблюдение. |cffff0000ВНИМАНИЕ! Очень высокая вероятность ложного срабатывания!|r";
+            ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
+            return true;
         }
 
         //first step...
