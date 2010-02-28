@@ -265,6 +265,16 @@ AC_SUBST(MANGOS_LIBS)
 
 ## Set output files.
 AC_CONFIG_HEADERS([config.h])
+
+AC_SEARCH_LIBS(poll, [poll], [AC_DEFINE(HAVE_POLL, 1, [Define to 1 if the OS is usabl... err, has poll().])])
+
+AH_TOP([
+#ifndef AC_CONFIG_H
+#define AC_CONFIG_H
+])
+
+AH_BOTTOM([#endif /* !AC_CONFIG_H */])
+
 AC_CONFIG_FILES([
    dep/include/Makefile
    dep/lib/Makefile
