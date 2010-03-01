@@ -240,7 +240,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
             return true;
         }
 
-        if (alarm_count > 1 || sum_count > 2)
+        if ((alarm_count > 1 || sum_count > 2) && Map != 571)
         {
             QueryResult *loginres = loginDatabase.PQuery("SELECT count(id) FROM account_banned WHERE id = '%u' AND bannedby = 'Anticheat'", Acc);
             if (loginres)
