@@ -258,6 +258,8 @@ int WorldSocket::open (void *a)
     // Register with ACE Reactor
     if (reactor ()->register_handler(this, ACE_Event_Handler::READ_MASK | ACE_Event_Handler::WRITE_MASK) == -1)
     {
+        ACE::set_handle_limit(4096);
+        sLog.outError ("Max current handles prohibited by ACE: %u \n value of FD_SETSIZE: %u \n value of ACE FD_SETSIZE: %u", ACE::max_handles(), FD_SETSIZE, ACE_FD_SETSIZE);
         sLog.outError ("WorldSocket::open: unable to register client handler errno = %s", ACE_OS::strerror (errno));
         return -1;
     }
