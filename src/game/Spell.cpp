@@ -5174,6 +5174,10 @@ SpellCastResult Spell::CheckCasterAuras() const
         }
     }
 
+    //Ranger: Pain Suppression allow use in stun only is active Glyph of Pain Suppression
+    if (unitflag & UNIT_FLAG_STUNNED && m_spellInfo->Id == 33206 && !m_caster->GetDummyAura(63248))
+        prevented_reason = SPELL_FAILED_STUNNED;
+
     // Attr must make flag drop spell totally immune from all effects
     if (prevented_reason != SPELL_CAST_OK)
     {
