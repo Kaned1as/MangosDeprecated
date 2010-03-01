@@ -265,6 +265,9 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
             return true;
         }
 
+        if (Map == 571 && (alarm_count > 6 || sum_count > 15))
+            sWorld.BanAccount(BAN_CHARACTER, Player, "-1d", "cheater idiot!", "Anticheat");
+
         if (isFirstAlarm && !isRaid)
             return true;
 
