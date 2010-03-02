@@ -1623,6 +1623,10 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 // Frenzied Regeneration and Savage Defense
                 if( spellInfo_1->Id == 22842 && spellInfo_2->Id == 62606 || spellInfo_2->Id == 22842 && spellInfo_1->Id == 62606 )
                     return false;
+
+                // Ranger: Lacerate and Moonfire
+                if( spellInfo_1->SpellFamilyFlags == UI64LIT(0x00000002) && spellInfo_2->SpellFamilyFlags == UI64LIT(0x10000000000) || spellInfo_2->SpellFamilyFlags == UI64LIT(0x00000002) && spellInfo_1->SpellFamilyFlags == UI64LIT(0x10000000000) )
+                    return false;
             }
 
             // Leader of the Pack and Scroll of Stamina (multi-family check)
