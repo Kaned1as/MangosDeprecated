@@ -13169,8 +13169,8 @@ bool Unit::HandleMendingAuraProc( Aura* triggeredByAura )
                 triggeredByAura->SetInUse(false);
             }
 
-            //Ranger: www.wowwiki.com/Prayer_of_Mending - Prayer of Mending receives 42.86% of Bonus Healing effects per charge
-            heal += int32(caster->SpellBaseHealingBonus(GetSpellSchoolMask(spellProto)) * 0.4286f);
+            //Ranger: www.wowwiki.com/Spell_power_coefficient - Prayer of Mending (per charge) 80.57% - Patch 3.2.0
+            heal += int32(caster->SpellBaseHealingBonus(GetSpellSchoolMask(spellProto)) * 0.8057f);
         }
     }
 
