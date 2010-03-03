@@ -2619,7 +2619,7 @@ void Spell::cast(bool skipCheck)
             if (m_spellInfo->Id == 16857 && m_caster->m_form != FORM_CAT)
                 AddTriggeredSpell(60089);
             // Berserk (Bear Mangle part)
-            else if (m_spellInfo->Id == 50334)
+            if (m_spellInfo->Id == 50334 && (m_caster->m_form == FORM_BEAR || m_caster->m_form == FORM_DIREBEAR))
                 AddTriggeredSpell(58923); 
             break;
         }
