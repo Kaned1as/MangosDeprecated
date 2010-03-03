@@ -7624,6 +7624,9 @@ void Aura::PeriodicDummyTick()
                     std::advance(itr, rand()%targets.size());
                     Unit* target = *itr;
 
+                    //Ranger: Killing Spree damage mod
+                    m_target->CastSpell(m_target, 61851, true);
+
                     m_target->CastSpell(target, 57840, true);
                     m_target->CastSpell(target, 57841, true);
                     return;

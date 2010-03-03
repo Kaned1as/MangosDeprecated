@@ -3866,6 +3866,9 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
 
         if(i_spellId == spellId) continue;
 
+        //Ranger: Killing Spree extension
+        if(i_spellId == 51690 && spellId == 61851) continue;
+
         bool is_triggered_by_spell = false;
         // prevent triggering aura of removing aura that triggered it
         for(int j = 0; j < 3; ++j)
