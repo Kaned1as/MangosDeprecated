@@ -4312,11 +4312,15 @@ void Aura::HandleModTaunt(bool apply, bool Real)
 /*********************************************************/
 /***                  MODIFY SPEED                     ***/
 /*********************************************************/
-void Aura::HandleAuraModIncreaseSpeed(bool /*apply*/, bool Real)
+void Aura::HandleAuraModIncreaseSpeed(bool apply, bool Real)
 {
     // all applied/removed only at real aura add/remove
     if(!Real)
         return;
+
+    // Ranger: Spirit Walk - Removes all movement impairing effects
+    if (apply && GetSpellProto()->Id == 58875)
+        m_target->CastSpell(m_target, 58876, true);
 
     m_target->UpdateSpeed(MOVE_RUN, true);
 }
