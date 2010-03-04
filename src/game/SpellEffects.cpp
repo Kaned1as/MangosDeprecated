@@ -1541,8 +1541,11 @@ void Spell::EffectDummy(uint32 i)
             // Penance
             if (m_spellInfo->SpellFamilyFlags & UI64LIT(0x0080000000000000))
             {
+
+		//megai2: shit may blow up =)
+		Unit * oldTgt = unitTarget;
                 if (!unitTarget)
-                    return;
+		    unitTarget = m_caster;                    
 
                 int hurt = 0;
                 int heal = 0;
@@ -1556,10 +1559,15 @@ void Spell::EffectDummy(uint32 i)
                         sLog.outError("Spell::EffectDummy: Spell %u Penance need set correct heal/damage spell", m_spellInfo->Id);
                         return;
                 }
+		if ((m_caster->GetMapId() != unitTarget->GetMapId()) || (m_caster->GetInstanceId() != unitTarget->GetInstanceId())
+                    || (!m_caster->IsInRange(unitTarget, 0, 30 + 10 * uint8(m_caster->IsFriendlyTo(unitTarget)), true)))
+			unitTarget = m_caster;
                 if (m_caster->IsFriendlyTo(unitTarget))
                     m_caster->CastSpell(unitTarget, heal, false, 0);
                 else
                     m_caster->CastSpell(unitTarget, hurt, false, 0);
+
+		unitTarget = oldTgt;
                 return;
             }
             break;
