@@ -89,6 +89,8 @@ class MANGOS_DLL_SPEC Aura
         void HandleAuraFeatherFall(bool Apply, bool Real);
         void HandleAuraHover(bool Apply, bool Real);
         void HandleAddModifier(bool Apply, bool Real);
+        void HandleAuraInitializeImages(bool Apply, bool Real);
+        void HandleAuraCloneCaster(bool Apply, bool Real);
         void HandleAddTargetTrigger(bool Apply, bool Real);
         void HandleAuraModStun(bool Apply, bool Real);
         void HandleModDamageDone(bool Apply, bool Real);

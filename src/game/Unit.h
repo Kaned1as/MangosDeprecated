@@ -1591,6 +1591,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         uint32 GetModelForForm(ShapeshiftForm form);
 
 	uint8 STASC_left;
+        float GetFollowAngle() { return m_follow_angle; }
+        void  SetFollowAngle(float fa) { m_follow_angle = fa; }
 
     protected:
         explicit Unit ();
@@ -1659,6 +1661,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         uint32 m_state;                                     // Even derived shouldn't modify
         uint32 m_CombatTimer;
+        float m_follow_angle;
 
         Spell* m_currentSpells[CURRENT_MAX_SPELL];
 

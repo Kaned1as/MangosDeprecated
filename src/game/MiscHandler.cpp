@@ -42,6 +42,82 @@
 #include "SocialMgr.h"
 #include "DBCEnums.h"
 
+void WorldSession::HandleMirrrorImageDataRequest( WorldPacket & recv_data ) //Full copyright goes to TrinityCore2
+{
+    sLog.outDebug("WORLD: CMSG_GET_MIRRORIMAGE_DATA");
+    uint64 guid;
+    recv_data >> guid;
+        
+    // Get unit for which data is needed by client
+    Unit *unit = _player->GetMap()->GetCreatureOrPetOrVehicle(guid); //ObjectAccessor::GetUnitInWorld((WorldObject*)NULL, guid);
+    if(!unit)
+        return;
+    // Get creator of the unit
+    Unit *creator = ObjectAccessor::GetUnit(*unit, unit->GetCreatorGUID());
+    if (!creator)
+        return;
+
+    sLog.outDetail("Got creator and Unit for Mirror Images");
+    WorldPacket data(SMSG_MIRRORIMAGE_DATA, 68);
+    data << (uint64)guid;
+    data << (uint32)creator->GetDisplayId();
+    if (creator->GetTypeId()==TYPEID_PLAYER)
+    {
+        Player * pCreator = (Player *)creator;
+        data << (uint8)pCreator->getRace();
+        data << (uint8)pCreator->getGender();
+        data << (uint8)pCreator->getClass();
+        data << (uint8)pCreator->GetByteValue(PLAYER_BYTES, 0); // skin
+        
+        data << (uint8)pCreator->GetByteValue(PLAYER_BYTES, 1); // face
+        data << (uint8)pCreator->GetByteValue(PLAYER_BYTES, 2); // hair
+        data << (uint8)pCreator->GetByteValue(PLAYER_BYTES, 3); // haircolor
+        data << (uint8)pCreator->GetByteValue(PLAYER_BYTES_2, 0); // facialhair
+        
+        data << (uint32)0;  // unk
+        static const EquipmentSlots ItemSlots[] = 
+        {
+            EQUIPMENT_SLOT_HEAD,
+        EQUIPMENT_SLOT_SHOULDERS,
+            EQUIPMENT_SLOT_BODY,
+            EQUIPMENT_SLOT_CHEST,
+            EQUIPMENT_SLOT_WAIST,
+            EQUIPMENT_SLOT_LEGS,
+            EQUIPMENT_SLOT_FEET,
+            EQUIPMENT_SLOT_WRISTS,
+            EQUIPMENT_SLOT_HANDS,
+            EQUIPMENT_SLOT_BACK,
+            EQUIPMENT_SLOT_TABARD,
+            EQUIPMENT_SLOT_END
+        };
+        // Display items in visible slots
+        for (EquipmentSlots const* itr = &ItemSlots[0];*itr!=EQUIPMENT_SLOT_END;++itr)
+        if (Item const *item =  pCreator->GetItemByPos(INVENTORY_SLOT_BAG_0, *itr))
+            data << (uint32)item->GetProto()->DisplayInfoID;
+        else
+            data << (uint32)0;
+    }
+    else
+    {
+        // Skip player data for creatures
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+        data << (uint32)0;
+    }
+    SendPacket( &data );
+}
+
 void WorldSession::HandleRepopRequestOpcode( WorldPacket & recv_data )
 {
     sLog.outDebug( "WORLD: Recvd CMSG_REPOP_REQUEST Message" );

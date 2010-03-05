@@ -3484,6 +3484,8 @@ void Spell::EffectSummonType(uint32 i)
             {
                 case SUMMON_PROP_TYPE_OTHER:
                 {
+                    if(prop_id == 1021)
+                        EffectSummonSpecialPets(i);
                     // those are classical totems - effectbasepoints is their hp and not summon ammount!
                     //SUMMON_TYPE_TOTEM = 121: 23035, battlestands
                     //SUMMON_TYPE_TOTEM2 = 647: 52893, Anti-Magic Zone (npc used)
@@ -7328,53 +7330,99 @@ void Spell::EffectSummonSpecialPets(uint32 i)
         spawnCreature->SetUInt32Value(UNIT_CREATED_BY_SPELL, m_spellInfo->Id);
 
         spawnCreature->setFaction(m_caster->getFaction());
-        spawnCreature->SetSheath(SHEATH_STATE_MELEE);
         spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
 
         spawnCreature->InitStatsForLevel(level, m_caster);
+        spawnCreature->AIM_Initialize();
+        
         if(pet_entry == 29264) //spirit wolf + from shaman stats
         {
+            spawnCreature->SetFollowAngle((count+1)*4*PET_FOLLOW_ANGLE/amount);
             float coef_ap = 0.30f;
             //Ranger: Glyph of Feral Spirit
-            if (m_caster->GetDummyAura(63271))
+            if ( m_caster->GetDummyAura ( 63271 ) )
                 coef_ap = 0.60f;
 
-            uint32 bonus_ap = uint32(m_caster->GetTotalAttackPowerValue(BASE_ATTACK) * coef_ap);
-            uint32 bonus_armor = uint32(m_caster->GetUInt32Value(UNIT_FIELD_RESISTANCES) * 0.35f);
+            uint32 bonus_ap = uint32 ( m_caster->GetTotalAttackPowerValue ( BASE_ATTACK ) * coef_ap );
+            uint32 bonus_armor = uint32 ( m_caster->GetUInt32Value ( UNIT_FIELD_RESISTANCES ) * 0.35f );
             uint32 base_hp = spawnCreature->GetCreatureInfo()->maxhealth;
-            uint32 bonus_health = uint32(((Player*)m_caster)->GetHealthBonusFromStamina() * 0.30f);
+            uint32 bonus_health = uint32 ( ( ( Player* ) m_caster )->GetHealthBonusFromStamina() * 0.30f );
 
-            spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, uint32(spawnCreature->GetCreatureInfo()->mindmg * spawnCreature->GetCreatureInfo()->dmg_multiplier));
-            spawnCreature->SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, uint32(spawnCreature->GetCreatureInfo()->maxdmg * spawnCreature->GetCreatureInfo()->dmg_multiplier));
-            spawnCreature->SetCreateHealth(base_hp + bonus_health);
-            spawnCreature->SetUInt32Value(UNIT_FIELD_ATTACK_POWER_MODS, spawnCreature->GetCreatureInfo()->attackpower + bonus_ap);
-            spawnCreature->SetModifierValue(UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor() + bonus_armor);
+            spawnCreature->SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( spawnCreature->GetCreatureInfo()->mindmg * spawnCreature->GetCreatureInfo()->dmg_multiplier ) );
+            spawnCreature->SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( spawnCreature->GetCreatureInfo()->maxdmg * spawnCreature->GetCreatureInfo()->dmg_multiplier ) );
+            spawnCreature->SetCreateHealth ( base_hp + bonus_health );
+            spawnCreature->SetUInt32Value ( UNIT_FIELD_ATTACK_POWER_MODS, spawnCreature->GetCreatureInfo()->attackpower + bonus_ap );
+            spawnCreature->SetModifierValue ( UNIT_MOD_ARMOR, BASE_VALUE, spawnCreature->GetArmor() + bonus_armor );
 
-            spawnCreature->SetMaxHealth(base_hp + bonus_health);
-            spawnCreature->SetHealth(base_hp + bonus_health);
-            spawnCreature->UpdateDamagePhysical(BASE_ATTACK);
+            spawnCreature->SetMaxHealth ( base_hp + bonus_health );
+            spawnCreature->SetHealth ( base_hp + bonus_health );
+            spawnCreature->UpdateDamagePhysical ( BASE_ATTACK );
             spawnCreature->UpdateArmor();
+            spawnCreature->SetSheath(SHEATH_STATE_MELEE);
+
+
+            
+            spawnCreature->GetCharmInfo()->SetPetNumber ( pet_number, false );
+            spawnCreature->InitPetCreateSpells();
+            spawnCreature->InitLevelupSpellsForLevel();
+
+            //spawnCreature
+
+            std::string name = m_caster->GetName();
+            name.append ( petTypeSuffix[spawnCreature->getPetType() ] );
+            spawnCreature->SetName ( name );
+
+            map->Add ( ( Creature* ) spawnCreature );
+            m_caster->SetPet ( spawnCreature );
+
+            if ( m_caster->GetTypeId() == TYPEID_PLAYER )
+            {
+                spawnCreature->GetCharmInfo()->SetReactState ( REACT_DEFENSIVE );
+                ( ( Player* ) m_caster )->PetSpellInitialize();
+            }
         }
 
-        //spawnCreature->SetFollowAngle(count*2*M_PI/amount);
-        spawnCreature->GetCharmInfo()->SetPetNumber(pet_number, false);
-
-        spawnCreature->AIM_Initialize();
-        spawnCreature->InitPetCreateSpells();
-        spawnCreature->InitLevelupSpellsForLevel();
-
-        //spawnCreature
-
-        std::string name = m_caster->GetName();
-        name.append(petTypeSuffix[spawnCreature->getPetType()]);
-        spawnCreature->SetName( name );
-        map->Add((Creature*)spawnCreature);
-        m_caster->SetPet(spawnCreature);
-        
-        if (m_caster->GetTypeId() == TYPEID_PLAYER)
+        if(pet_entry == 31216)
         {
-            spawnCreature->GetCharmInfo()->SetReactState( REACT_DEFENSIVE );
-            ((Player*)m_caster)->PetSpellInitialize();
+
+            switch (m_spellInfo->EffectImplicitTargetA[i]) //setting follow angles for mirrors
+            {
+            case 49:
+                spawnCreature->SetFollowAngle(2*PET_FOLLOW_ANGLE);
+                break;
+            case 50:
+                spawnCreature->SetFollowAngle(3*PET_FOLLOW_ANGLE);
+                break;
+            default:
+                spawnCreature->SetFollowAngle(PET_FOLLOW_ANGLE);
+                break;
+            }
+
+            spawnCreature->SetMaxHealth ( m_caster->GetMaxHealth()/3 );
+            spawnCreature->SetHealth ( m_caster->GetMaxHealth()/3 );
+            spawnCreature->SetMaxPower ( POWER_MANA, m_caster->GetPower(POWER_MANA) );
+            spawnCreature->SetPower ( POWER_MANA, m_caster->GetMaxPower(POWER_MANA) );
+            
+            spawnCreature->GetCharmInfo()->SetPetNumber ( pet_number, false );
+            m_caster->AddGuardian ( spawnCreature );
+            map->Add ( ( Creature* ) spawnCreature );
+            m_caster->SetPet ( spawnCreature );
+
+            spawnCreature->SetDisplayId ( m_caster->GetDisplayId() );
+            //spells & spelldamage
+            spawnCreature->m_spells.clear();
+            spawnCreature->addSpell ( 59638 );
+            spawnCreature->addSpell ( 59637 );
+            spawnCreature->ToggleAutocast ( 59638, true );
+            spawnCreature->ToggleAutocast ( 59637, true );
+
+            // Clone me!
+            m_caster->CastSpell( spawnCreature, 45204, true );
+            if ( m_caster->GetTypeId() == TYPEID_PLAYER )
+            {
+                spawnCreature->GetCharmInfo()->SetReactState ( REACT_DEFENSIVE );
+                ( ( Player* ) m_caster )->RemovePetActionBar();
+            }
         }
     }
 }

@@ -509,7 +509,7 @@ void Pet::Update(uint32 diff)
 
             if(isControlled())
             {
-				if( owner->GetPetGUID() != GetGUID() && GetEntry() != 29264) //want 2 wolves ;)
+                if( owner->GetPetGUID() != GetGUID() && GetEntry() != 29264 && GetEntry() != 31216) //want 2 wolves ;)
                 {
                     Remove(getPetType()==HUNTER_PET?PET_SAVE_AS_DELETED:PET_SAVE_NOT_IN_SLOT);
                     return;

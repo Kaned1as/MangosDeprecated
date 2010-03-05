@@ -87,6 +87,7 @@ Unit::Unit()
     m_modAttackSpeedPct[RANGED_ATTACK] = 1.0f;
 
     m_extraAttacks = 0;
+    m_follow_angle = 0;
 
     m_state = 0;
     m_form = FORM_NONE;
@@ -8508,7 +8509,7 @@ Unit* Unit::GetCharm() const
         sLog.outError("Unit::GetCharm: Charmed creature %u not exist.",GUID_LOPART(charm_guid));
         const_cast<Unit*>(this)->SetCharm(NULL);
 
-        //Ranger: чудо-юдо-мега-крашхакфикс! о!
+        //Ranger: пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅ-пїЅпїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ! пїЅ!
         if (GetTypeId() == TYPEID_PLAYER)
             ((Player*)this)->SetMover(NULL);
     }

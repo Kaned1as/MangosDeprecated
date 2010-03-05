@@ -297,6 +297,9 @@ MotionMaster::MoveFollow(Unit* target, float dist, float angle)
         return;
 
     i_owner->addUnitState(UNIT_STAT_FOLLOW);
+    if(i_owner->GetFollowAngle())
+      angle = i_owner->GetFollowAngle();
+
     if(i_owner->GetTypeId()==TYPEID_PLAYER)
     {
         DEBUG_LOG("Player (GUID: %u) follow to %s (GUID: %u)", i_owner->GetGUIDLow(),
