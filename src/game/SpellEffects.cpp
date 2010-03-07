@@ -1442,7 +1442,7 @@ void Spell::EffectDummy(uint32 i)
                         }
                     }
 					
-					m_caster->RemoveAura(52437, 0)
+					m_caster->RemoveAura(52437, 0);
                 }
 
                 m_caster->SetPower(POWER_RAGE,m_caster->GetPower(POWER_RAGE)-rage);
