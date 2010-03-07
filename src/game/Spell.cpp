@@ -3076,9 +3076,9 @@ void Spell::finish(bool ok)
     // FoF hackfix
     if(m_caster->STASC_left > 0 && m_caster->HasAura(44544) && m_damage)
     {
-	m_caster->STASC_left--;
-	if(m_caster->STASC_left == 0)
-	    m_caster->RemoveAura(44544, 0);
+	    m_caster->STASC_left--;
+	    if(m_caster->STASC_left == 0)
+            m_caster->RemoveAura(44544, 0);
     }
 }
 

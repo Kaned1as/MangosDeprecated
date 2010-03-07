@@ -8064,7 +8064,7 @@ void Aura::HandleAllowOnlyAbility(bool apply, bool Real)
 void Aura::HandleSkipTASC(bool apply, bool Real)
 {
     if(apply)
-	m_target->STASC_left = (m_modifier.m_amount == 0) ? 1 : (m_modifier.m_amount+1);
+	  m_target->STASC_left = (m_modifier.m_amount == 0) ? 1 : (m_modifier.m_amount+1);
     else
-	m_target->STASC_left = 0;
+	  m_target->STASC_left = 0;
 }

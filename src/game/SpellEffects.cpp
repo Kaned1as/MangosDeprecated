@@ -1404,6 +1404,9 @@ void Spell::EffectDummy(uint32 i)
             {
                 if(!unitTarget)
                     return;
+					
+				/*if ((unitTarget->GetHealth() * 100 / unitTarget->GetMaxHealth() > 20) && !m_caster->HasAura(52437))
+					return;*/
 
                 uint32 rage = m_caster->GetPower(POWER_RAGE);
 
@@ -1438,6 +1441,8 @@ void Spell::EffectDummy(uint32 i)
                             break;
                         }
                     }
+					
+					m_caster->RemoveAura(52437, 0)
                 }
 
                 m_caster->SetPower(POWER_RAGE,m_caster->GetPower(POWER_RAGE)-rage);
