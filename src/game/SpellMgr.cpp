@@ -1577,6 +1577,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if ((spellInfo_1->Id == 47585 && spellInfo_2->Id == 60069) ||
                     (spellInfo_2->Id == 47585 && spellInfo_1->Id == 60069))
                     return false;
+
+                // Ranger: Divine Aegis and Power Word: Shield
+                if ((spellInfo_1->Id == 47753 && spellInfo_2->SpellFamilyFlags & UI64LIT(0x0000000000000001)) ||
+                    (spellInfo_2->Id == 47753 && spellInfo_1->SpellFamilyFlags & UI64LIT(0x0000000000000001)))
+                    return false;
             }
             break;
         case SPELLFAMILY_DRUID:
