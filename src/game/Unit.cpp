@@ -9045,9 +9045,9 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
 		    if (!IsChanneledSpell(spellProto))
                 DotFactor = GetSpellDuration(spellProto) / 15000.0f;
 				
-			uint8 x;
-			
-			for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+			uint8 x=0;
+
+			for (uint8 j = 0; j < 3; ++j)
             {
                 if (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && (
                     spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_DAMAGE ||
