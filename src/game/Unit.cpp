@@ -9028,10 +9028,57 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
         DoneAdvertisedBenefit += ((Pet*)this)->GetBonusDamage();
 
     float LvlPenalty = CalculateLevelPenalty(spellProto);
+
+	int32 DotTicks = 6;	
+    // Damage over Time spells bonus calculation
+    float DotFactor = 1.0f;
+	int32 DotDuration;
+    if (damagetype == DOT)
+    {		    
+        DotDuration = GetSpellDuration(spellProto);
+        // 200% limit
+        if (DotDuration > 0)
+        {
+            if (DotDuration > 30000)
+                DotDuration = 30000;		
+				
+		    if (!IsChanneledSpell(spellProto))
+                DotFactor = GetSpellDuration(spellProto) / 15000.0f;
+				
+			for (uint8 j = 0; j < MAX_SPELL_EFFECTS; ++j)
+            {
+                if (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && (
+                    spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_DAMAGE ||
+                    spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                {
+                    x = j;
+                    break;
+                }
+            }
+
+            if (spellProto->EffectAmplitude[x] != 0)
+                DotTicks = DotDuration / spellProto->EffectAmplitude[x];
+        }
+    }				
+						
+
     // Spellmod SpellDamage
     float SpellModSpellDamage = 100.0f;
     if(Player* modOwner = GetSpellModOwner())
+	{
+	    float oCoeff = SpellModSpellDamage;
         modOwner->ApplySpellMod(spellProto->Id,SPELLMOD_SPELL_BONUS_DAMAGE,SpellModSpellDamage);
+		/* 
+			Warlock's talents that modify spell power bonus for dots , give the amount of flat bonus
+			for each tick , and not the total bonus! So for corruption(6 ticks) instead of 36% bonus
+			Improved corruption was granting only 6% total , and Everlasting Affliction was granting 
+			5% total instead of 30%
+		*/
+  	    if(spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK 
+            && spellProto->SchoolMask == SPELL_SCHOOL_MASK_SHADOW
+            && damagetype == DOT ) //only if it's a DOT!!!
+                SpellModSpellDamage = oCoeff + (SpellModSpellDamage - oCoeff) * DotTicks;//megai2: hardcore hackfixes
+    }
     SpellModSpellDamage /= 100.0f;
 
     // Check for table values
@@ -9053,18 +9100,11 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     else if (DoneAdvertisedBenefit || TakenAdvertisedBenefit)
     {
         // Damage over Time spells bonus calculation
-        float DotFactor = 1.0f;
-        if (damagetype == DOT)
+		if ((damagetype == DOT) && (DotDuration > 0) && (DotTicks > 0))
         {
-            if (!IsChanneledSpell(spellProto))
-                DotFactor = GetSpellDuration(spellProto) / 15000.0f;
-
-            if (uint16 DotTicks = GetSpellAuraMaxTicks(spellProto))
-            {
                 DoneAdvertisedBenefit = DoneAdvertisedBenefit * int32(stack) / DotTicks;
                 TakenAdvertisedBenefit = TakenAdvertisedBenefit * int32(stack) / DotTicks;
-            }
-        }
+        }        
         // Distribute Damage over multiple effects, reduce by AoE
         uint32 CastingTime = !IsChanneledSpell(spellProto) ? GetSpellCastTime(spellProto) : GetSpellDuration(spellProto);
         CastingTime = GetCastingTimeForBonus( spellProto, damagetype, CastingTime );
@@ -9086,7 +9126,9 @@ uint32 Unit::SpellDamageBonus(Unit *pVictim, SpellEntry const *spellProto, uint3
     float tmpDamage = (pdamage + DoneTotal) * DoneTotalMod;
     // apply spellmod to Done damage (flat and pct)
     if(Player* modOwner = GetSpellModOwner())
+	{
         modOwner->ApplySpellMod(spellProto->Id, damagetype == DOT ? SPELLMOD_DOT : SPELLMOD_DAMAGE, tmpDamage);
+    }		
 
     tmpDamage = (tmpDamage + TakenTotal) * TakenTotalMod;
 
