@@ -2269,8 +2269,7 @@ void Aura::TriggerSpell()
         if (Unit* caster = GetCaster())
         {
             if(target->GetTypeId() != TYPEID_UNIT || !Script->EffectDummyCreature(caster, GetId(), GetEffIndex(), (Creature*)target))
-                if (GetId() != 39140 && GetId() != 13810 && GetId() != 28522 && GetId() != 31326 && GetId() != 24018 )   //Ranger: ignoring spells
-                    sLog.outError("Aura::TriggerSpell: Spell %u have 0 in EffectTriggered[%d], not handled custom case?",GetId(),GetEffIndex());
+                sLog.outDebug("Aura::TriggerSpell: Spell %u have 0 in EffectTriggered[%d], not handled custom case?",GetId(),GetEffIndex());
         }
     }
 }
