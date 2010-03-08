@@ -37,7 +37,7 @@ extern "C"
 #endif /* __cplusplus */
 
 #if !defined (__cpu_set_t_defined) || !defined (ACE_HAS_CPU_SET_T)
-#  define ACE_CPU_SETSIZE 1024
+#  define ACE_CPU_SETSIZE 2048
    typedef struct
    {
      ACE_UINT32 bit_array_[ACE_CPU_SETSIZE / (8 * sizeof (ACE_UINT32))];

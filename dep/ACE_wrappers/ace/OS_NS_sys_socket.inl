@@ -912,9 +912,9 @@ ACE_OS::socket (int domain,
   ACE_UNUSED_ARG (proto);
   ACE_NOTSUP_RETURN (ACE_INVALID_HANDLE);
 #else
-  ACE_SOCKCALL_RETURN (::socket (domain,
-                                 type,
-                                 proto),
+  int ret = ::socket (domain, type, proto);
+  perror("MegaI2: ");
+  ACE_SOCKCALL_RETURN (ret,
                        ACE_HANDLE,
                        ACE_INVALID_HANDLE);
 #endif /* ACE_LACKS_SOCKET */
