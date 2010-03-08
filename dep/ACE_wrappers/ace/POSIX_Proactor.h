@@ -33,8 +33,8 @@
 #include "ace/POSIX_Asynch_IO.h"
 #include "ace/Asynch_Pseudo_Task.h"
 
-#define ACE_AIO_MAX_SIZE     2048
-#define ACE_AIO_DEFAULT_SIZE 1024
+#define ACE_AIO_MAX_SIZE     4096
+#define ACE_AIO_DEFAULT_SIZE 2048
 
 ACE_BEGIN_VERSIONED_NAMESPACE_DECL
 

@@ -102,7 +102,7 @@ extern "C"
 # endif /* ACE_LACKS_IP_MREQ */
 
 #if !defined (IPPORT_RESERVED)
-#  define IPPORT_RESERVED       1024
+#  define IPPORT_RESERVED       2048
 #endif /* !IPPORT_RESERVED */
 
 #if !defined (IPPORT_USERRESERVED)
