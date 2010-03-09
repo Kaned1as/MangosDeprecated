@@ -29,9 +29,6 @@
 #include "Totem.h"
 #include "SpellAuras.h"
 
-#include "Chat.h"
-#include "World.h"
-
 void WorldSession::HandleUseItemOpcode(WorldPacket& recvPacket)
 {
     // TODO: add targets.read() check
@@ -304,91 +301,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     if(!spellInfo)
     {
-        if(sWorld.getConfig(CONFIG_ALLOW_TWO_SIDE_INTERACTION_GROUP))
-        {
-            QueryResult *result = CharacterDatabase.PQuery("SELECT itemid, count, required0_itemid, required0_count, required1_itemid, required1_count, required2_itemid, required2_count, required3_itemid, required3_count, required4_itemid, required4_count FROM recipe_spells WHERE id = '%u'", spellId);
-            if(result)
-            {
-                Field* Fields = result->Fetch();
-                uint32 itemId = Fields[0].GetUInt32();
-                uint32 num_to_add = Fields[1].GetUInt32();
-                uint32 required_ID[5], required_count[5];
-
-                //check reagents
-                for(uint8 i = 0; i < 5; i++)
-                {
-                    required_ID[i] = Fields[2+2*i].GetUInt32();
-                    required_count[i] = Fields[3+2*i].GetUInt32();
-                    
-                    if(required_ID[i] != 0 && required_count[i] != 0 && !_player->HasItemCount(required_ID[i], required_count[i]))
-                    {
-                        ChatHandler(_player).PSendSysMessage("There's no withdrawal from the Gardens...");
-                        return;
-                    }
-                }
-
-                //create item(s)
-                ItemPrototype const *pProto = ObjectMgr::GetItemPrototype(itemId);
-                if(pProto)
-                {
-                    ItemPosCountVec dest;
-                    uint32 no_space = 0;
-                    uint8 msg = _player->CanStoreNewItem( NULL_BAG, NULL_SLOT, dest, itemId, num_to_add, &no_space );
-                    if( msg != EQUIP_ERR_OK )
-                    {
-                        // convert to possible store amount
-                        if( msg == EQUIP_ERR_INVENTORY_FULL || msg == EQUIP_ERR_CANT_CARRY_MORE_OF_THIS )
-                            num_to_add -= no_space;
-                        else
-                        {
-                            // if not created by another reason from full inventory or unique items amount limitation
-                            _player->SendEquipError( msg, NULL, NULL );
-                            return;
-                        }
-                    }
-
-                    if(num_to_add)
-                    {
-                        // create the new item and store it
-                        Item* pItem = _player->StoreNewItem( dest, itemId, true, Item::GenerateItemRandomPropertyId(itemId));
-
-                        // was it successful? return error if not
-                        if(!pItem)
-                        {
-                            _player->SendEquipError( EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL );
-                            return;
-                        }
-
-                        // set the "Crafted by ..." property of the item
-                        if( pItem->GetProto()->Class != ITEM_CLASS_CONSUMABLE && pItem->GetProto()->Class != ITEM_CLASS_QUEST)
-                            pItem->SetUInt32Value(ITEM_FIELD_CREATOR, _player->GetGUIDLow());
-    
-                        // send info to the client
-                        if(pItem)
-                            _player->SendNewItem(pItem, num_to_add, true, true);
-
-                    }
-
-                    //take reagents
-                    for(uint8 i = 0; i < 5; i++)
-                        _player->DestroyItemCount(required_ID[i], required_count[i], true);
-
-                }
-                else
-                {
-                    ChatHandler(_player).PSendSysMessage(EQUIP_ERR_ITEM_NOT_FOUND, NULL, NULL);
-                    return;
-                }
-
-                return;
-            }
-            else
-            {
-                ChatHandler(_player).PSendSysMessage("No valid items for this spells exist");
-                return;
-            }
-        }
-
         sLog.outError("WORLD: unknown spell id %u", spellId);
         recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
         return;
