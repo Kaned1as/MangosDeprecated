@@ -34,7 +34,7 @@ enum RollType
     MAX_ROLL_TYPE     = 3
 };
 
-#define MAX_NR_LOOT_ITEMS 128
+#define MAX_NR_LOOT_ITEMS 255
 // note: the client cannot show more than 16 items total
 #define MAX_NR_QUEST_ITEMS 32
 // unrelated to the number of quest items shown, just for reserve
@@ -62,7 +62,7 @@ enum LootType
     LOOT_PICKPOCKETING          = 2,
     LOOT_FISHING                = 3,
     LOOT_DISENCHANTING          = 4,
-    LOOT_SPELL					= 5,                        // ignored always by client
+    LOOT_SPELL                  = 5,                        // ignored always by client
     LOOT_SKINNING               = 6,
     LOOT_PROSPECTING            = 7,
     LOOT_MILLING                = 8,
@@ -116,6 +116,11 @@ struct LootItem
 
     // Basic checks for player/item compatibility - if false no chance to see the item in the loot
     bool AllowedForPlayer(Player const * player) const;
+};
+
+struct PriorLootItem
+{
+        bool operator () (LootItem const& left, LootItem const& right) const;
 };
 
 struct QuestItem
@@ -238,6 +243,7 @@ struct Loot
     QuestItemMap const& GetPlayerNonQuestNonFFAConditionalItems() const { return PlayerNonQuestNonFFAConditionalItems; }
 
     std::vector<LootItem> items;
+    std::priority_queue<LootItem, std::vector<LootItem>, PriorLootItem>  prioritized_items;
     uint32 gold;
     uint8 unlootedCount;
     LootType loot_type;                                     // required for achievement system
