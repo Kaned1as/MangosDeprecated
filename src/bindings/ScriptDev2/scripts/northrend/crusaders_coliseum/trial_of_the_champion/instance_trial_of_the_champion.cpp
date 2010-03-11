@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: Instance_Trial_Of_the_Champion
-SD%Complete: 100
-SDComment: 
+SD%Complete: 70
+SDComment: modified by /dev/rsa
 SDCategory: Trial Of the Champion
 EndScriptData */
 
@@ -28,7 +28,8 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 {
     instance_trial_of_the_champion(Map* pMap) : ScriptedInstance(pMap) { Initialize(); }
 
-    uint32 m_auiEncounter[MAX_ENCOUNTER];
+    uint32 m_auiEncounter[MAX_ENCOUNTER+1];
+
     std::string m_strInstData;
 
     uint64 m_uiJacobGUID;
@@ -53,6 +54,7 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 	uint32 m_uiChampionId1;
 	uint32 m_uiChampionId2;
 	uint32 m_uiChampionId3;
+	uint32 m_uiChampionsCount;
 	uint64 m_uiChampion1;
 	uint64 m_uiChampion2;
 	uint64 m_uiChampion3;
@@ -89,22 +91,13 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 		m_uiChampion1			= 0;
 		m_uiChampion2			= 0;
 		m_uiChampion3			= 0;
-		m_uiArgentChallenger	= 0;
+		m_uiChampionsCount		= 3;
+		m_uiArgentChallenger		= 0;
 		m_uiMemoryGUID			= 0;
-		m_uiArgentChallengerID  = 0;
+		m_uiArgentChallengerID		= 0;
 
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
-    }
-
-    bool IsEncounterInProgress() const
-    {
-        for(uint8 i = 0; i < MAX_ENCOUNTER; ++i)
-        {
-            if (m_auiEncounter[i] == IN_PROGRESS)
-                return true;
-        }
-
-        return false;
+    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
+            m_auiEncounter[i] = NOT_STARTED;
     }
 
     void OnCreatureCreate(Creature* pCreature)
@@ -374,37 +367,52 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 			case DATA_CHAMPIONID_3:
 				m_uiChampionId3 = uiData;
 			break;
+			case DATA_CHAMPIONS_COUNT:
+				m_uiChampionsCount = uiData;
+			break;
 			case DATA_ARGENT_CHALLENGER:
 				m_uiArgentChallengerID = uiData;
 			break;
 			case DATA_BLACK_KNIGHT_MINION:
 				m_uiBlackKnightMinionGUID = uiData;
 			break;
-            case TYPE_GRAND_CHAMPIONS:
+			case TYPE_GRAND_CHAMPIONS:
 				m_auiEncounter[0] = uiData;
-				if (uiData == DONE)
+                if (uiData == DONE)
                 {
                     if (GameObject* pChest = instance->GetGameObject(m_uiChampionsLootGUID))
                         if (pChest && !pChest->isSpawned())
-                            pChest->SetRespawnTime(350000000);
+                            pChest->SetRespawnTime(DAY);
+                }
+                if (uiData == FAIL)
+                {
+                      m_auiEncounter[0] = NOT_STARTED;
                 }
                 break;
             case TYPE_ARGENT_CHALLENGE:
 				m_auiEncounter[1] = uiData;
-				if (uiData == DONE)
+                  if (uiData == DONE)
                 {
 					if (m_uiArgentChallenger == m_uiEadricGUID)
 						if (GameObject* pChest = instance->GetGameObject(m_uiEadricLootGUID))
 							if (pChest && !pChest->isSpawned())
-								pChest->SetRespawnTime(350000000);
+								pChest->SetRespawnTime(DAY);
 					if (m_uiArgentChallenger == m_uiPaletressGUID)
 						if (GameObject* pChest = instance->GetGameObject(m_uiPaletressLootGUID))
 							if (pChest && !pChest->isSpawned())
-								pChest->SetRespawnTime(350000000);
+								pChest->SetRespawnTime(DAY);
+                }
+                if (uiData == FAIL)
+                {
+                      m_auiEncounter[1] = NOT_STARTED;
                 }
                 break;
             case TYPE_BLACK_KNIGHT:
 				m_auiEncounter[2] = uiData;
+                if (uiData == FAIL)
+                {
+                      m_auiEncounter[2] = NOT_STARTED;
+                }
                 break;
         }
 
@@ -428,7 +436,7 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
     {
         switch(uiData)
         {
-            case DATA_CHAMPION_1:
+			case DATA_CHAMPION_1:
 				return m_uiChampion1;
 			case DATA_CHAMPION_2:
 				return m_uiChampion2;
@@ -436,8 +444,10 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 				return m_uiChampion3;
 			case DATA_MEMORY:
 				return m_uiMemoryGUID;
+			case DATA_ARGENT_CHALLENGER:
+				return m_uiArgentChallenger;
 			case DATA_BLACK_KNIGHT:
-                return m_uiBlackKnightGUID;
+				return m_uiBlackKnightGUID;
         }
 
         return 0;
@@ -453,6 +463,8 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 				return m_uiChampionId2;
 			case DATA_CHAMPIONID_3:
 				return m_uiChampionId3;
+			case DATA_CHAMPIONS_COUNT:
+				return m_uiChampionsCount;
 			case DATA_ARGENT_CHALLENGER:
 				return m_uiArgentChallengerID;
 			case DATA_BLACK_KNIGHT_MINION:
@@ -463,10 +475,9 @@ struct MANGOS_DLL_DECL instance_trial_of_the_champion : public ScriptedInstance
 				return m_uiJaerenGUID;
 			case DATA_ARELAS:
 				return m_uiArelasGUID;
-            case TYPE_GRAND_CHAMPIONS:
-            case TYPE_ARGENT_CHALLENGE:
-            case TYPE_BLACK_KNIGHT:
-				return m_auiEncounter[uiType];
+            case TYPE_GRAND_CHAMPIONS: return m_auiEncounter[0];
+            case TYPE_ARGENT_CHALLENGE: return m_auiEncounter[1];
+            case TYPE_BLACK_KNIGHT: return m_auiEncounter[2];
         }
 
         return 0;

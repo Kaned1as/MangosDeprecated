@@ -16,8 +16,8 @@
 
 /* ScriptData
 SDName: boss_black_knight
-SD%Complete: 92%
-SDComment: missing yells. not sure about timers.
+SD%Complete: 70%
+SDComment: missing yells. not sure about timers. modified by /dev/rsa
 SDCategory: Trial Of the Champion
 EndScriptData */
 
@@ -26,6 +26,7 @@ EndScriptData */
 
 enum
 {
+        SPELL_BERSERK                           = 47008,
 	//yells
 
 	//undead
@@ -35,13 +36,13 @@ enum
 	SPELL_ICY_TOUCH_H			= 67881,
 	SPELL_OBLITERATE			= 67725,
 	SPELL_OBLITERATE_H			= 67883,
-	SPELL_CHOKE					= 68306,
+	SPELL_CHOKE				= 68306,
 	//skeleton
-	SPELL_ARMY					= 42650,			//replacing original one, since that one spawns millions of ghouls!!
+	SPELL_ARMY				= 42650, //replacing original one, since that one spawns millions of ghouls!!
 	//ghost
 	SPELL_DEATH 				= 67808,
 	SPELL_DEATH_H				= 67875,
-	SPELL_MARK					= 67823,
+	SPELL_MARK				= 67823,
 
 	//risen ghoul
 	SPELL_CLAW					= 67879,
@@ -61,10 +62,11 @@ struct MANGOS_DLL_DECL mob_toc5_risen_ghoulAI : public ScriptedAI
 	{
 		Reset();
 		m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+		m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
 	}
 
 	ScriptedInstance* m_pInstance;
-    bool m_bIsRegularMode;
+	bool m_bIsRegularMode;
 
 	uint32 Attack;
 
@@ -99,7 +101,7 @@ struct MANGOS_DLL_DECL mob_toc5_risen_ghoulAI : public ScriptedAI
         }else Attack -= diff;
 
 		if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 25)
-			DoCast(m_creature, m_bIsRegularMode ? SPELL_EXPLODE : SPELL_EXPLODE_H);
+		DoCast(m_creature, m_bIsRegularMode ? SPELL_EXPLODE : SPELL_EXPLODE_H);
 		
 		DoMeleeAttackIfReady();
 	}
@@ -117,10 +119,11 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 	{
 		Reset();
 		m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+		m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
 	}
 
 	ScriptedInstance* m_pInstance;
-    bool m_bIsRegularMode;
+	bool m_bIsRegularMode;
 
 	uint32 Plague_Strike_Timer;
 	uint32 Icy_Touch_Timer;
@@ -130,7 +133,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 	uint32 Mark_Timer;
 	uint32 Phase_Delay;
 	uint32 Summon_Ghoul;
-
+        uint32 m_uiBerserk_Timer;
 	bool phase1;
 	bool phase2;
 	bool phase3;
@@ -138,79 +141,65 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 
     void Reset()
     {
-		m_creature->SetRespawnDelay(999999999);
+    m_creature->SetRespawnDelay(DAY);
 		m_creature->SetDisplayId(29837);
 		SetEquipmentSlots(false, EQUIP_SWORD, EQUIP_NO_CHANGE, EQUIP_NO_CHANGE);
-		Plague_Strike_Timer = 5000;
-		Icy_Touch_Timer = 10000;
-		Obliterate_Timer = 16000;
+		Plague_Strike_Timer = m_bIsRegularMode ? 5000 : 4000;
+		Icy_Touch_Timer = m_bIsRegularMode ? 10000 : 7000;
+		Obliterate_Timer = m_bIsRegularMode ? 16000 : 10000;
 		Choke_Timer = 15000;
 		Summon_Ghoul = 4000;
+		m_uiBerserk_Timer = m_bIsRegularMode ? 300000 : 180000;
 		phase1 = true;
 		phase2 = false;
 		phase3 = false;
 		ghoul = false;
+		m_creature->GetMotionMaster()->MovePoint(0, 746, 614, m_creature->GetPositionZ());
+                m_creature->AddMonsterMoveFlag(MONSTER_MOVE_WALK);
     }
 
-	void EnterEvadeMode()
-	{
-		m_creature->SetDisplayId(29837);
-		Plague_Strike_Timer = 5000;
-		Icy_Touch_Timer = 10000;
-		Obliterate_Timer = 16000;
-		Choke_Timer = 15000;
-		Summon_Ghoul = 4000;
-		phase1 = true;
-		phase2 = false;
-		phase3 = false;
-		ghoul = false;
-		m_creature->RemoveArenaAuras(true);
-		m_creature->SendMonsterMove(746.864441, 660.918762, 411.695465, 4.698700, m_creature->GetMonsterMoveFlags(), 1);
-		m_creature->GetMap()->CreatureRelocation(m_creature, 754.360779, 660.816162, 412.395996, 4.698700);
-		m_creature->SetHealth(m_creature->GetMaxHealth());
-	}
 
 	void Aggro(Unit* pWho)
     {
 		if (!m_pInstance)
 			return;
-		if (m_pInstance->GetData(TYPE_BLACK_KNIGHT) == DONE)
-			m_creature->ForcedDespawn();
-		else
+		if (m_pInstance->GetData(TYPE_BLACK_KNIGHT) != DONE)
 			m_pInstance->SetData(TYPE_BLACK_KNIGHT, IN_PROGRESS);
     }
 
-	void DamageTaken(Unit* pDoneBy, uint32& uiDamage)
+    void DamageTaken(Unit* pDoneBy, uint32& uiDamage)
     {
-		if (uiDamage > m_creature->GetHealth() && !phase3){
-			uiDamage = 0;
-			if (phase2)
-				StartPhase3();
-			if (phase1)
-				StartPhase2();
-		}
+        if ((uiDamage > m_creature->GetHealth() || 
+        m_creature->GetHealth()/m_creature->GetHealth() <= 0.1 )  && !phase3){
+            uiDamage = 0;
+            if (phase2)
+                StartPhase3();
+            if (phase1)
+                StartPhase2();
+        }
     }
 
-	void JustDied(Unit* pKiller)
+
+    void JustDied(Unit* pKiller)
     {
 		if (!m_pInstance)
 			return;
-		if (phase3)
+		if (phase3 && !phase1 && !phase2)
 		{
 			m_pInstance->SetData(TYPE_BLACK_KNIGHT, DONE);
 		}
-		if (phase2)
+/*		if (phase2 && !phase1 && !phase3)
 			if (!m_creature->isAlive())
 			{
 				m_creature->Respawn();
 				StartPhase3();
 			}
-		if (phase1)
+		if (phase1 && !phase2 && !phase3)
 			if (!m_creature->isAlive())
 			{
 				m_creature->Respawn();
 				StartPhase2();
-			}
+			}*/
 	}
 
 	void StartPhase2()
@@ -221,9 +210,9 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 		phase2 = true;
 		phase3 = false;
 		DoCast(m_creature, SPELL_ARMY);
-		Plague_Strike_Timer = 14000;
-		Icy_Touch_Timer = 12000;
-		Obliterate_Timer = 18000;
+		Plague_Strike_Timer = m_bIsRegularMode ? 14000 : 8000;
+		Icy_Touch_Timer = m_bIsRegularMode ? 12000 : 7000;
+		Obliterate_Timer = m_bIsRegularMode ? 18000 : 10000;
 	}
 
 	void StartPhase3()
@@ -234,8 +223,8 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 		phase1 = false;
 		phase2 = false;
 		phase3 = true;
-		Death_Timer = 5000;
-		Mark_Timer = 9000;
+		Death_Timer = m_bIsRegularMode ? 5000 : 3000;
+		Mark_Timer = m_bIsRegularMode ? 9000 : 7000;
 	}
 
 	void UpdateAI(const uint32 diff)
@@ -246,34 +235,34 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 		if (Plague_Strike_Timer < diff && !phase3)
         {
 			DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_PLAGUE_STRIKE : SPELL_PLAGUE_STRIKE_H);
-            Plague_Strike_Timer = 10500;
+            Plague_Strike_Timer = m_bIsRegularMode ? 10500 : 7000;
         }else Plague_Strike_Timer -= diff;  
 
 		if (Icy_Touch_Timer < diff && !phase3)
         {
 			DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_ICY_TOUCH : SPELL_ICY_TOUCH_H);
-            Icy_Touch_Timer = 10000;
+            Icy_Touch_Timer = m_bIsRegularMode ? 10000 : 8000;
         }else Icy_Touch_Timer -= diff;
 
 		if (Obliterate_Timer < diff && !phase3)
         {
 			DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_OBLITERATE : SPELL_OBLITERATE_H);
-            Obliterate_Timer = 11000;
+            Obliterate_Timer = m_bIsRegularMode ? 11000 : 8000;
         }else Obliterate_Timer -= diff;
 
 		if (Choke_Timer < diff && phase1)
         {
 			if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
 				DoCast(m_creature->getVictim(), SPELL_CHOKE);
-			Choke_Timer = 15000;
+			Choke_Timer = m_bIsRegularMode ? 15000 : 10000;
         }else Choke_Timer -= diff;
 
 		if (Summon_Ghoul < diff && phase1 && !ghoul)
         {
 			if (m_pInstance->GetData(DATA_TOC5_ANNOUNCER) == m_pInstance->GetData(DATA_JAEREN))
-				 m_creature->SummonCreature(NPC_RISEN_JAEREN, 0.0f, 0.0f, 0.0f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+			 m_creature->SummonCreature(NPC_RISEN_JAEREN, 0.0f, 0.0f, 0.0f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
 			else
-				m_creature->SummonCreature(NPC_RISEN_ARELAS, 0.0f, 0.0f, 0.0f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
+			m_creature->SummonCreature(NPC_RISEN_ARELAS, 0.0f, 0.0f, 0.0f, 0, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 5000);
 			ghoul = true;
         }else Summon_Ghoul -= diff;
 
@@ -281,7 +270,7 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
         {
 			if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
 				DoCast(target, SPELL_MARK);
-			Mark_Timer = 15000;
+			Mark_Timer = m_bIsRegularMode ? 15000 : 10000;
         }else Mark_Timer -= diff;
 
 		if (Death_Timer < diff && phase3)
@@ -289,7 +278,14 @@ struct MANGOS_DLL_DECL boss_black_knightAI : public ScriptedAI
 			DoCast(m_creature, m_bIsRegularMode ? SPELL_DEATH : SPELL_DEATH_H);
 			Death_Timer = 3500;
         }else Death_Timer -= diff;
-		
+
+        if (m_uiBerserk_Timer < diff)
+        {
+            DoCast(m_creature, SPELL_BERSERK);
+            m_uiBerserk_Timer = m_bIsRegularMode ? 300000 : 180000;
+        }
+        else  m_uiBerserk_Timer -= diff;
+
 		DoMeleeAttackIfReady();
 	}
 };
@@ -305,11 +301,11 @@ void AddSC_boss_black_knight()
 
     NewScript = new Script;
     NewScript->Name = "mob_toc5_risen_ghoul";
-	NewScript->GetAI = &GetAI_mob_toc5_risen_ghoul;
+    NewScript->GetAI = &GetAI_mob_toc5_risen_ghoul;
     NewScript->RegisterSelf();
 
-	NewScript = new Script;
+    NewScript = new Script;
     NewScript->Name = "boss_black_knight";
-	NewScript->GetAI = &GetAI_boss_black_knight;
+    NewScript->GetAI = &GetAI_boss_black_knight;
     NewScript->RegisterSelf();
 }
