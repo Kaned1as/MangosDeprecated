@@ -5925,6 +5925,10 @@ void Aura::HandleShapeshiftBoosts(bool apply)
         case FORM_METAMORPHOSIS:
             spellId1 = 54817;
             spellId2 = 54879;
+            if(m_target->GetTypeId() == TYPEID_PLAYER) {      // megai2: http://www.wowhead.com/?spell=63117 Nemesis
+                ((Player*)m_target)->RemoveSpellCooldown(54817);			
+                ((Player*)m_target)->RemoveSpellCooldown(54879);	
+            }					
             break;
         case FORM_SPIRITOFREDEMPTION:
             spellId1 = 27792;
