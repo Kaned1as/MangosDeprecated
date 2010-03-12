@@ -581,7 +581,8 @@ void Player::UpdateDodgePercentage()
     // Dodge from SPELL_AURA_MOD_DODGE_PERCENT aura
     value += GetTotalAuraModifier(SPELL_AURA_MOD_DODGE_PERCENT);
     // Dodge from rating
-    value += GetRatingBonusValue(CR_DODGE);
+    //megai2: may be done in dbc, maybe not...
+    value += GetRatingBonusValue(CR_DODGE) * 0.85f;
     value = value < 0.0f ? 0.0f : value;
     SetStatFloatValue(PLAYER_DODGE_PERCENTAGE, value);
 }

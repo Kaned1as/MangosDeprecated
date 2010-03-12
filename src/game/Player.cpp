@@ -4887,7 +4887,7 @@ float Player::GetDodgeFromAgility()
     if (dodgeRatio==NULL || pclass > MAX_CLASSES)
         return 0.0f;
 
-    float dodge=dodge_base[pclass-1] + GetStat(STAT_AGILITY) * dodgeRatio->ratio * crit_to_dodge[pclass-1];
+    float dodge=dodge_base[pclass-1] + GetStat(STAT_AGILITY) * dodgeRatio->ratio * crit_to_dodge[pclass-1] * 0.85f;
     return dodge*100.0f;
 }
 
