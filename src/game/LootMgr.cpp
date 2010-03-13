@@ -1413,5 +1413,15 @@ void Loot::FillVisualLootIfPossible()
         if(!items[i].is_looted)
             tmpitems.push_back(items[i]);
 
+    uint8 diff = items.size() - tmpitems.size();
+
     items = tmpitems;
+
+    for(QuestItemMap::iterator itr = PlayerFFAItems.begin(); itr != PlayerFFAItems.end(); itr++)
+        for(QuestItemList::iterator itr1 = itr->second->begin(); itr1 != itr->second->end(); itr1++)
+            itr1->index -= diff;
+         
+    for(QuestItemMap::iterator itr = PlayerNonQuestNonFFAConditionalItems.begin(); itr != PlayerNonQuestNonFFAConditionalItems.end(); itr++)
+        for(QuestItemList::iterator itr1 = itr->second->begin(); itr1 != itr->second->end(); itr1++)
+            itr1->index -= diff;
 }
