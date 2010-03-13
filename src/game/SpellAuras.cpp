@@ -2299,12 +2299,15 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
     if(!Real)
         return;
 
+//megai2: remove comments if you now that combat mode is not needed with this buf anyway
+/*
     //megai2: http://wowhead.com/?spell=64373 Armistice
     if (GetId() == 64373) {
         //megai2: hard hack	
         HandleAuraModPacify(apply, Real);
         HandleAuraModSilence(apply, Real);                        
     }
+*/
 
     // AT APPLY
     if(apply)
