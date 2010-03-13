@@ -5659,7 +5659,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 {
                     basepoints0 = int32(damage * triggerAmount / 100);
                     //megai2: http://www.wowhead.com/?item=42469 Glyph of Siphon Life	
-		    if (target && target->HasAura(56216)) 
+		    if (this->HasAura(56216)) 
                         basepoints0 = int32(basepoints0 * 1.25f);
                     triggered_spell_id = 63106;
                     break;
