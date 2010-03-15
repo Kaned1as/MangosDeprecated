@@ -337,8 +337,18 @@ bool PriorLootItem::operator () (LootItem const& left, LootItem const& right) co
 {
     ItemPrototype const* pLeft = ObjectMgr::GetItemPrototype(left.itemid);
     ItemPrototype const* pRight = ObjectMgr::GetItemPrototype(right.itemid);
+    uint32 lvl1 = 0, lvl2 = 0;
 
-    return pLeft->ItemLevel+pLeft->StartQuest < pRight->ItemLevel+pRight->StartQuest;
+    if(pLeft->Quality == 1 /* Normal */) lvl1 += 1000;
+    if(pRight->Quality == 1 /* Normal */) lvl2 += 1000;
+
+    lvl1 += pLeft->ItemLevel;
+    lvl2 += pRight->ItemLevel;
+
+    lvl1 += pLeft->StartQuest;
+    lvl2 += pRight->StartQuest;
+
+    return lvl1 < lvl2;
 }
 
 // Basic checks for player/item compatibility - if false no chance to see the item in the loot
@@ -481,7 +491,7 @@ QuestItemList* Loot::FillFFALoot(Player* player)
 
 QuestItemList* Loot::FillQuestLoot(Player* player)
 {
-    if (items.size() == MAX_NR_LOOT_ITEMS) return NULL;
+    //if (items.size() == MAX_NR_LOOT_ITEMS) return NULL;
     QuestItemList *ql = new QuestItemList();
 
     for(uint8 i = 0; i < quest_items.size(); ++i)
@@ -500,8 +510,8 @@ QuestItemList* Loot::FillQuestLoot(Player* player)
 
             item.is_blocked = true;
 
-            if (items.size() + ql->size() == MAX_NR_LOOT_ITEMS)
-                break;
+            //if (items.size() + ql->size() == MAX_NR_LOOT_ITEMS)
+            //    break;
         }
     }
     if (ql->empty())
