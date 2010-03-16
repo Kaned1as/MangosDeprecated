@@ -7746,6 +7746,20 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
             basepoints[0] = int32(GetTotalAttackPowerValue(BASE_ATTACK) * triggerAmount / 100);
             break;
         }
+        //Rogue - Honor among thieves
+        case 52916: 
+        {
+            if(triggeredByAura->GetCaster() && triggeredByAura->GetCaster()->GetTypeId() == TYPEID_PLAYER)
+            {
+                Unit *target_unit = NULL;
+                if(((Player*)triggeredByAura->GetCaster())->GetSelection())
+                    target_unit = ObjectAccessor::GetUnit(*triggeredByAura->GetCaster(), ((Player*)triggeredByAura->GetCaster())->GetSelection());
+
+                if(target_unit)
+                    ((Player*)triggeredByAura->GetCaster())->AddComboPoints(target_unit, 1);
+            }
+            break;
+        }
     }
 
     if( cooldown && GetTypeId()==TYPEID_PLAYER && ((Player*)this)->HasSpellCooldown(trigger_spell_id))
