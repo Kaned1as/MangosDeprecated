@@ -5455,6 +5455,16 @@ void Spell::EffectScriptEffect(uint32 effIndex)
                     m_caster->CastSpell(m_caster, spells[random], true);
                     return;
                 }
+                case 50725:                                 // Vigilance
+                {
+                    if(!m_caster || !m_caster->IsInWorld() || m_caster->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    // Remove Taunt cooldown
+                    ((Player*)m_caster)->RemoveSpellCooldown(355, true);
+
+                    return;
+                }
             }
             break;
         }
