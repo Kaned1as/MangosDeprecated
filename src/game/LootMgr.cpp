@@ -339,14 +339,16 @@ bool PriorLootItem::operator () (LootItem const& left, LootItem const& right) co
     ItemPrototype const* pRight = ObjectMgr::GetItemPrototype(right.itemid);
     uint32 lvl1 = 0, lvl2 = 0;
 
-    if(pLeft->Quality == 1 /* Normal */) lvl1 += 1000;
-    if(pRight->Quality == 1 /* Normal */) lvl2 += 1000;
-
-    lvl1 += pLeft->ItemLevel;
-    lvl2 += pRight->ItemLevel;
-
-    lvl1 += pLeft->StartQuest;
-    lvl2 += pRight->StartQuest;
+    // and yes, I'm totally twisted man ;)
+    if(left.freeforall)                         lvl1 += 0x10;
+    if(right.freeforall)                        lvl2 += 0x10;
+    if(left.conditionId)                        lvl1 += 0x8;
+    if(right.conditionId)                       lvl2 += 0x8;
+    if(pLeft->StartQuest)                       lvl1 += 0x4;
+    if(pRight->StartQuest)                      lvl2 += 0x4;
+    if(pLeft->Quality == 1)                     lvl1 += 0x2;
+    if(pRight->Quality == 1)                    lvl2 += 0x2;
+    if(pLeft->ItemLevel < pRight->ItemLevel)    lvl2 += 0x1;
 
     return lvl1 < lvl2;
 }
