@@ -903,7 +903,7 @@ bool LootTemplate::LootGroup::HasQuestDropForPlayer(Player const * player) const
 void LootTemplate::LootGroup::Process(Loot& loot) const
 {
 	if(loot.loot_type != LOOT_SPELL) //если это не чёртовы карты ><
-		for(uint32 k=0; k < sWorld.getRate(RATE_DROP_MONEY); k++) //повторяем поиск в группе. грубо, но действенно.
+		for(uint32 k=0; k < sWorld.getRate(RATE_DROP_ITEM_ARTIFACT); k++) //повторяем поиск в группе. грубо, но действенно.
 		{
 			LootStoreItem const * item = Roll();
 			if (item != NULL)
