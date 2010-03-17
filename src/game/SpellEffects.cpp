@@ -1344,6 +1344,13 @@ void Spell::EffectDummy(uint32 i)
                     m_caster->CastSpell(m_caster, spell_id, true);
                     return;
                 }
+                case 58601:                                // Remove Flight Auras
+                {
+                    m_caster->RemoveSpellsCausingAura(SPELL_AURA_FLY);
+                    m_caster->RemoveSpellsCausingAura(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED);
+                    //m_caster->RemoveSpellsCausingAura(SPELL_AURA_MOD_SPEED_MOUNTED);
+                    return;
+                }
             }
             break;
         }
