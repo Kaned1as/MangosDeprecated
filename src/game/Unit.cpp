@@ -7752,11 +7752,25 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
             if(triggeredByAura->GetCaster() && triggeredByAura->GetCaster()->GetTypeId() == TYPEID_PLAYER)
             {
                 Unit *target_unit = NULL;
+                // adding combo points to CURRENT caster's target (if exists)
                 if(((Player*)triggeredByAura->GetCaster())->GetSelection())
                     target_unit = ObjectAccessor::GetUnit(*triggeredByAura->GetCaster(), ((Player*)triggeredByAura->GetCaster())->GetSelection());
 
+                // you can gain 2 combo points per second maximum. 1 combo point from your own crit, and 1 from any member of your party critting.
                 if(target_unit)
-                    ((Player*)triggeredByAura->GetCaster())->AddComboPoints(target_unit, 1);
+                {
+                    Unit::AuraList const& mDummyAuras = target_unit->GetAurasByType(SPELL_AURA_DUMMY);
+                    bool found = false;
+                    for(Unit::AuraList::const_iterator i = mDummyAuras.begin(); i != mDummyAuras.end(); ++i)
+                        if ((*i)->GetSpellProto()->Id == 51699 && (*i)->GetCaster() == triggeredByAura->GetCaster())
+                        {
+                            found = true; //has your mighty aura
+                            break;
+                        }
+
+                    if(!found || triggeredByAura->GetCaster() == this)
+                        triggeredByAura->GetCaster()->CastSpell(target_unit, 51699, true);
+                }
             }
             break;
         }
