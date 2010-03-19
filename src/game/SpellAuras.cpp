@@ -541,7 +541,9 @@ PersistentAreaAura::~PersistentAreaAura()
 SingleEnemyTargetAura::SingleEnemyTargetAura(SpellEntry const* spellproto, uint32 eff, int32 *currentBasePoints, Unit *target,
 Unit *caster, Item* castItem) : Aura(spellproto, eff, currentBasePoints, target, caster, castItem)
 {
-    if (caster)
+    if(caster->GetTypeId()==TYPEID_PLAYER && ((Player*)caster)->m_lastSpellTargetGUID)
+        m_casters_target_guid = ((Player*)caster)->m_lastSpellTargetGUID;
+    else if (caster)
         m_casters_target_guid = caster->GetTypeId()==TYPEID_PLAYER ? ((Player*)caster)->GetSelection() : caster->GetTargetGUID();
     else
         m_casters_target_guid = 0;
@@ -2263,7 +2265,10 @@ void Aura::TriggerSpell()
 
     // All ok cast by default case
     if(triggeredSpellInfo)
-        target->CastSpell(target, triggeredSpellInfo, true, NULL, this, casterGUID);
+        if (Unit* caster = GetCaster())
+            caster->CastSpell(target, triggeredSpellInfo, true, NULL, this, casterGUID);
+        else
+            target->CastSpell(target, triggeredSpellInfo, true, NULL, this, casterGUID);
     else
     {
         if (Unit* caster = GetCaster())
