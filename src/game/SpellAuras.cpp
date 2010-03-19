@@ -2799,7 +2799,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                             return;
 
                     // final heal
-                    if(m_target->IsInWorld() && m_stackAmount > 0)
+                    if(m_target->IsInWorld() && (m_stackAmount > 0 || m_removeMode == AURA_REMOVE_BY_DISPEL))
                     {
                         m_target->CastCustomSpell(m_target, 33778, &m_modifier.m_amount, NULL, NULL, true, NULL, this, GetCasterGUID());
 
