@@ -2265,10 +2265,7 @@ void Aura::TriggerSpell()
 
     // All ok cast by default case
     if(triggeredSpellInfo)
-        if (Unit* caster = GetCaster())
-            caster->CastSpell(target, triggeredSpellInfo, true, NULL, this, casterGUID);
-        else
-            target->CastSpell(target, triggeredSpellInfo, true, NULL, this, casterGUID);
+        target->CastSpell(target, triggeredSpellInfo, true, NULL, this, casterGUID);
     else
     {
         if (Unit* caster = GetCaster())
