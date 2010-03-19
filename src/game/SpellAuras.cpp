@@ -541,7 +541,7 @@ PersistentAreaAura::~PersistentAreaAura()
 SingleEnemyTargetAura::SingleEnemyTargetAura(SpellEntry const* spellproto, uint32 eff, int32 *currentBasePoints, Unit *target,
 Unit *caster, Item* castItem) : Aura(spellproto, eff, currentBasePoints, target, caster, castItem)
 {
-    if(caster->GetTypeId()==TYPEID_PLAYER && ((Player*)caster)->m_lastSpellTargetGUID)
+    if(caster->GetTypeId()==TYPEID_PLAYER && ((Player*)caster)->m_lastSpellTargetGUID && spellproto->EffectApplyAuraName[eff] != 227)
         m_casters_target_guid = ((Player*)caster)->m_lastSpellTargetGUID;
     else if (caster)
         m_casters_target_guid = caster->GetTypeId()==TYPEID_PLAYER ? ((Player*)caster)->GetSelection() : caster->GetTargetGUID();
