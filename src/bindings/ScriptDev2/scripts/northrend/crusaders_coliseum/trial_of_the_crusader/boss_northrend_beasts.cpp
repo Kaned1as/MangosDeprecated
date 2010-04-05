@@ -160,6 +160,7 @@ struct MANGOS_DLL_DECL mob_snobold_vassalAI : public ScriptedAI
     void Reset()
     {
         defaultTarget = NULL;
+        pBoss = NULL;
         bsw = new BossSpellWorker(this);
         Difficulty = m_pInstance->GetData(TYPE_DIFFICULTY);
         bsw->Reset(Difficulty);
@@ -462,6 +463,8 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
 
     void Reset() {
         if(!m_pInstance) return;
+        pTarget = NULL;
+        WayPointList.clear();
         Difficulty = m_pInstance->GetData(TYPE_DIFFICULTY);
         bsw = new BossSpellWorker(this);
         bsw->Reset(Difficulty);
