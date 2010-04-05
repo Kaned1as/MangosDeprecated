@@ -16728,7 +16728,15 @@ void Player::_SaveInventory()
                                        GetName(),GetSession()->GetAccountId(),inventoryone.str().c_str(),"detected in Player::_SaveInventory()",GetMapId(),
                                        mypositionone.str().c_str(),getLevel());
 
-            sWorld.BanAccount(BAN_CHARACTER, GetName(), "-1d", "unknow exploit", "Anticheat");
+            uint32 cheatcount = 0;
+            QueryResult *countcheat = CharacterDatabase.PQuery("SELECT count(acctid) FROM cheaters WHERE acctid='%u' AND reason LIKE 'unknow exploit'", GetSession()->GetAccountId());
+            if (countcheat)
+            {
+                cheatcount = (*countcheat)[0].GetUInt32();
+                delete countcheat;
+            }
+            if (cheatcount > 10)
+                sWorld.BanAccount(BAN_CHARACTER, GetName(), "-1d", "unknow exploit", "Anticheat");
         }
         else if (test != item)
         {
