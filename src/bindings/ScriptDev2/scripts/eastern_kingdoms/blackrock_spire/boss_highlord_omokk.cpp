@@ -24,7 +24,6 @@ EndScriptData */
 #include "precompiled.h"
 
 #define SPELL_WARSTOMP          24375
-#define SPELL_CLEAVE            15579
 #define SPELL_STRIKE            18368
 #define SPELL_REND              18106
 #define SPELL_SUNDERARMOR       24317
@@ -36,7 +35,6 @@ struct MANGOS_DLL_DECL boss_highlordomokkAI : public ScriptedAI
     boss_highlordomokkAI(Creature* pCreature) : ScriptedAI(pCreature) {Reset();}
 
     uint32 WarStomp_Timer;
-    uint32 Cleave_Timer;
     uint32 Strike_Timer;
     uint32 Rend_Timer;
     uint32 SunderArmor_Timer;
@@ -46,7 +44,6 @@ struct MANGOS_DLL_DECL boss_highlordomokkAI : public ScriptedAI
     void Reset()
     {
         WarStomp_Timer = 15000;
-        Cleave_Timer = 6000;
         Strike_Timer = 10000;
         Rend_Timer = 14000;
         SunderArmor_Timer = 2000;
@@ -63,55 +60,49 @@ struct MANGOS_DLL_DECL boss_highlordomokkAI : public ScriptedAI
         //WarStomp_Timer
         if (WarStomp_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_WARSTOMP);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_WARSTOMP);
             WarStomp_Timer = 14000;
         }else WarStomp_Timer -= diff;
-
-        //Cleave_Timer
-        if (Cleave_Timer < diff)
-        {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
-            Cleave_Timer = 8000;
-        }else Cleave_Timer -= diff;
 
         //Strike_Timer
         if (Strike_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_STRIKE);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_STRIKE);
             Strike_Timer = 10000;
         }else Strike_Timer -= diff;
 
         //Rend_Timer
         if (Rend_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_REND);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_REND);
             Rend_Timer = 18000;
         }else Rend_Timer -= diff;
 
         //SunderArmor_Timer
         if (SunderArmor_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SUNDERARMOR);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_SUNDERARMOR);
             SunderArmor_Timer = 25000;
         }else SunderArmor_Timer -= diff;
 
         //KnockAway_Timer
         if (KnockAway_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_KNOCKAWAY);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_KNOCKAWAY);
             KnockAway_Timer = 12000;
         }else KnockAway_Timer -= diff;
 
         //Slow_Timer
         if (Slow_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SLOW);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_SLOW);
             Slow_Timer = 18000;
         }else Slow_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
 };
+
 CreatureAI* GetAI_boss_highlordomokk(Creature* pCreature)
 {
     return new boss_highlordomokkAI(pCreature);

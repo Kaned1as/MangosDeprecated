@@ -50,18 +50,20 @@ struct MANGOS_DLL_DECL boss_grizzleAI : public ScriptedAI
         //GroundTremor_Timer
         if (GroundTremor_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_GROUNDTREMOR);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_GROUNDTREMOR);
             GroundTremor_Timer = 8000;
         }else GroundTremor_Timer -= diff;
 
         //Frenzy_Timer
-        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 51)
+        if (m_creature->GetHealthPercent() < 51.0f)
         {
             if (Frenzy_Timer < diff)
             {
-                DoCast(m_creature,SPELL_FRENZY);
-                DoScriptText(EMOTE_GENERIC_FRENZY_KILL, m_creature);
-                Frenzy_Timer = 15000;
+                if (DoCastSpellIfCan(m_creature, SPELL_FRENZY) == CAST_OK)
+                {
+                    DoScriptText(EMOTE_GENERIC_FRENZY_KILL, m_creature);
+                    Frenzy_Timer = 15000;
+                }
             }else Frenzy_Timer -= diff;
         }
 

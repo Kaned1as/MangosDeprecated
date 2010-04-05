@@ -1,4 +1,3 @@
-
 #include "precompiled.h"
 #include "vault_of_archavon.h"
 
@@ -19,7 +18,6 @@
 #define SP_CINDER       66684
 #define H_SP_CINDER     67332
 
-
 struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
 {
     boss_koralonAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -31,6 +29,8 @@ struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
 
     ScriptedInstance* pInstance;
     bool Regular;
+    uint32 m_uiEvadeCheckCooldown;
+
     uint32 BurningBreathTimer;
     uint32 MeteorFistsTimer;
     uint32 FlamesTimer;
@@ -41,6 +41,7 @@ struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
 
     void Reset()
     {
+        m_uiEvadeCheckCooldown = 2000;
         BurningBreathTimer = 25000;
         MeteorFistsTimer = 47000;
         FlamesTimer = 15000;
@@ -66,6 +67,15 @@ struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
     {
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
+
+        if (m_uiEvadeCheckCooldown < diff)
+        {
+            if (m_creature->GetDistance2d(-218.95f, 103.41f) > 80.0f)
+                EnterEvadeMode();
+            m_uiEvadeCheckCooldown = 2000;
+        }
+        else
+            m_uiEvadeCheckCooldown -= diff;
 
         if(BurningBreathTimer < diff)
         {

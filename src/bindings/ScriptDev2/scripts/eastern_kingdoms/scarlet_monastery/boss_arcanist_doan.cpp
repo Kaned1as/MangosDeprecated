@@ -66,7 +66,7 @@ struct MANGOS_DLL_DECL boss_arcanist_doanAI : public ScriptedAI
 
         if (bShielded && bCanDetonate)
         {
-            DoCast(m_creature,SPELL_FIREAOE);
+            DoCastSpellIfCan(m_creature,SPELL_FIREAOE);
             bCanDetonate = false;
         }
 
@@ -74,14 +74,14 @@ struct MANGOS_DLL_DECL boss_arcanist_doanAI : public ScriptedAI
             return;
 
         //If we are <50% hp cast Arcane Bubble
-        if (!bShielded && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 50)
+        if (!bShielded && m_creature->GetHealthPercent() <= 50.0f)
         {
             //wait if we already casting
             if (m_creature->IsNonMeleeSpellCasted(false))
                 return;
 
             DoScriptText(SAY_SPECIALAE, m_creature);
-            DoCast(m_creature,SPELL_ARCANEBUBBLE);
+            DoCastSpellIfCan(m_creature,SPELL_ARCANEBUBBLE);
 
             bCanDetonate = true;
             bShielded = true;
@@ -90,7 +90,7 @@ struct MANGOS_DLL_DECL boss_arcanist_doanAI : public ScriptedAI
         if (Polymorph_Timer < diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
-                DoCast(target,SPELL_POLYMORPH);
+                DoCastSpellIfCan(target,SPELL_POLYMORPH);
 
             Polymorph_Timer = 20000;
         }else Polymorph_Timer -= diff;
@@ -98,14 +98,14 @@ struct MANGOS_DLL_DECL boss_arcanist_doanAI : public ScriptedAI
         //AoESilence_Timer
         if (AoESilence_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_AOESILENCE);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_AOESILENCE);
             AoESilence_Timer = urand(15000, 20000);
         }else AoESilence_Timer -= diff;
 
         //ArcaneExplosion_Timer
         if (ArcaneExplosion_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ARCANEEXPLOSION);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_ARCANEEXPLOSION);
             ArcaneExplosion_Timer = 8000;
         }else ArcaneExplosion_Timer -= diff;
 

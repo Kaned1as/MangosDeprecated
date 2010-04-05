@@ -142,7 +142,7 @@ struct MANGOS_DLL_DECL npc_clintar_dw_spiritAI : public npc_escortAI
                 DoScriptText(SAY_RELIC2, m_creature, pPlayer);
                 break;
             case 31:
-                m_creature->SummonCreature(NPC_ASPECT_OF_RAVEN, 7465.321, -3088.515, 429.006, 5.550, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
+                m_creature->SummonCreature(NPC_ASPECT_OF_RAVEN, 7465.321f, -3088.515f, 429.006f, 5.550f, TEMPSUMMON_TIMED_DESPAWN_OUT_OF_COMBAT, 10000);
                 break;
             case 35:
                 m_creature->HandleEmoteCommand(EMOTE_STATE_USESTANDING_NOSHEATHE);
@@ -202,10 +202,10 @@ CreatureAI* GetAI_npc_clintar_dw_spirit(Creature* pCreature)
 }
 
 //we expect this spell to be triggered from spell casted at questAccept
-bool EffectDummyCreature_npc_clintar_dw_spirit(Unit *pCaster, uint32 spellId, uint32 effIndex, Creature *pCreatureTarget)
+bool EffectDummyCreature_npc_clintar_dw_spirit(Unit *pCaster, uint32 spellId, SpellEffectIndex effIndex, Creature *pCreatureTarget)
 {
     //always check spellid and effectindex
-    if (spellId == SPELL_EMERALD_DREAM && effIndex == 0)
+    if (spellId == SPELL_EMERALD_DREAM && effIndex == EFFECT_INDEX_0)
     {
         if (pCaster->GetTypeId() != TYPEID_PLAYER || pCaster->HasAura(SPELL_EMERALD_DREAM))
             return true;

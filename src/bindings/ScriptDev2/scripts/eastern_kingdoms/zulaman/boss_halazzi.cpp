@@ -95,12 +95,12 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
         m_uiPhase = PHASE_SINGLE;                           // reset phase
         m_uiPhaseCounter = 3;
 
-        m_uiCheckTimer = IN_MILISECONDS;
-        m_uiFrenzyTimer = 16*IN_MILISECONDS;
-        m_uiSaberLashTimer = 20*IN_MILISECONDS;
-        m_uiShockTimer = 10*IN_MILISECONDS;
-        m_uiTotemTimer = 12*IN_MILISECONDS;
-        m_uiBerserkTimer = 10*MINUTE*IN_MILISECONDS;
+        m_uiCheckTimer = IN_MILLISECONDS;
+        m_uiFrenzyTimer = 16*IN_MILLISECONDS;
+        m_uiSaberLashTimer = 20*IN_MILLISECONDS;
+        m_uiShockTimer = 10*IN_MILLISECONDS;
+        m_uiTotemTimer = 12*IN_MILLISECONDS;
+        m_uiBerserkTimer = 10*MINUTE*IN_MILLISECONDS;
         m_bIsBerserk = false;
 
         m_creature->SetMaxHealth(m_creature->GetCreatureInfo()->maxhealth);
@@ -169,27 +169,27 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
             DoUpdateStats(pInfo);
 
         if (m_uiPhase == PHASE_TOTEM)
-            DoCast(m_creature, SPELL_SUMMON_LYNX);
+            DoCastSpellIfCan(m_creature, SPELL_SUMMON_LYNX);
     }
 
     void PhaseChange()
     {
         if (m_uiPhase == PHASE_SINGLE)
         {
-            if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) <= 25*m_uiPhaseCounter)
+            if (m_creature->GetHealthPercent() <= float(25*m_uiPhaseCounter))
             {
                 if (!m_uiPhaseCounter)
                 {
                     // final phase
                     m_uiPhase = PHASE_FINAL;
-                    m_uiFrenzyTimer = 16*IN_MILISECONDS;
-                    m_uiSaberLashTimer = 20*IN_MILISECONDS;
+                    m_uiFrenzyTimer = 16*IN_MILLISECONDS;
+                    m_uiSaberLashTimer = 20*IN_MILLISECONDS;
                 }
                 else
                 {
                     m_uiPhase = PHASE_TOTEM;
-                    m_uiShockTimer = 10*IN_MILISECONDS;
-                    m_uiTotemTimer = 12*IN_MILISECONDS;
+                    m_uiShockTimer = 10*IN_MILLISECONDS;
+                    m_uiTotemTimer = 12*IN_MILLISECONDS;
 
                     DoScriptText(SAY_SPLIT, m_creature);
                     m_creature->CastSpell(m_creature, SPELL_TRANSFIGURE_TO_TROLL, false);
@@ -200,8 +200,8 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
         {
             Creature* pSpiritLynx = m_pInstance->instance->GetCreature(m_pInstance->GetData64(DATA_SPIRIT_LYNX));
 
-            if (m_creature->GetHealth()*10 < m_creature->GetMaxHealth() ||
-                (pSpiritLynx && pSpiritLynx->GetHealth()*10 < pSpiritLynx->GetMaxHealth()))
+            if (m_creature->GetHealthPercent() < 10.0f ||
+                (pSpiritLynx && pSpiritLynx->GetHealthPercent() < 10.0f))
             {
                 m_uiPhase = PHASE_SINGLE;
 
@@ -221,8 +221,8 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
                 if (pSpiritLynx)
                     pSpiritLynx->ForcedDespawn();
 
-                m_uiFrenzyTimer = 16*IN_MILISECONDS;
-                m_uiSaberLashTimer = 20*IN_MILISECONDS;
+                m_uiFrenzyTimer = 16*IN_MILLISECONDS;
+                m_uiSaberLashTimer = 20*IN_MILLISECONDS;
             }
         }
     }
@@ -237,7 +237,7 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
             if (m_uiBerserkTimer < uiDiff)
             {
                 DoScriptText(SAY_BERSERK, m_creature);
-                DoCast(m_creature, SPELL_BERSERK,true);
+                DoCastSpellIfCan(m_creature, SPELL_BERSERK, CAST_TRIGGERED);
                 m_bIsBerserk = true;
             }
             else
@@ -253,7 +253,7 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
                 else
                     m_uiPhase = PHASE_FINAL;
 
-                m_uiCheckTimer = IN_MILISECONDS;
+                m_uiCheckTimer = IN_MILLISECONDS;
             }
             else
                 m_uiCheckTimer -= uiDiff;
@@ -263,8 +263,8 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
         {
             if (m_uiFrenzyTimer < uiDiff)
             {
-                DoCast(m_creature, SPELL_FRENZY);
-                m_uiFrenzyTimer = 16*IN_MILISECONDS;
+                DoCastSpellIfCan(m_creature, SPELL_FRENZY);
+                m_uiFrenzyTimer = 16*IN_MILLISECONDS;
             }
             else
                 m_uiFrenzyTimer -= uiDiff;
@@ -273,8 +273,8 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
             {
                 DoScriptText(urand(0, 1) ? SAY_SABERLASH1 : SAY_SABERLASH2, m_creature);
 
-                DoCast(m_creature->getVictim(), SPELL_SABER_LASH);
-                m_uiSaberLashTimer = 20*IN_MILISECONDS;
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_SABER_LASH);
+                m_uiSaberLashTimer = 20*IN_MILLISECONDS;
             }
             else
                 m_uiSaberLashTimer -= uiDiff;
@@ -284,8 +284,8 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
         {
             if (m_uiTotemTimer < uiDiff)
             {
-                DoCast(m_creature, SPELL_SUMMON_TOTEM);
-                m_uiTotemTimer = 20*IN_MILISECONDS;
+                DoCastSpellIfCan(m_creature, SPELL_SUMMON_TOTEM);
+                m_uiTotemTimer = 20*IN_MILLISECONDS;
             }
             else
                 m_uiTotemTimer -= uiDiff;
@@ -295,9 +295,9 @@ struct MANGOS_DLL_DECL boss_halazziAI : public ScriptedAI
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
                 {
                     if (pTarget->IsNonMeleeSpellCasted(false))
-                        DoCast(pTarget, SPELL_EARTHSHOCK);
+                        DoCastSpellIfCan(pTarget, SPELL_EARTHSHOCK);
                     else
-                        DoCast(pTarget, SPELL_FLAMESHOCK);
+                        DoCastSpellIfCan(pTarget, SPELL_FLAMESHOCK);
 
                     m_uiShockTimer = urand(10000, 14000);
                 }
@@ -361,7 +361,7 @@ struct MANGOS_DLL_DECL boss_spirit_lynxAI : public ScriptedAI
 
         if (m_uiFrenzyTimer < uiDiff)
         {
-            DoCast(m_creature, SPELL_LYNX_FRENZY);
+            DoCastSpellIfCan(m_creature, SPELL_LYNX_FRENZY);
             m_uiFrenzyTimer = urand(20000, 30000);          //subsequent frenzys casted every 20-30 seconds
         }
         else
@@ -369,7 +369,7 @@ struct MANGOS_DLL_DECL boss_spirit_lynxAI : public ScriptedAI
 
         if (m_uiShredArmorTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), SPELL_SHRED_ARMOR);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_SHRED_ARMOR);
             m_uiShredArmorTimer = 4000;
         }
         else

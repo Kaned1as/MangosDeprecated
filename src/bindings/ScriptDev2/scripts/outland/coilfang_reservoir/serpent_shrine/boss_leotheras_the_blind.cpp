@@ -90,7 +90,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
         m_uiWhirlwind_Timer  = 18500;
         m_uiInnerDemon_Timer = 15000;
         m_uiSwitch_Timer     = 45000;
-        m_uiEnrage_Timer     = MINUTE*10*IN_MILISECONDS;
+        m_uiEnrage_Timer     = MINUTE*10*IN_MILLISECONDS;
 
         m_bDemonForm   = false;
         m_bIsFinalForm = false;
@@ -158,7 +158,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
             //Whirlwind_Timer
             if (m_uiWhirlwind_Timer < uiDiff)
             {
-                DoCast(m_creature, SPELL_WHIRLWIND);
+                DoCastSpellIfCan(m_creature, SPELL_WHIRLWIND);
                 m_uiWhirlwind_Timer = 30000;
             }else m_uiWhirlwind_Timer -= uiDiff;
 
@@ -169,7 +169,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
                 {
                     DoScriptText(SAY_SWITCH_TO_DEMON, m_creature);
 
-                    if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == TARGETED_MOTION_TYPE)
+                    if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
                     {
                         //set false, so MoveChase is not triggered in AttackStart
                         SetCombatMovement(false);
@@ -199,7 +199,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
                 if (m_creature->IsNonMeleeSpellCasted(false))
                     m_creature->InterruptNonMeleeSpells(false);
 
-                DoCast(m_creature, SPELL_INSIDIOUS_WHISPER);
+                DoCastSpellIfCan(m_creature, SPELL_INSIDIOUS_WHISPER);
 
                 m_uiInnerDemon_Timer = 60000;
             }else m_uiInnerDemon_Timer -= uiDiff;
@@ -217,7 +217,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
                 //switch to nightelf form
                 m_creature->SetDisplayId(MODEL_NIGHTELF);
 
-                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != TARGETED_MOTION_TYPE)
+                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
                     m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
 
                 //set true
@@ -231,7 +231,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
             }else m_uiSwitch_Timer -= uiDiff;
         }
 
-        if (!m_bIsFinalForm && (m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 15)
+        if (!m_bIsFinalForm && m_creature->GetHealthPercent() < 15.0f)
         {
             DoScriptText(SAY_FINAL_FORM, m_creature);
 
@@ -246,7 +246,7 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
                 //switch to nightelf form
                 m_creature->SetDisplayId(MODEL_NIGHTELF);
 
-                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != TARGETED_MOTION_TYPE)
+                if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
                     m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
 
                 //set true
@@ -265,8 +265,8 @@ struct MANGOS_DLL_DECL boss_leotheras_the_blindAI : public ScriptedAI
             if (m_creature->IsNonMeleeSpellCasted(false))
                 m_creature->InterruptNonMeleeSpells(false);
 
-            DoCast(m_creature, SPELL_ENRAGE);
-            m_uiEnrage_Timer = MINUTE*5*IN_MILISECONDS;
+            DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
+            m_uiEnrage_Timer = MINUTE*5*IN_MILLISECONDS;
         }else m_uiEnrage_Timer -= uiDiff;
 
         if (!m_bDemonForm)

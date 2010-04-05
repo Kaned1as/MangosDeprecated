@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,8 +23,8 @@
 
 class BattleGround;
 
-#define BG_EY_FLAG_RESPAWN_TIME         (10*IN_MILISECONDS) //10 seconds
-#define BG_EY_FPOINTS_TICK_TIME         (2*IN_MILISECONDS)  //2 seconds
+#define BG_EY_FLAG_RESPAWN_TIME         (10*IN_MILLISECONDS) //10 seconds
+#define BG_EY_FPOINTS_TICK_TIME         (2*IN_MILLISECONDS)  //2 seconds
 
 enum BG_EY_WorldStates
 {

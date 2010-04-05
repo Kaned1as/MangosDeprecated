@@ -259,7 +259,7 @@ const uint32_t numBlockBinLimit = 32;
  /*
   * The number of bins to cache large objects.
   */
-const uint32_t numLargeObjectBins = 2048; // for 1024 max cached size is near 8MB
+const uint32_t numLargeObjectBins = 1024; // for 1024 max cached size is near 8MB
  
 /********* The data structures and global objects        **************/
 

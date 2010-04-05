@@ -54,9 +54,9 @@ struct MANGOS_DLL_DECL boss_golemaggAI : public ScriptedAI
 
     void Reset()
     {
-        m_uiPyroblastTimer = 7*IN_MILISECONDS;              // These timers are probably wrong
-        m_uiEarthquakeTimer = 3*IN_MILISECONDS;
-        m_uiBuffTimer = 2.5*IN_MILISECONDS;
+        m_uiPyroblastTimer = 7*IN_MILLISECONDS;              // These timers are probably wrong
+        m_uiEarthquakeTimer = 3*IN_MILLISECONDS;
+        m_uiBuffTimer = 2.5*IN_MILLISECONDS;
         m_bEnraged = false;
 
         m_creature->CastSpell(m_creature, SPELL_MAGMASPLASH, true);
@@ -77,17 +77,17 @@ struct MANGOS_DLL_DECL boss_golemaggAI : public ScriptedAI
         if (m_uiPyroblastTimer < uiDiff)
         {
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                DoCast(pTarget, SPELL_PYROBLAST);
+                DoCastSpellIfCan(pTarget, SPELL_PYROBLAST);
 
-            m_uiPyroblastTimer = 7*IN_MILISECONDS;
+            m_uiPyroblastTimer = 7*IN_MILLISECONDS;
         }
         else
             m_uiPyroblastTimer -= uiDiff;
 
         // Enrage
-        if (!m_bEnraged && m_creature->GetHealth()*100 < m_creature->GetMaxHealth()*10)
+        if (!m_bEnraged && m_creature->GetHealthPercent() < 10.0f)
         {
-            DoCast(m_creature, SPELL_ENRAGE);
+            DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
             m_bEnraged = true;
         }
 
@@ -96,8 +96,8 @@ struct MANGOS_DLL_DECL boss_golemaggAI : public ScriptedAI
         {
             if (m_uiEarthquakeTimer < uiDiff)
             {
-                DoCast(m_creature->getVictim(), SPELL_EARTHQUAKE);
-                m_uiEarthquakeTimer = 3*IN_MILISECONDS;
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_EARTHQUAKE);
+                m_uiEarthquakeTimer = 3*IN_MILLISECONDS;
             }
             else
                 m_uiEarthquakeTimer -= uiDiff;
@@ -107,8 +107,8 @@ struct MANGOS_DLL_DECL boss_golemaggAI : public ScriptedAI
         // Golemagg's Trust
         if (m_uiBuffTimer < uiDiff)
         {
-            DoCast(m_creature, SPELL_GOLEMAGG_TRUST);
-            m_uiBuffTimer = 2.5*IN_MILISECONDS;
+            DoCastSpellIfCan(m_creature, SPELL_GOLEMAGG_TRUST);
+            m_uiBuffTimer = 2.5*IN_MILLISECONDS;
         }
         else
             m_uiBuffTimer -= uiDiff;
@@ -131,12 +131,12 @@ struct MANGOS_DLL_DECL mob_core_ragerAI : public ScriptedAI
 
     void Reset()
     {
-        m_uiMangleTimer = 7*IN_MILISECONDS;                 // These times are probably wrong
+        m_uiMangleTimer = 7*IN_MILLISECONDS;                 // These times are probably wrong
     }
 
     void DamageTaken(Unit* pDoneBy, uint32& uiDamage)
     {
-        if (m_creature->GetHealth()*100 < m_creature->GetMaxHealth()*50)
+        if (m_creature->GetHealthPercent() < 50.0f)
         {
             if (m_pInstance)
             {
@@ -162,8 +162,8 @@ struct MANGOS_DLL_DECL mob_core_ragerAI : public ScriptedAI
         // Mangle
         if (m_uiMangleTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), SPELL_MANGLE);
-            m_uiMangleTimer = 10*IN_MILISECONDS;
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_MANGLE);
+            m_uiMangleTimer = 10*IN_MILLISECONDS;
         }
         else
             m_uiMangleTimer -= uiDiff;

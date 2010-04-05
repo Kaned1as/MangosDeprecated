@@ -62,9 +62,9 @@ struct MANGOS_DLL_DECL boss_high_inquisitor_fairbanksAI : public ScriptedAI
             return;
 
         //If we are <25% hp cast Heal
-        if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 25 && !m_creature->IsNonMeleeSpellCasted(false) && Heal_Timer < diff)
+        if (m_creature->GetHealthPercent() <= 25.0f && !m_creature->IsNonMeleeSpellCasted(false) && Heal_Timer < diff)
         {
-            DoCast(m_creature,SPELL_HEAL);
+            DoCastSpellIfCan(m_creature,SPELL_HEAL);
             Heal_Timer = 30000;
         }else Heal_Timer -= diff;
 
@@ -72,7 +72,7 @@ struct MANGOS_DLL_DECL boss_high_inquisitor_fairbanksAI : public ScriptedAI
         if (Fear_Timer < diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
-                DoCast(target,SPELL_FEAR);
+                DoCastSpellIfCan(target,SPELL_FEAR);
 
             Fear_Timer = 40000;
         }else Fear_Timer -= diff;
@@ -81,15 +81,15 @@ struct MANGOS_DLL_DECL boss_high_inquisitor_fairbanksAI : public ScriptedAI
         if (Sleep_Timer < diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_TOPAGGRO,0))
-                DoCast(target,SPELL_SLEEP);
+                DoCastSpellIfCan(target,SPELL_SLEEP);
 
             Sleep_Timer = 30000;
         }else Sleep_Timer -= diff;
 
         //PowerWordShield_Timer
-        if (!PowerWordShield && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() <= 25)
+        if (!PowerWordShield && m_creature->GetHealthPercent() <= 25.0f)
         {
-            DoCast(m_creature,SPELL_POWERWORDSHIELD);
+            DoCastSpellIfCan(m_creature,SPELL_POWERWORDSHIELD);
             PowerWordShield = true;
         }
 
@@ -97,7 +97,7 @@ struct MANGOS_DLL_DECL boss_high_inquisitor_fairbanksAI : public ScriptedAI
         if (Dispel_Timer < diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,0))
-                DoCast(target, SPELL_DISPELMAGIC);
+                DoCastSpellIfCan(target, SPELL_DISPELMAGIC);
 
             DispelMagic_Timer = 30000;
         }else DispelMagic_Timer -= diff;
@@ -105,7 +105,7 @@ struct MANGOS_DLL_DECL boss_high_inquisitor_fairbanksAI : public ScriptedAI
         //CurseOfBlood_Timer
         if (CurseOfBlood_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_CURSEOFBLOOD);
             CurseOfBlood_Timer = 25000;
         }else CurseOfBlood_Timer -= diff;
 

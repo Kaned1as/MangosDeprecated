@@ -185,10 +185,11 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
             {
                 if (pSpark->isAlive())
                 {
-                    if (pSpark->GetMotionMaster()->GetCurrentMovementGeneratorType() == TARGETED_MOTION_TYPE)
+                    if (pSpark->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
                         pSpark->GetMotionMaster()->MovementExpired();
 
-                    pSpark->SetSpeed(MOVE_RUN, pSpark->GetCreatureInfo()->speed * 2);
+                    pSpark->SetSpeedRate(MOVE_RUN,2);
+
                     pSpark->GetMotionMaster()->MovePoint(POINT_CALLBACK, m_creature->GetPositionX(), m_creature->GetPositionY(), m_creature->GetPositionZ());
                 }
             }
@@ -237,7 +238,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
                     m_bIsSplitPhase = false;
                 }
                 // Lightning effect and restore Ionar
-                else if (m_uiSparkAtHomeCount == MAX_SPARKS)
+                else 
                 {
                     m_creature->SetVisibility(VISIBILITY_ON);
                     m_creature->CastSpell(m_creature, SPELL_SPARK_DESPAWN, false);
@@ -248,7 +249,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
                     m_uiSplit_Timer = 25000;
                     m_bIsSplitPhase = true;
 
-                    if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != TARGETED_MOTION_TYPE)
+                    if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != CHASE_MOTION_TYPE)
                     {
                         if (m_creature->getVictim())
                             m_creature->GetMotionMaster()->MoveChase(m_creature->getVictim());
@@ -267,7 +268,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
         if (m_uiStaticOverload_Timer < uiDiff)
         {
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                DoCast(pTarget, m_bIsRegularMode ? SPELL_STATIC_OVERLOAD_N : SPELL_STATIC_OVERLOAD_H);
+                DoCastSpellIfCan(pTarget, m_bIsRegularMode ? SPELL_STATIC_OVERLOAD_N : SPELL_STATIC_OVERLOAD_H);
 
             m_uiStaticOverload_Timer = urand(5000, 6000);
         }
@@ -276,14 +277,14 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
 
         if (m_uiBallLightning_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), m_bIsRegularMode ? SPELL_BALL_LIGHTNING_N : SPELL_BALL_LIGHTNING_H);
+            DoCastSpellIfCan(m_creature->getVictim(), m_bIsRegularMode ? SPELL_BALL_LIGHTNING_N : SPELL_BALL_LIGHTNING_H);
             m_uiBallLightning_Timer = urand(10000, 11000);
         }
         else
             m_uiBallLightning_Timer -= uiDiff;
 
         // Health check
-        if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < (100-(20*m_uiHealthAmountModifier)))
+        if (m_creature->GetHealthPercent() < float(100 - 20*m_uiHealthAmountModifier))
         {
             ++m_uiHealthAmountModifier;
 
@@ -292,7 +293,7 @@ struct MANGOS_DLL_DECL boss_ionarAI : public ScriptedAI
             if (m_creature->IsNonMeleeSpellCasted(false))
                 m_creature->InterruptNonMeleeSpells(false);
 
-            DoCast(m_creature, SPELL_DISPERSE);
+            DoCastSpellIfCan(m_creature, SPELL_DISPERSE);
         }
 
         DoMeleeAttackIfReady();
@@ -304,10 +305,10 @@ CreatureAI* GetAI_boss_ionar(Creature* pCreature)
     return new boss_ionarAI(pCreature);
 }
 
-bool EffectDummyCreature_boss_ionar(Unit* pCaster, uint32 uiSpellId, uint32 uiEffIndex, Creature* pCreatureTarget)
+bool EffectDummyCreature_boss_ionar(Unit* pCaster, uint32 uiSpellId, SpellEffectIndex uiEffIndex, Creature* pCreatureTarget)
 {
     //always check spellid and effectindex
-    if (uiSpellId == SPELL_DISPERSE && uiEffIndex == 0)
+    if (uiSpellId == SPELL_DISPERSE && uiEffIndex == EFFECT_INDEX_0)
     {
         if (pCreatureTarget->GetEntry() != NPC_IONAR)
             return true;
@@ -318,7 +319,7 @@ bool EffectDummyCreature_boss_ionar(Unit* pCaster, uint32 uiSpellId, uint32 uiEf
         pCreatureTarget->AttackStop();
         pCreatureTarget->SetVisibility(VISIBILITY_OFF);
 
-        if (pCreatureTarget->GetMotionMaster()->GetCurrentMovementGeneratorType() == TARGETED_MOTION_TYPE)
+        if (pCreatureTarget->GetMotionMaster()->GetCurrentMovementGeneratorType() == CHASE_MOTION_TYPE)
             pCreatureTarget->GetMotionMaster()->MovementExpired();
 
         //always return true when we are handling this spell and effect

@@ -26,10 +26,10 @@ EndScriptData */
 #define SPELL_CROWDPUMMEL       10887
 #define SPELL_MIGHTYBLOW        14099
 
-#define ADD_1X                  -169.839203
-#define ADD_1Y                  -324.961395
-#define ADD_1Z                  64.401443
-#define ADD_1O                  3.124724
+#define ADD_1X                  -169.839203f
+#define ADD_1Y                  -324.961395f
+#define ADD_1Z                  64.401443f
+#define ADD_1O                  3.124724f
 
 struct MANGOS_DLL_DECL boss_halyconAI : public ScriptedAI
 {
@@ -55,19 +55,19 @@ struct MANGOS_DLL_DECL boss_halyconAI : public ScriptedAI
         //CrowdPummel_Timer
         if (CrowdPummel_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CROWDPUMMEL);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_CROWDPUMMEL);
             CrowdPummel_Timer = 14000;
         }else CrowdPummel_Timer -= diff;
 
         //MightyBlow_Timer
         if (MightyBlow_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MIGHTYBLOW);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_MIGHTYBLOW);
             MightyBlow_Timer = 10000;
         }else MightyBlow_Timer -= diff;
 
         //Summon Gizrul
-        if (!Summoned && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 25)
+        if (!Summoned && m_creature->GetHealthPercent() < 25.0f)
         {
             m_creature->SummonCreature(10268,ADD_1X,ADD_1Y,ADD_1Z,ADD_1O,TEMPSUMMON_TIMED_DESPAWN,300000);
             Summoned = true;

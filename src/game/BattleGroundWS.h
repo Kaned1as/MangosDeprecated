@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,8 +22,8 @@
 #include "BattleGround.h"
 
 #define BG_WS_MAX_TEAM_SCORE      3
-#define BG_WS_FLAG_RESPAWN_TIME   (23*IN_MILISECONDS)
-#define BG_WS_FLAG_DROP_TIME      (10*IN_MILISECONDS)
+#define BG_WS_FLAG_RESPAWN_TIME   (23*IN_MILLISECONDS)
+#define BG_WS_FLAG_DROP_TIME      (10*IN_MILLISECONDS)
 
 enum BG_WS_Sound
 {

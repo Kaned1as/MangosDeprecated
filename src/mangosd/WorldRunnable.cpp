@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,6 @@ void WorldRunnable::run()
 
     uint32 realCurrTime = 0;
     uint32 realPrevTime = getMSTime();
-    uint32 currDiffTime = 0;
-    uint32 maxlatency = 0; 
 
     uint32 prevSleepTime = 0;                               // used for balanced full tick time length near WORLD_SLEEP_CONST
 
@@ -58,16 +56,6 @@ void WorldRunnable::run()
         realCurrTime = getMSTime();
 
         uint32 diff = getMSTimeDiff(realPrevTime,realCurrTime);
-
-        currDiffTime += diff;
-        if (maxlatency < diff) maxlatency = diff;
-
-        if(currDiffTime > 60000)
-        {
-            currDiffTime = 0;
-            //CharacterDatabase.PExecute("INSERT INTO world_statistics (unixtime, latency) VALUES ('%u', '%u')", realCurrTime, maxlatency);
-            maxlatency = 0;
-        }
 
         sWorld.Update( diff );
         realPrevTime = realCurrTime;

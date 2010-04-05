@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,28 @@
 #include "MapManager.h"
 #include "Player.h"
 #include "Chat.h"
+
+void utf8print(void* arg, const char* str)
+{
+#if PLATFORM == PLATFORM_WINDOWS
+    wchar_t wtemp_buf[6000];
+    size_t wtemp_len = 6000-1;
+    if(!Utf8toWStr(str,strlen(str),wtemp_buf,wtemp_len))
+        return;
+
+    char temp_buf[6000];
+    CharToOemBuffW(&wtemp_buf[0],&temp_buf[0],wtemp_len+1);
+    printf("%s", temp_buf);
+#else
+    printf("%s", str);
+#endif
+}
+
+void commandFinished(void*, bool sucess)
+{
+    printf("mangos>");
+    fflush(stdout);
+}
 
 /// Delete a user account and all associated characters in this realm
 /// \todo This function has to be enhanced to respect the login/realm split (delete char, delete account chars in realm, delete account chars in realm then delete account
@@ -326,7 +348,7 @@ void CliRunnable::run()
                 continue;
             }
 
-            sWorld.QueueCliCommand(&utf8print,command.c_str());
+            sWorld.QueueCliCommand(new CliCommandHolder(0, SEC_CONSOLE, NULL, command.c_str(), &utf8print, &commandFinished));
         }
         else if (feof(stdin))
         {

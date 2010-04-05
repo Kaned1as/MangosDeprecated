@@ -24,9 +24,9 @@ EndScriptData */
 #include "precompiled.h"
 
 #define SPELL_SNAPKICK          15618
-#define SPELL_CLEAVE            15579
+#define SPELL_CLEAVE            15284
 #define SPELL_UPPERCUT          10966
-#define SPELL_MORTALSTRIKE      16856
+#define SPELL_MORTALSTRIKE      15708
 #define SPELL_PUMMEL            15615
 #define SPELL_THROWAXE          16075
 
@@ -60,48 +60,49 @@ struct MANGOS_DLL_DECL boss_warmastervooneAI : public ScriptedAI
         //Snapkick_Timer
         if (Snapkick_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SNAPKICK);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_SNAPKICK);
             Snapkick_Timer = 6000;
         }else Snapkick_Timer -= diff;
 
         //Cleave_Timer
         if (Cleave_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_CLEAVE);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_CLEAVE);
             Cleave_Timer = 12000;
         }else Cleave_Timer -= diff;
 
         //Uppercut_Timer
         if (Uppercut_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_UPPERCUT);
             Uppercut_Timer = 14000;
         }else Uppercut_Timer -= diff;
 
         //MortalStrike_Timer
         if (MortalStrike_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MORTALSTRIKE);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_MORTALSTRIKE);
             MortalStrike_Timer = 10000;
         }else MortalStrike_Timer -= diff;
 
         //Pummel_Timer
         if (Pummel_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_PUMMEL);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_PUMMEL);
             Pummel_Timer = 16000;
         }else Pummel_Timer -= diff;
 
         //ThrowAxe_Timer
         if (ThrowAxe_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_THROWAXE);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_THROWAXE);
             ThrowAxe_Timer = 8000;
         }else ThrowAxe_Timer -= diff;
 
         DoMeleeAttackIfReady();
     }
 };
+
 CreatureAI* GetAI_boss_warmastervoone(Creature* pCreature)
 {
     return new boss_warmastervooneAI(pCreature);

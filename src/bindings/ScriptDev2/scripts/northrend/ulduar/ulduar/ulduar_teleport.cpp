@@ -31,7 +31,7 @@ bool GossipHello_ulduar_teleporter(Player *player, Creature *creature)
     ScriptedInstance *pInstance = (ScriptedInstance *) creature->GetInstanceData();
     if(!pInstance) return true;
 
-    player->ADD_GOSSIP_ITEM(0, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
     //if(pInstance->GetData(TYPE_LEVIATHAN_TP))
     //    player->ADD_GOSSIP_ITEM(0, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
 
@@ -94,7 +94,7 @@ bool GossipSelect_ulduar_teleporter(Player *player, Creature *creature, uint32 s
         player->TeleportTo(603, 2536.87, 2569.15, 412.304, 0);
         player->CLOSE_GOSSIP_MENU(); break;
     case PRISON:
-        //player->TeleportTo(603, 2536.87, 2569.15, 412.304, 0);
+        player->TeleportTo(603, 1854.297, -11.0173, 334.4, 0);
         player->CLOSE_GOSSIP_MENU(); break;
     }
 

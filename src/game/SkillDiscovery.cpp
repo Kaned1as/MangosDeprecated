@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,7 +62,7 @@ void LoadSkillDiscoveryTable()
         return;
     }
 
-    barGoLink bar(result->GetRowCount());
+    barGoLink bar((int)result->GetRowCount());
 
     std::ostringstream ssNonDiscoverableEntries;
     std::set<uint32> reportedReqSpells;
@@ -89,7 +89,7 @@ void LoadSkillDiscoveryTable()
             SpellEntry const* reqSpellEntry = sSpellStore.LookupEntry(reqSkillOrSpell);
             if (!reqSpellEntry)
             {
-                if(reportedReqSpells.count(reqSkillOrSpell)==0)
+                if (reportedReqSpells.find(reqSkillOrSpell) == reportedReqSpells.end())
                 {
                     sLog.outErrorDb("Spell (ID: %u) have not existed spell (ID: %i) in `reqSpell` field in `skill_discovery_template` table",spellId,reqSkillOrSpell);
                     reportedReqSpells.insert(reqSkillOrSpell);
@@ -102,7 +102,7 @@ void LoadSkillDiscoveryTable()
                 // explicit discovery ability
                 !IsExplicitDiscoverySpell(reqSpellEntry))
             {
-                if (reportedReqSpells.count(reqSkillOrSpell)==0)
+                if (reportedReqSpells.find(reqSkillOrSpell) == reportedReqSpells.end())
                 {
                     sLog.outErrorDb("Spell (ID: %u) not have MECHANIC_DISCOVERY (28) value in Mechanic field in spell.dbc"
                         " and not 100%% chance random discovery ability but listed for spellId %u (and maybe more) in `skill_discovery_template` table",
@@ -170,10 +170,6 @@ uint32 GetExplicitDiscoverySpell(uint32 spellId, Player* player)
     SkillLineAbilityMapBounds bounds = sSpellMgr.GetSkillLineAbilityMapBounds(spellId);
     uint32 skillvalue = bounds.first != bounds.second ? player->GetSkillValue(bounds.first->second->skillId) : 0;
 
-    //Ranger: hackfix for Book of Glyph Mastery
-    if( spellId == 64323 )
-        skillvalue = player->GetSkillValue(SKILL_INSCRIPTION);
-
     float full_chance = 0;
     for(SkillDiscoveryList::const_iterator item_iter = tab->second.begin(); item_iter != tab->second.end(); ++item_iter)
         if (item_iter->reqSkillValue <= skillvalue)
@@ -181,7 +177,7 @@ uint32 GetExplicitDiscoverySpell(uint32 spellId, Player* player)
                 full_chance += item_iter->chance;
 
     float rate = full_chance / 100.0f;
-    float roll = rand_chance() * rate;                      // roll now in range 0..full_chance
+    float roll = rand_chance_f() * rate;                    // roll now in range 0..full_chance
 
     for(SkillDiscoveryList::const_iterator item_iter = tab->second.begin(); item_iter != tab->second.end(); ++item_iter)
     {
@@ -211,7 +207,7 @@ uint32 GetSkillDiscoverySpell(uint32 skillId, uint32 spellId, Player* player)
     {
         for(SkillDiscoveryList::const_iterator item_iter = tab->second.begin(); item_iter != tab->second.end(); ++item_iter)
         {
-            if (roll_chance_f(item_iter->chance * sWorld.getRate(RATE_SKILL_DISCOVERY)) &&
+            if (roll_chance_f(item_iter->chance * sWorld.getConfig(CONFIG_FLOAT_RATE_SKILL_DISCOVERY)) &&
                 item_iter->reqSkillValue <= skillvalue &&
                 !player->HasSpell(item_iter->spellId))
                 return item_iter->spellId;
@@ -229,7 +225,7 @@ uint32 GetSkillDiscoverySpell(uint32 skillId, uint32 spellId, Player* player)
     {
         for(SkillDiscoveryList::const_iterator item_iter = tab->second.begin(); item_iter != tab->second.end(); ++item_iter)
         {
-            if (roll_chance_f(item_iter->chance * sWorld.getRate(RATE_SKILL_DISCOVERY)) &&
+            if (roll_chance_f(item_iter->chance * sWorld.getConfig(CONFIG_FLOAT_RATE_SKILL_DISCOVERY)) &&
                 item_iter->reqSkillValue <= skillvalue &&
                 !player->HasSpell(item_iter->spellId))
                 return item_iter->spellId;

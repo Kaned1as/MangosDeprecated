@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #include "Common.h"
 #include "Item.h"
 #include "ObjectMgr.h"
-#include "ObjectDefines.h"
+#include "ObjectGuid.h"
 #include "WorldPacket.h"
 #include "Database/DatabaseEnv.h"
 #include "ItemEnchantmentMgr.h"
@@ -159,7 +159,7 @@ void RemoveItemsSetItem(Player*player,ItemPrototype const *proto)
 
     if(!eff->item_count)                                    //all items of a set were removed
     {
-        assert(eff == player->ItemSetEff[setindex]);
+        ASSERT(eff == player->ItemSetEff[setindex]);
         delete eff;
         player->ItemSetEff[setindex] = NULL;
     }
@@ -268,7 +268,7 @@ bool Item::Create( uint32 guidlow, uint32 itemid, Player const* owner)
         SetSpellCharges(i,itemProto->Spells[i].SpellCharges);
 
     SetUInt32Value(ITEM_FIELD_FLAGS, itemProto->Flags);
-    SetUInt32Value(ITEM_FIELD_DURATION, abs(itemProto->Duration));
+    SetUInt32Value(ITEM_FIELD_DURATION, itemProto->Duration);
 
     return true;
 }
@@ -282,32 +282,8 @@ void Item::UpdateDuration(Player* owner, uint32 diff)
 
     if (GetUInt32Value(ITEM_FIELD_DURATION)<=diff)
     {
-        uint32 itemId = this->GetEntry();
         owner->DestroyItem(GetBagSlot(), GetSlot(), true);
-        ItemPosCountVec dest;
-
-        if (itemId == 39878) //Mysterious Egg
-        {
-            uint8 msg = owner->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 39883, 1);
-            if (msg == EQUIP_ERR_OK)
-            {
-                Item* item = owner->StoreNewItem(dest,39883,true);
-                if (item)
-                    owner->SendNewItem(item,1,false,true);
-            }
-        }
-
-        if (itemId == 44717) //Disgusting Jar
-        {
-            uint8 msg = owner->CanStoreNewItem(NULL_BAG, NULL_SLOT, dest, 44718, 1);
-            if (msg == EQUIP_ERR_OK)
-            {
-                Item* item = owner->StoreNewItem(dest,44718,true);
-                if (item)
-                    owner->SendNewItem(item,1,false,true);
-            }
-        }
-         return;
+        return;
     }
 
     SetUInt32Value(ITEM_FIELD_DURATION, GetUInt32Value(ITEM_FIELD_DURATION) - diff);
@@ -427,20 +403,20 @@ bool Item::LoadFromDB(uint32 guid, uint64 owner_guid, QueryResult *result)
     }
 
     // update duration if need, and remove if not need
-    if((proto->Duration==0) != (GetUInt32Value(ITEM_FIELD_DURATION)==0))
+    if ((proto->Duration == 0) != (GetUInt32Value(ITEM_FIELD_DURATION) == 0))
     {
-        SetUInt32Value(ITEM_FIELD_DURATION,abs(proto->Duration));
+        SetUInt32Value(ITEM_FIELD_DURATION, proto->Duration);
         need_save = true;
     }
 
     // set correct owner
-    if(owner_guid != 0 && GetOwnerGUID() != owner_guid)
+    if (owner_guid != 0 && GetOwnerGUID() != owner_guid)
     {
         SetOwnerGUID(owner_guid);
         need_save = true;
     }
 
-    if(need_save)                                           // normal item changed state set not work at loading
+    if (need_save)                                          // normal item changed state set not work at loading
     {
         std::ostringstream ss;
         ss << "UPDATE item_instance SET data = '";
@@ -463,7 +439,7 @@ void Item::DeleteFromDB()
 void Item::DeleteFromInventoryDB()
 {
     CharacterDatabase.PExecute("DELETE FROM character_inventory WHERE item = '%u'",GetGUIDLow());
-    CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 30 WHERE itemGuid = %u", GetGUIDLow());	
+    CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 30 WHERE itemGuid = %u", GetGUIDLow());
 }
 
 ItemPrototype const *Item::GetProto() const
@@ -735,6 +711,9 @@ bool Item::IsEquipped() const
 
 bool Item::CanBeTraded(bool mail) const
 {
+    if (m_lootGenerated)
+        return false;
+
     if ((!mail || !IsBoundAccountWide()) && IsSoulBound())
         return false;
 
@@ -780,7 +759,7 @@ bool Item::IsFitToSpellRequirements(SpellEntry const* spellInfo) const
 
     //Lava Lash
     if (spellInfo->Id==60103 && spellInfo->EquippedItemClass==ITEM_CLASS_WEAPON)
-         return true;
+        return true;
 
     if (spellInfo->EquippedItemClass != -1)                 // -1 == any item class
     {
@@ -973,7 +952,7 @@ Item* Item::CreateItem( uint32 item, uint32 count, Player const* player )
         if ( count > pProto->GetMaxStackSize())
             count = pProto->GetMaxStackSize();
 
-        assert(count !=0 && "pProto->Stackable==0 but checked at loading already");
+        ASSERT(count !=0 && "pProto->Stackable==0 but checked at loading already");
 
         Item *pItem = NewItemOrBag( pProto );
         if( pItem->Create(sObjectMgr.GenerateLowGuid(HIGHGUID_ITEM), item, player) )
@@ -1047,6 +1026,23 @@ void Item::BuildUpdateData(UpdateDataMapType& update_players)
     ClearUpdateMask(false);
 }
 
+uint8 Item::CanBeMergedPartlyWith( ItemPrototype const* proto ) const
+{
+    // check item type
+    if (GetEntry() != proto->ItemId)
+        return EQUIP_ERR_ITEM_CANT_STACK;
+
+    // check free space (full stacks can't be target of merge
+    if (GetCount() >= proto->GetMaxStackSize())
+        return EQUIP_ERR_ITEM_CANT_STACK;
+
+    // not allow merge looting currently items
+    if (m_lootGenerated)
+        return EQUIP_ERR_ALREADY_LOOTED;
+
+    return EQUIP_ERR_OK;
+}
+
 bool ItemRequiredTarget::IsFitToRequirements( Unit* pUnitTarget ) const
 {
     if(pUnitTarget->GetTypeId() != TYPEID_UNIT)
@@ -1063,5 +1059,30 @@ bool ItemRequiredTarget::IsFitToRequirements( Unit* pUnitTarget ) const
             return !pUnitTarget->isAlive();
         default:
             return false;
+    }
+}
+
+bool Item::HasMaxCharges() const
+{
+    ItemPrototype const* itemProto = GetProto();
+
+    for(int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+        if (GetSpellCharges(i) != itemProto->Spells[i].SpellCharges)
+            return false;
+
+    return true;
+}
+
+void Item::RestoreCharges()
+{
+    ItemPrototype const* itemProto = GetProto();
+
+    for(int i = 0; i < MAX_ITEM_PROTO_SPELLS; ++i)
+    {
+        if (GetSpellCharges(i) != itemProto->Spells[i].SpellCharges)
+        {
+            SetSpellCharges(i, itemProto->Spells[i].SpellCharges);
+            SetState(ITEM_CHANGED);
+        }
     }
 }

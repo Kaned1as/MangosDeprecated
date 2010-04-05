@@ -101,14 +101,14 @@ struct MANGOS_DLL_DECL boss_kormokAI : public ScriptedAI
         //ShadowVolley_Timer
         if (ShadowVolley_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SHADOWBOLTVOLLEY);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_SHADOWBOLTVOLLEY);
             ShadowVolley_Timer = 15000;
         }else ShadowVolley_Timer -= diff;
 
         //BoneShield_Timer
         if (BoneShield_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_BONESHIELD);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_BONESHIELD);
             BoneShield_Timer = 45000;
         }else BoneShield_Timer -= diff;
 
@@ -125,7 +125,7 @@ struct MANGOS_DLL_DECL boss_kormokAI : public ScriptedAI
         }else Minion_Timer -= diff;
 
         //Summon 2 Bone Mages
-        if (!Mages && m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 26)
+        if (!Mages && m_creature->GetHealthPercent() < 26.0f)
         {
             //Cast
             SummonMages(m_creature->getVictim());

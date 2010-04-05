@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005,2006,2007 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -157,7 +157,7 @@ InstanceSave::InstanceSave(uint16 MapId, uint32 InstanceId, Difficulty difficult
 InstanceSave::~InstanceSave()
 {
     // the players and groups must be unbound before deleting the save
-    assert(m_playerList.empty() && m_groupList.empty());
+    ASSERT(m_playerList.empty() && m_groupList.empty());
 }
 
 /*
@@ -171,7 +171,7 @@ void InstanceSave::SaveToDB()
     Map *map = sMapMgr.FindMap(GetMapId(),m_instanceid);
     if(map)
     {
-        assert(map->IsDungeon());
+        ASSERT(map->IsDungeon());
         InstanceData *iData = ((InstanceMap *)map)->GetInstanceData();
         if(iData && iData->Save())
         {
@@ -225,7 +225,7 @@ bool InstanceSave::UnloadIfEmpty()
 void InstanceSaveManager::_DelHelper(DatabaseType &db, const char *fields, const char *table, const char *queryTail,...)
 {
     Tokens fieldTokens = StrSplit(fields, ", ");
-    assert(fieldTokens.size() != 0);
+    ASSERT(fieldTokens.size() != 0);
 
     va_list ap;
     char szQueryTail [MAX_QUERY_LEN];
@@ -430,7 +430,7 @@ void InstanceSaveManager::LoadResetTimes()
     }
 
     // load the global respawn times for raid/heroic instances
-    uint32 diff = sWorld.getConfig(CONFIG_INSTANCE_RESET_TIME_HOUR) * HOUR;
+    uint32 diff = sWorld.getConfig(CONFIG_UINT32_INSTANCE_RESET_TIME_HOUR) * HOUR;
     result = CharacterDatabase.Query("SELECT mapid, difficulty, resettime FROM instance_reset");
     if(result)
     {
@@ -475,7 +475,9 @@ void InstanceSaveManager::LoadResetTimes()
             continue;
 
         // the reset_delay must be at least one day
-        uint32 period =  (mapDiff->resetTime / DAY * sWorld.getRate(RATE_INSTANCE_RESET_TIME)) * DAY;
+        uint32 period =  uint32(mapDiff->resetTime / DAY * sWorld.getConfig(CONFIG_FLOAT_RATE_INSTANCE_RESET_TIME)) * DAY;
+        if (period < DAY)
+            period = DAY;
 
         time_t t = GetResetTimeFor(mapid,difficulty);
         if(!t)
@@ -549,7 +551,7 @@ void InstanceSaveManager::Update()
         {
             // global reset/warning for a certain map
             time_t resetTime = GetResetTimeFor(event.mapid,event.difficulty);
-            _ResetOrWarnAll(event.mapid, event.difficulty, event.type != 4, resetTime - now);
+            _ResetOrWarnAll(event.mapid, event.difficulty, event.type != 4, uint32(resetTime - now));
             if(event.type != 4)
             {
                 // schedule the next warning/reset
@@ -607,7 +609,7 @@ void InstanceSaveManager::_ResetOrWarnAll(uint32 mapid, Difficulty difficulty, b
     if (!mapEntry->Instanceable())
         return;
 
-    uint64 now = (uint64)time(NULL);
+    time_t now = time(NULL);
 
     if (!warn)
     {
@@ -635,11 +637,11 @@ void InstanceSaveManager::_ResetOrWarnAll(uint32 mapid, Difficulty difficulty, b
         CharacterDatabase.CommitTransaction();
 
         // calculate the next reset time
-        uint32 diff = sWorld.getConfig(CONFIG_INSTANCE_RESET_TIME_HOUR) * HOUR;
+        uint32 diff = sWorld.getConfig(CONFIG_UINT32_INSTANCE_RESET_TIME_HOUR) * HOUR;
         uint32 period = mapDiff->resetTime * DAY;
-        uint64 next_reset = ((now + timeLeft + MINUTE) / DAY * DAY) + period + diff;
+        time_t next_reset = ((now + timeLeft + MINUTE) / DAY * DAY) + period + diff;
         // update it in the DB
-        CharacterDatabase.PExecute("UPDATE instance_reset SET resettime = '"UI64FMTD"' WHERE mapid = '%d' AND difficulty = '%d'", next_reset, mapid, difficulty);
+        CharacterDatabase.PExecute("UPDATE instance_reset SET resettime = '"UI64FMTD"' WHERE mapid = '%d' AND difficulty = '%d'", (uint64)next_reset, mapid, difficulty);
     }
 
     // note: this isn't fast but it's meant to be executed very rarely
@@ -649,9 +651,13 @@ void InstanceSaveManager::_ResetOrWarnAll(uint32 mapid, Difficulty difficulty, b
     for(mitr = instMaps.begin(); mitr != instMaps.end(); ++mitr)
     {
         Map *map2 = mitr->second;
-        if(!map2->IsDungeon()) continue;
-        if(warn) ((InstanceMap*)map2)->SendResetWarnings(timeLeft);
-        else ((InstanceMap*)map2)->Reset(INSTANCE_RESET_GLOBAL);
+        if (!map2->IsDungeon())
+            continue;
+
+        if (warn)
+            ((InstanceMap*)map2)->SendResetWarnings(timeLeft);
+        else
+            ((InstanceMap*)map2)->Reset(INSTANCE_RESET_GLOBAL);
     }
 
     // TODO: delete creature/gameobject respawn times even if the maps are not loaded

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,10 +51,10 @@ void RealmList::Initialize(uint32 updateInterval)
 }
 
 void RealmList::UpdateRealm( uint32 ID, const std::string& name, const std::string& address, uint32 port, uint8 icon, uint8 color, uint8 timezone, AccountTypes allowedSecurityLevel, float popu, const char* builds)
-{      
+{
     ///- Create new if not exist or update existed
     Realm& realm = m_realms[name];
-    
+
     realm.m_ID      = ID;
     realm.icon      = icon;
     realm.color     = color;
@@ -62,7 +62,7 @@ void RealmList::UpdateRealm( uint32 ID, const std::string& name, const std::stri
     realm.allowedSecurityLevel = allowedSecurityLevel;
     realm.populationLevel        = popu;
 
-	Tokens tokens = StrSplit(builds, " ");
+    Tokens tokens = StrSplit(builds, " ");
     Tokens::iterator iter;
 
     for (iter = tokens.begin(); iter != tokens.end(); ++iter)

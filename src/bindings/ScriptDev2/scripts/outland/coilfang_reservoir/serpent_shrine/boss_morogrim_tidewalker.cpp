@@ -154,7 +154,7 @@ struct MANGOS_DLL_DECL boss_morogrim_tidewalkerAI : public ScriptedAI
         {
             if (!m_bEarthquake)
             {
-                DoCast(m_creature->getVictim(), SPELL_EARTHQUAKE);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_EARTHQUAKE);
                 m_bEarthquake = true;
                 m_uiEarthquake_Timer = 5000;
             }
@@ -186,7 +186,7 @@ struct MANGOS_DLL_DECL boss_morogrim_tidewalkerAI : public ScriptedAI
         //m_uiTidalWave_Timer
         if (m_uiTidalWave_Timer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), SPELL_TIDAL_WAVE);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_TIDAL_WAVE);
             m_uiTidalWave_Timer = 20000;
         }else m_uiTidalWave_Timer -= uiDiff;
 
@@ -219,7 +219,7 @@ struct MANGOS_DLL_DECL boss_morogrim_tidewalkerAI : public ScriptedAI
             }else m_uiWateryGrave_Timer -= uiDiff;
 
             //Start Phase2
-            if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 25)
+            if (m_creature->GetHealthPercent() < 25.0f)
                 m_bPhase2 = true;
         }
         else

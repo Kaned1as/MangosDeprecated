@@ -162,7 +162,6 @@ struct MANGOS_DLL_DECL npc_tempest_minionAI : public ScriptedAI
                 DoResetThreat();
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     m_creature->GetMotionMaster()->MoveChase(pTarget);
-
             }
             else
                 m_uiRespawnTimer -= uiDiff;
@@ -173,7 +172,7 @@ struct MANGOS_DLL_DECL npc_tempest_minionAI : public ScriptedAI
         if (m_uiOverchargedStacksCheckTimer < uiDiff)
         {
             m_uiOverchargedStacksCheckTimer = 2000;
-            Aura* pAuraOvercharged = m_creature->GetAura(SPELL_OVERCHARGED, 0);
+            Aura* pAuraOvercharged = m_creature->GetAura(SPELL_OVERCHARGED, EFFECT_INDEX_0);
             if(pAuraOvercharged && pAuraOvercharged->GetStackAmount() >= 10)
             {
                 DoCast(m_creature, SPELL_OVERCHARGED_BLAST);
@@ -195,7 +194,6 @@ struct MANGOS_DLL_DECL npc_tempest_minionAI : public ScriptedAI
         DoMeleeAttackIfReady();
     }
 };
-
 
 /*######
 ## boss_emalon
@@ -387,7 +385,7 @@ struct MANGOS_DLL_DECL npc_tempest_warderAI : public ScriptedAI
             if (m_uiOverchargedStacksCheckTimer < uiDiff)
             {
                 m_uiOverchargedStacksCheckTimer = 2000;
-                Aura* pAuraOvercharged = m_creature->GetAura(SPELL_OVERCHARGED, 0);
+                Aura* pAuraOvercharged = m_creature->GetAura(SPELL_OVERCHARGED, EFFECT_INDEX_0);
                 if(pAuraOvercharged && pAuraOvercharged->GetStackAmount() >= 10)
                 {
                     DoCast(m_creature, SPELL_OVERCHARGED_BLAST);

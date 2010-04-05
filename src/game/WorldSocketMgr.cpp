@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -64,13 +64,13 @@ class ReactorRunnable : protected ACE_Task_Base
 
             imp = new ACE_Dev_Poll_Reactor ();
 
-            imp->max_notify_iterations (256);
+            imp->max_notify_iterations (128);
             imp->restart (1);
 
             #else
 
             imp = new ACE_TP_Reactor ();
-            imp->max_notify_iterations (256);
+            imp->max_notify_iterations (128);
 
             #endif
 

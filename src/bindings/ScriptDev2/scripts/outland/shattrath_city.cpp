@@ -88,7 +88,7 @@ struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
 
         //expect database to have correct faction (1194) and then only unit flags set/remove needed
         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
+        m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
     }
 
     void SetRuffies(uint64 guid, bool bAttack, bool bReset)
@@ -104,12 +104,12 @@ struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
                 pCreature->AI()->EnterEvadeMode();
 
             pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
+            pCreature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
         }
         else
         {
             pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
+            pCreature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
 
             if (!pCreature->isAlive())
                 return;
@@ -132,7 +132,7 @@ struct MANGOS_DLL_DECL npc_dirty_larryAI : public ScriptedAI
         m_creature->SetUInt32Value(UNIT_NPC_FLAGS, UNIT_NPC_FLAG_NONE);
 
         m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_UNK_9);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_PASSIVE);
 
         if (Creature* pCreepjack = GetClosestCreatureWithEntry(m_creature, ENTRY_CREEPJACK, 20.0f))
             m_uiCreepjackGUID = pCreepjack->GetGUID();
@@ -400,7 +400,6 @@ struct MANGOS_DLL_DECL npc_khadgars_servantAI : public npc_escortAI
         else
             error_log("SD2: npc_khadgars_servant can not obtain owner or owner is not a player.");
 
-        pCreature->SetSpeed(MOVE_WALK,1.5f);
         Reset();
     }
 
@@ -668,7 +667,7 @@ struct MANGOS_DLL_DECL npc_raliq_the_drunkAI : public ScriptedAI
 
         if (m_uiUppercut_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_UPPERCUT);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_UPPERCUT);
             m_uiUppercut_Timer = 15000;
         }else m_uiUppercut_Timer -= diff;
 
@@ -741,7 +740,7 @@ struct MANGOS_DLL_DECL npc_salsalabimAI : public ScriptedAI
 
         if (MagneticPull_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_MAGNETIC_PULL);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_MAGNETIC_PULL);
             MagneticPull_Timer = 15000;
         }else MagneticPull_Timer -= diff;
 

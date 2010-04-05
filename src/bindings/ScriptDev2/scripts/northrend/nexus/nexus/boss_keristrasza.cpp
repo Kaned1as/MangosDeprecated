@@ -114,13 +114,13 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
-        if (!m_bIsEnraged && m_creature->GetHealth()*100 < m_creature->GetMaxHealth()*25)
+        if (!m_bIsEnraged && m_creature->GetHealthPercent() < 25.0f)
         {
             if (!m_creature->IsNonMeleeSpellCasted(false))
             {
                 m_bIsEnraged = true;
                 DoScriptText(SAY_ENRAGE, m_creature);
-                DoCast(m_creature, SPELL_ENRAGE);
+                DoCastSpellIfCan(m_creature, SPELL_ENRAGE);
             }
         }
 
@@ -133,7 +133,7 @@ struct MANGOS_DLL_DECL boss_keristraszaAI : public ScriptedAI
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 1))
                     {
                         if (Player* pPlayer = pTarget->GetCharmerOrOwnerPlayerOrPlayerItself())
-                            DoCast(pPlayer, SPELL_CRYSTAL_CHAINS);
+                            DoCastSpellIfCan(pPlayer, SPELL_CRYSTAL_CHAINS);
 
                         uiCrystalChainTimer = 30000;
                     }

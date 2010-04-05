@@ -30,7 +30,7 @@ bool ScriptedAI::IsVisible(Unit* pWho) const
 
 void ScriptedAI::MoveInLineOfSight(Unit* pWho)
 {
-    if (!m_creature->hasUnitState(UNIT_STAT_STUNNED) && pWho->isTargetableForAttack() &&
+    if (m_creature->CanInitiateAttack() && pWho->isTargetableForAttack() &&
         m_creature->IsHostileTo(pWho) && pWho->isInAccessablePlaceFor(m_creature))
     {
         if (!m_creature->canFly() && m_creature->GetDistanceZ(pWho) > CREATURE_Z_ATTACK_RANGE)
@@ -154,19 +154,17 @@ void ScriptedAI::DoStopAttack()
 
 void ScriptedAI::DoCast(Unit* pTarget, uint32 uiSpellId, bool bTriggered)
 {
-    if (!pTarget || m_creature->IsNonMeleeSpellCasted(false))
+    if (m_creature->IsNonMeleeSpellCasted(false) && !bTriggered)
         return;
 
-    m_creature->StopMoving();
     m_creature->CastSpell(pTarget, uiSpellId, bTriggered);
 }
 
 void ScriptedAI::DoCastSpell(Unit* pTarget, SpellEntry const* pSpellInfo, bool bTriggered)
 {
-    if (!pTarget || m_creature->IsNonMeleeSpellCasted(false))
+    if (m_creature->IsNonMeleeSpellCasted(false) && !bTriggered)
         return;
 
-    m_creature->StopMoving();
     m_creature->CastSpell(pTarget, pSpellInfo, bTriggered);
 }
 
@@ -339,7 +337,7 @@ void FillSpellSummary()
 
     SpellEntry const* pTempSpell;
 
-    for (int i=0; i < GetSpellStore()->GetNumRows(); ++i)
+    for (uint32 i=0; i < GetSpellStore()->GetNumRows(); ++i)
     {
         SpellSummary[i].Effects = 0;
         SpellSummary[i].Targets = 0;
@@ -467,8 +465,7 @@ Unit* ScriptedAI::DoSelectLowestHpFriendly(float fRange, uint32 uiMinHPDiff)
     */
     TypeContainerVisitor<MaNGOS::UnitLastSearcher<MaNGOS::MostHPMissingInRange>, GridTypeMapContainer >  grid_unit_searcher(searcher);
 
-    CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_unit_searcher, *(m_creature->GetMap()), *m_creature, fRange);
+    cell.Visit(p, grid_unit_searcher, *(m_creature->GetMap()), *m_creature, fRange);
 
     return pUnit;
 }
@@ -487,8 +484,7 @@ std::list<Creature*> ScriptedAI::DoFindFriendlyCC(float fRange)
 
     TypeContainerVisitor<MaNGOS::CreatureListSearcher<MaNGOS::FriendlyCCedInRange>, GridTypeMapContainer >  grid_creature_searcher(searcher);
 
-    CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_creature_searcher, *(m_creature->GetMap()), *m_creature, fRange);
+    cell.Visit(p, grid_creature_searcher, *(m_creature->GetMap()), *m_creature, fRange);
 
     return pList;
 }
@@ -507,8 +503,7 @@ std::list<Creature*> ScriptedAI::DoFindFriendlyMissingBuff(float fRange, uint32 
 
     TypeContainerVisitor<MaNGOS::CreatureListSearcher<MaNGOS::FriendlyMissingBuffInRange>, GridTypeMapContainer >  grid_creature_searcher(searcher);
 
-    CellLock<GridReadGuard> cell_lock(cell, p);
-    cell_lock->Visit(cell_lock, grid_creature_searcher, *(m_creature->GetMap()), *m_creature, fRange);
+    cell.Visit(p, grid_creature_searcher, *(m_creature->GetMap()), *m_creature, fRange);
 
     return pList;
 }
@@ -526,11 +521,10 @@ Player* ScriptedAI::GetPlayerAtMinimumRange(float fMinimumRange)
     MaNGOS::PlayerSearcher<PlayerAtMinimumRangeAway> searcher(m_creature, pPlayer, check);
     TypeContainerVisitor<MaNGOS::PlayerSearcher<PlayerAtMinimumRangeAway>, GridTypeMapContainer> visitor(searcher);
 
-    CellLock<GridReadGuard> cell_lock(cell, pair);
     Map * map = m_creature->GetMap();
     //lets limit the maximum player search distance to speed up calculations...
     const float fMaxSearchDst = map->GetVisibilityDistance() > MAX_PLAYER_STEALTH_DETECT_RANGE ? MAX_PLAYER_STEALTH_DETECT_RANGE : map->GetVisibilityDistance();
-    cell_lock->Visit(cell_lock, visitor, *map, *m_creature, fMaxSearchDst);
+    cell.Visit(pair, visitor, *map, *m_creature, fMaxSearchDst);
 
     return pPlayer;
 }

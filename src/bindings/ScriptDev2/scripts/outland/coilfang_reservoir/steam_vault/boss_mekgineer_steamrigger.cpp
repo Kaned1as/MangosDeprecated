@@ -133,30 +133,30 @@ struct MANGOS_DLL_DECL boss_mekgineer_steamriggerAI : public ScriptedAI
 
         if (Shrink_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_SUPER_SHRINK_RAY);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_SUPER_SHRINK_RAY);
             Shrink_Timer = 20000;
         }else Shrink_Timer -= diff;
 
         if (Saw_Blade_Timer < diff)
         {
             if (Unit* target = SelectUnit(SELECT_TARGET_RANDOM,1))
-                DoCast(target,SPELL_SAW_BLADE);
+                DoCastSpellIfCan(target,SPELL_SAW_BLADE);
             else
-                DoCast(m_creature->getVictim(),SPELL_SAW_BLADE);
+                DoCastSpellIfCan(m_creature->getVictim(),SPELL_SAW_BLADE);
 
             Saw_Blade_Timer = 15000;
         } else Saw_Blade_Timer -= diff;
 
         if (Electrified_Net_Timer < diff)
         {
-            DoCast(m_creature->getVictim(),SPELL_ELECTRIFIED_NET);
+            DoCastSpellIfCan(m_creature->getVictim(),SPELL_ELECTRIFIED_NET);
             Electrified_Net_Timer = 10000;
         }
         else Electrified_Net_Timer -= diff;
 
         if (!Summon75)
         {
-            if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 75)
+            if (m_creature->GetHealthPercent() < 75.0f)
             {
                 SummonMechanichs();
                 Summon75 = true;
@@ -165,7 +165,7 @@ struct MANGOS_DLL_DECL boss_mekgineer_steamriggerAI : public ScriptedAI
 
         if (!Summon50)
         {
-            if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 50)
+            if (m_creature->GetHealthPercent() < 50.0f)
             {
                 SummonMechanichs();
                 Summon50 = true;
@@ -174,7 +174,7 @@ struct MANGOS_DLL_DECL boss_mekgineer_steamriggerAI : public ScriptedAI
 
         if (!Summon25)
         {
-            if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < 25)
+            if (m_creature->GetHealthPercent() < 25.0f)
             {
                 SummonMechanichs();
                 Summon25 = true;
@@ -238,7 +238,7 @@ struct MANGOS_DLL_DECL mob_steamrigger_mechanicAI : public ScriptedAI
                             //m_creature->GetMotionMaster()->MovementExpired();
                             //m_creature->GetMotionMaster()->MoveIdle();
 
-                            DoCast(m_creature, m_bIsRegularMode ? SPELL_REPAIR : H_SPELL_REPAIR, true);
+                            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_REPAIR : H_SPELL_REPAIR, CAST_TRIGGERED);
                         }
                         Repair_Timer = 5000;
                     }

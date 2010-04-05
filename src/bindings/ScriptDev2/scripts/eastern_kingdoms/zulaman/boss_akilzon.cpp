@@ -82,7 +82,7 @@ struct MANGOS_DLL_DECL boss_akilzonAI : public ScriptedAI
         m_uiGustOfWindTimer = urand(20000, 30000);
         m_uiStormTimer = 50000;
         m_uiSummonEagleTimer = 65000;
-        m_uiBerserkTimer = MINUTE*8*IN_MILISECONDS;
+        m_uiBerserkTimer = MINUTE*8*IN_MILLISECONDS;
         m_bIsBerserk = false;
     }
 
@@ -249,8 +249,8 @@ struct MANGOS_DLL_DECL mob_soaring_eagleAI : public ScriptedAI
             float fX, fY, fZ;
             pAzkil->GetRandomPoint(pAzkil->GetPositionX(), pAzkil->GetPositionY(), pAzkil->GetPositionZ()+15.0f, 30.0f, fX, fY, fZ);
 
-            if (m_creature->HasMonsterMoveFlag(MONSTER_MOVE_WALK))
-                m_creature->RemoveMonsterMoveFlag(MONSTER_MOVE_WALK);
+            if (m_creature->HasSplineFlag(SPLINEFLAG_WALKMODE))
+                m_creature->RemoveSplineFlag(SPLINEFLAG_WALKMODE);
 
             m_creature->GetMotionMaster()->MovePoint(POINT_ID_RANDOM, fX, fY, fZ);
 
@@ -279,7 +279,7 @@ struct MANGOS_DLL_DECL mob_soaring_eagleAI : public ScriptedAI
         {
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,0))
             {
-                DoCast(pTarget,SPELL_EAGLE_SWOOP);
+                DoCastSpellIfCan(pTarget,SPELL_EAGLE_SWOOP);
 
                 m_bCanMoveToRandom = true;
                 m_bCanCast = false;

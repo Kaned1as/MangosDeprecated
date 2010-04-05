@@ -17,6 +17,9 @@
 *.so.dbg
 *.bin
 *.gz
+Makefile.in
+*.m4
+*.kdev4
 
 #
 # Top-level generic files
@@ -44,8 +47,6 @@ install-sh
 ltmain.sh
 missing
 stamp-h1
-bin
-*.svn
 
 Makefile.in
 Makefile
@@ -57,6 +58,7 @@ Makefile
 *.bak
 *.orig
 *.patch
+*.orig
 callgrind.out.*
 
 #
@@ -68,9 +70,16 @@ patches-*
 #
 # VS binaries output
 #
+bin/*
+*.svn
+src/build/*
 
+# OS specific
+# MacOS
+.DS_Store
 
 #
 # Special exceptions
 #
 !dep/ACE_wrappers/ace/ace_message_table.bin
+!dep/tbb/src/Makefile

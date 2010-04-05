@@ -125,7 +125,7 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
         if (m_bIsAura)
         {
             // workaround for PULSING_SHOCKWAVE
-            /*if (m_uiPulsingShockwave_Timer < uiDiff)
+            if (m_uiPulsingShockwave_Timer < uiDiff)
             {
                 Map *map = m_creature->GetMap();
                 if (map->IsDungeon())
@@ -144,13 +144,13 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
                             if (m_fDist <= 1.0f) // Less than 1 yard
                                 dmg = (m_bIsRegularMode ? 800 : 850); // need to correct damage
                             else // Further from 1 yard
-                                dmg = round((m_bIsRegularMode ? 200 : 250) * m_fDist) + (m_bIsRegularMode ? 800 : 850); // need to correct damage
+                                dmg = int((m_bIsRegularMode ? 200 : 250) * m_fDist) + (m_bIsRegularMode ? 800 : 850); // need to correct damage
 
                             m_creature->CastCustomSpell(i->getSource(), (m_bIsRegularMode ? 52942 : 59837), &dmg, 0, 0, false);
                         }
                 }
                 m_uiPulsingShockwave_Timer = 2000;
-            }else m_uiPulsingShockwave_Timer -= uiDiff;*/
+            }else m_uiPulsingShockwave_Timer -= uiDiff;
         }
         else
         {
@@ -159,7 +159,7 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
                 //breaks at movement, can we assume when it's time, this spell is casted and also must stop movement?
                 //m_creature->CastSpell(m_creature, SPELL_PULSING_SHOCKWAVE_AURA, true);
 
-                  //DoCast(m_creature, m_bIsRegularMode ? SPELL_PULSING_SHOCKWAVE_N : SPELL_PULSING_SHOCKWAVE_H); // need core support
+                  //DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_PULSING_SHOCKWAVE_N : SPELL_PULSING_SHOCKWAVE_H); // need core support
                 m_bIsAura = true;
                 m_uiResumePulsingShockwave_Timer = 0;
             }
@@ -170,7 +170,7 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
         if (m_uiArcLightning_Timer < uiDiff)
         {
             if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                DoCast(pTarget, SPELL_ARC_LIGHTNING);
+                DoCastSpellIfCan(pTarget, SPELL_ARC_LIGHTNING);
 
             m_uiArcLightning_Timer = urand(15000, 16000);
         }
@@ -186,7 +186,7 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
                 case 2: DoScriptText(SAY_NOVA_3, m_creature);break;
             }
 
-            DoCast(m_creature, m_bIsRegularMode ? SPELL_LIGHTNING_NOVA_N : SPELL_LIGHTNING_NOVA_H);
+            DoCastSpellIfCan(m_creature, m_bIsRegularMode ? SPELL_LIGHTNING_NOVA_N : SPELL_LIGHTNING_NOVA_H);
 
             m_bIsAura = false;
             m_uiResumePulsingShockwave_Timer = (m_bIsRegularMode ? 5000 : 4000); // Pause Pulsing Shockwave aura
@@ -196,7 +196,7 @@ struct MANGOS_DLL_DECL boss_lokenAI : public ScriptedAI
             m_uiLightningNova_Timer -= uiDiff;
 
         // Health check
-        if ((m_creature->GetHealth()*100 / m_creature->GetMaxHealth()) < (100-(25*m_uiHealthAmountModifier)))
+        if (m_creature->GetHealthPercent() < float(100 - 25*m_uiHealthAmountModifier))
         {
             switch(m_uiHealthAmountModifier)
             {

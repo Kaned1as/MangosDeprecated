@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include "Common.h"
 #include "SharedDefines.h"
+#include "Map.h"
 
 // magic event-numbers
 #define BG_EVENT_NONE 255
@@ -38,6 +39,7 @@ class Player;
 class WorldPacket;
 class BattleGroundMap;
 
+struct PvPDifficultyEntry;
 struct WorldSafeLocsEntry;
 
 struct BattleGroundEventIdx
@@ -164,19 +166,6 @@ enum BattleGroundQueueTypeId
     BATTLEGROUND_QUEUE_5v5      = 9
 };
 #define MAX_BATTLEGROUND_QUEUE_TYPES 10
-
-enum BGQueueIdBasedOnLevel                        // queue_id for level ranges
-{
-    QUEUE_ID_MAX_LEVEL_19   = 0,
-    QUEUE_ID_MAX_LEVEL_29   = 1,
-    QUEUE_ID_MAX_LEVEL_39   = 2,
-    QUEUE_ID_MAX_LEVEL_49   = 3,
-    QUEUE_ID_MAX_LEVEL_59   = 4,
-    QUEUE_ID_MAX_LEVEL_69   = 5,
-    QUEUE_ID_MAX_LEVEL_79   = 6,
-    QUEUE_ID_MAX_LEVEL_80   = 7
-};
-#define MAX_BATTLEGROUND_QUEUES 8
 
 enum ScoreType
 {
@@ -309,8 +298,10 @@ class BattleGround
         // Get methods:
         char const* GetName() const         { return m_Name; }
         BattleGroundTypeId GetTypeID() const { return m_TypeID; }
-        BGQueueIdBasedOnLevel GetQueueId() const { return m_QueueId; }
-        uint32 GetInstanceID() const        { return m_InstanceID; }
+        BattleGroundBracketId GetBracketId() const { return m_BracketId; }
+        // the instanceId check is also used to determine a bg-template
+        // that's why the m_map hack is here..
+        uint32 GetInstanceID()              { return m_Map?GetBgMap()->GetInstanceId():0; }
         BattleGroundStatus GetStatus() const { return m_Status; }
         uint32 GetClientInstanceID() const  { return m_ClientInstanceID; }
         uint32 GetStartTime() const         { return m_StartTime; }
@@ -334,13 +325,7 @@ class BattleGround
         void SetName(char const* Name)      { m_Name = Name; }
         void SetTypeID(BattleGroundTypeId TypeID) { m_TypeID = TypeID; }
         //here we can count minlevel and maxlevel for players
-        void SetQueueId(BGQueueIdBasedOnLevel ID)
-        {
-            m_QueueId = ID;
-            uint8 diff = (m_TypeID == BATTLEGROUND_AV) ? 1 : 0;
-            this->SetLevelRange((ID + 1) * 10 + diff, (ID + 2) * 10 - ((diff + 1) % 2));
-        }
-        void SetInstanceID(uint32 InstanceID) { m_InstanceID = InstanceID; }
+        void SetBracket(PvPDifficultyEntry const* bracketEntry);
         void SetStatus(BattleGroundStatus Status) { m_Status = Status; }
         void SetClientInstanceID(uint32 InstanceID) { m_ClientInstanceID = InstanceID; }
         void SetStartTime(uint32 Time)      { m_StartTime = Time; }
@@ -466,7 +451,6 @@ class BattleGround
         void SetArenaTeamRatingChangeForTeam(uint32 Team, int32 RatingChange) { m_ArenaTeamRatingChanges[GetTeamIndexByTeamId(Team)] = RatingChange; }
         int32 GetArenaTeamRatingChangeForTeam(uint32 Team) const    { return m_ArenaTeamRatingChanges[GetTeamIndexByTeamId(Team)]; }
         void CheckArenaWinConditions();
-        void UpdateArenaWorldState();
 
         /* Triggers handle */
         // must be implemented in BG subclass
@@ -532,8 +516,6 @@ class BattleGround
         uint32 GetOtherTeam(uint32 teamId){ return (teamId) ? ((teamId == ALLIANCE) ? HORDE : ALLIANCE) : 0; }
         bool IsPlayerInBattleGround(uint64 guid);
 
-        void SetDeleteThis() {m_SetDeleteThis = true;}
-
         /* virtual score-array - get's used in bg-subclasses */
         int32 m_TeamScores[BG_TEAMS_COUNT];
 
@@ -580,16 +562,14 @@ class BattleGround
     private:
         /* Battleground */
         BattleGroundTypeId m_TypeID;
-        uint32 m_InstanceID;                                //BattleGround Instance's GUID!
         BattleGroundStatus m_Status;
         uint32 m_ClientInstanceID;                          //the instance-id which is sent to the client and without any other internal use
         uint32 m_StartTime;
         bool m_ArenaBuffSpawned;                            // to cache if arenabuff event is started (cause bool is faster than checking IsActiveEvent)
         int32 m_EndTime;                                    // it is set to 120000 when bg is ending and it decreases itself
-        BGQueueIdBasedOnLevel m_QueueId;
+        BattleGroundBracketId m_BracketId;
         uint8  m_ArenaType;                                 // 2=2v2, 3=3v3, 5=5v5
         bool   m_InBGFreeSlotQueue;                         // used to make sure that BG is only once inserted into the BattleGroundMgr.BGFreeSlotQueue[bgTypeId] deque
-        bool   m_SetDeleteThis;                             // used for safe deletion of the bg after end / all players leave
         bool   m_IsArena;
         uint8  m_Winner;                                    // 0=alliance, 1=horde, 2=none
         int32  m_StartDelayTime;

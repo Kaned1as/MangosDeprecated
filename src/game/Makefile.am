@@ -1,4 +1,4 @@
-# Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+# Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ libmangosgame_a_SOURCES = \
 	AchievementMgr.cpp \
 	AggressorAI.cpp \
 	AggressorAI.h \
-	AnimalRandomMovementGenerator.h \
 	ArenaTeam.cpp \
 	ArenaTeam.h \
 	ArenaTeamHandler.cpp \
@@ -125,8 +124,6 @@ libmangosgame_a_SOURCES = \
 	GameEventMgr.h \
 	GameObject.cpp \
 	GameObject.h \
-	GlobalEvents.cpp \
-	GlobalEvents.h \
 	GMTicketHandler.cpp \
 	GMTicketMgr.cpp \
 	GMTicketMgr.h \
@@ -195,7 +192,8 @@ libmangosgame_a_SOURCES = \
 	ObjectAccessor.cpp \
 	ObjectAccessor.h \
 	Object.cpp \
-	ObjectDefines.h \
+	ObjectGuid.cpp \
+	ObjectGuid.h \
 	ObjectGridLoader.cpp \
 	ObjectGridLoader.h \
 	Object.h \

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@ enum EventAI_Type
     EVENT_T_RECEIVE_EMOTE           = 22,                   // EmoteId, Condition, CondValue1, CondValue2
     EVENT_T_BUFFED                  = 23,                   // Param1 = SpellID, Param2 = Number of Time STacked, Param3/4 Repeat Min/Max
     EVENT_T_TARGET_BUFFED           = 24,                   // Param1 = SpellID, Param2 = Number of Time STacked, Param3/4 Repeat Min/Max
+    EVENT_T_SUMMONED_JUST_DIED      = 25,                   // CreatureId, RepeatMin, RepeatMax
+    EVENT_T_SUMMONED_JUST_DESPAWN   = 26,                   // CreatureId, RepeatMin, RepeatMax
 
     EVENT_T_END,
 };
@@ -364,7 +366,12 @@ struct CreatureEventAI_Action
         {
             uint32 sheath;
         } set_sheath;
-        // ACTION_T_SET_INVINCIBILITY_HP_LEVEL             = 42
+        // ACTION_T_FORCE_DESPAWN                           = 41
+        struct
+        {
+            uint32 msDelay;
+        } forced_despawn;
+        // ACTION_T_SET_INVINCIBILITY_HP_LEVEL              = 42
         struct
         {
             uint32 hp_level;
@@ -481,12 +488,14 @@ struct CreatureEventAI_Event
             uint32 repeatMax;
         } friendly_buff;
         // EVENT_T_SUMMONED_UNIT                            = 17
+        //EVENT_T_SUMMONED_JUST_DIED                        = 25
+        //EVENT_T_SUMMONED_JUST_DESPAWN                     = 26
         struct
         {
             uint32 creatureId;
             uint32 repeatMin;
             uint32 repeatMax;
-        } summon_unit;
+        } summoned;
         // EVENT_T_QUEST_ACCEPT                             = 19
         // EVENT_T_QUEST_COMPLETE                           = 20
         struct
@@ -577,6 +586,9 @@ class MANGOS_DLL_SPEC CreatureEventAI : public CreatureAI
         void UpdateAI(const uint32 diff);
         bool IsVisible(Unit *) const;
         void ReceiveEmote(Player* pPlayer, uint32 text_emote);
+        void SummonedCreatureJustDied(Creature* unit);
+        void SummonedCreatureDespawn(Creature* unit);
+
         static int Permissible(const Creature *);
 
         bool ProcessEvent(CreatureEventAIHolder& pHolder, Unit* pActionInvoker = NULL);

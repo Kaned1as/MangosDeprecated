@@ -39,11 +39,10 @@ enum
     SPELL_TAILSWEEP             = 68867,
     H_SPELL_TAILSWEEP           = 69286,
     SPELL_KNOCK_AWAY            = 19633,
-
-    SPELL_ENGULFINGFLAMES       = 20019,
-    SPELL_DEEPBREATH            = 23461,
     SPELL_FIREBALL              = 18392,
     H_SPELL_FIREBALL            = 68926,
+    SPELL_ERRUPTION             = 17731,                    // does not work                
+    H_SPELL_ERRUPTION           = 69294,                    // does not work
 
     //Not much choise about these. We have to make own defintion on the direction/start-end point
     //SPELL_BREATH_NORTH_TO_SOUTH = 17086,                  // 20x in "array"
@@ -94,10 +93,10 @@ static sOnyxMove aMoveData[]=
 
 static float SpawnLocs[4][3]=
 {
-    {-30.127, -254.463, -89.440}, //whelps
-    {-30.817, -177.106, -89.258}, //whelps
-    {-126.57, -214.609, -71.446}, //guardians
-    {-22.347, -214.571, -89.104}  //Onyxia
+    {-30.127f, -254.463f, -89.440f}, //whelps
+    {-30.817f, -177.106f, -89.258f}, //whelps
+    {-126.57f, -214.609f, -71.446f}, //guardians
+    {-22.347f, -214.571f, -89.104f}  //Onyxia
 };
 
 struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
@@ -109,6 +108,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
     }
 
     bool Regular;
+    uint32 m_uiEvadeCheckCooldown;
     uint32 m_uiPhase;
 
     uint32 m_uiFlameBreathTimer;
@@ -135,6 +135,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
         if (!IsCombatMovement())
             SetCombatMovement(true);
 
+        m_uiEvadeCheckCooldown = 2000;
         m_uiPhase = PHASE_START;
 
         m_uiFlameBreathTimer = urand(10000, 20000);
@@ -185,8 +186,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
         {
             if (m_pPointData)
             {
-                m_creature->GetMap()->CreatureRelocation(m_creature, m_pPointData->fX, m_pPointData->fY, m_pPointData->fZ, 0.0f);
-                m_creature->SendMonsterMove(m_pPointData->fX, m_pPointData->fY, m_pPointData->fZ, 0, m_creature->GetMonsterMoveFlags(), 1);
+                m_creature->MonsterMove(m_pPointData->fX, m_pPointData->fY, m_pPointData->fZ, 1);
             }
         }
     }
@@ -208,7 +208,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
     {
         uint32 uiMaxCount = sizeof(aMoveData)/sizeof(sOnyxMove);
 
-        int iTemp = rand()%(uiMaxCount-1);
+        uint32 iTemp = urand(0, uiMaxCount-1);
 
         if (iTemp >= m_uiMovePoint)
             ++iTemp;
@@ -221,11 +221,23 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
 
+        if (m_uiEvadeCheckCooldown < uiDiff)
+        {
+            if (m_creature->GetDistance2d(-22.346f, -214.57f) > 100.0f)
+            {
+                EnterEvadeMode();
+                m_uiPhase = PHASE_START;
+            }
+            m_uiEvadeCheckCooldown = 2000;
+        }
+        else
+            m_uiEvadeCheckCooldown -= uiDiff;
+
         if (m_uiPhase == PHASE_START || m_uiPhase == PHASE_END)
         {
             if (m_uiFlameBreathTimer < uiDiff)
             {
-                DoCast(m_creature->getVictim(), Regular ? SPELL_FLAMEBREATH : H_SPELL_FLAMEBREATH);
+                DoCastSpellIfCan(m_creature->getVictim(), Regular ? SPELL_FLAMEBREATH : H_SPELL_FLAMEBREATH);
                 m_uiFlameBreathTimer = urand(10000, 20000);
             }
             else
@@ -233,7 +245,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
 
             if (m_uiTailSweepTimer < uiDiff)
             {
-                DoCast(m_creature, Regular ? SPELL_TAILSWEEP : H_SPELL_TAILSWEEP);
+                DoCastSpellIfCan(m_creature, Regular ? SPELL_TAILSWEEP : H_SPELL_TAILSWEEP);
                 m_uiTailSweepTimer = urand(15000, 20000);
             }
             else
@@ -241,7 +253,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
 
             if (m_uiCleaveTimer < uiDiff)
             {
-                DoCast(m_creature->getVictim(), SPELL_CLEAVE);
+                DoCastSpellIfCan(m_creature->getVictim(), SPELL_CLEAVE);
                 m_uiCleaveTimer = urand(2000, 5000);
             }
             else
@@ -249,7 +261,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
 
             if (m_uiWingBuffetTimer < uiDiff)
             {
-                DoCast(m_creature->getVictim(), Regular ? SPELL_WINGBUFFET : H_SPELL_WINGBUFFET);
+                DoCastSpellIfCan(m_creature->getVictim(), Regular ? SPELL_WINGBUFFET : H_SPELL_WINGBUFFET);
                 m_uiWingBuffetTimer = urand(15000, 30000);
             }
             else
@@ -259,7 +271,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
             {
                 if (m_uiBellowingRoarTimer < uiDiff)
                 {
-                    DoCast(m_creature->getVictim(), SPELL_BELLOWINGROAR);
+                    DoCastSpellIfCan(m_creature->getVictim(), SPELL_BELLOWINGROAR);
                     m_uiBellowingRoarTimer = 30000;
                 }
                 else
@@ -267,7 +279,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
             }
             else
             {
-                if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 65)
+                if (m_creature->GetHealthPercent() < 65.0f)
                 {
                     m_uiPhase = PHASE_BREATH;
 
@@ -290,7 +302,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
         }
         else
         {
-            if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 40)
+            if (m_creature->GetHealthPercent() < 40.0f)
             {
                 m_uiPhase = PHASE_END;
                 DoScriptText(SAY_PHASE_3_TRANS, m_creature);
@@ -318,7 +330,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
                         m_creature->InterruptNonMeleeSpells(false);
 
                     DoScriptText(EMOTE_BREATH, m_creature);
-                    DoCast(m_creature, m_pPointData->uiSpellId);
+                    DoCastSpellIfCan(m_creature, m_pPointData->uiSpellId);
                 }
                 else
                 {
@@ -333,7 +345,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
                 if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE)
                 {
                     if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                        DoCast(pTarget, Regular ? SPELL_FIREBALL : H_SPELL_FIREBALL);
+                        DoCastSpellIfCan(pTarget, Regular ? SPELL_FIREBALL : H_SPELL_FIREBALL);
 
                     m_uiEngulfingFlamesTimer = 8000;
                 }
@@ -359,7 +371,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
                 {
                     m_bIsSummoningWhelps = false;
                     m_uiSummonCount = 0;
-                    m_uiSummonWhelpsTimer = 300000;
+                    m_uiSummonWhelpsTimer = 85000;
                 }
             }
             else
@@ -373,7 +385,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
             if(SummonGuardTimer < uiDiff)
             {
                 m_creature->SummonCreature(NPC_GUARD, SpawnLocs[2][0], SpawnLocs[2][1], SpawnLocs[2][2], 0.0f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000);
-                SummonGuardTimer = 360000;
+                SummonGuardTimer = 30000;
             }
             else 
                 SummonGuardTimer -= uiDiff;

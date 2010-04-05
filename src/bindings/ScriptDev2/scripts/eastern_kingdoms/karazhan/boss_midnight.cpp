@@ -113,7 +113,7 @@ struct MANGOS_DLL_DECL boss_midnightAI : public ScriptedAI
         switch(m_uiPhase)
         {
             case 1:
-                if ((m_creature->GetHealth()*100)/m_creature->GetMaxHealth() < 95)
+                if (m_creature->GetHealthPercent() < 95.0f)
                 {
                     m_uiPhase = 2;
 
@@ -133,7 +133,7 @@ struct MANGOS_DLL_DECL boss_midnightAI : public ScriptedAI
                 }
                 break;
             case 2:
-                if ((m_creature->GetHealth()*100)/m_creature->GetMaxHealth() < 25)
+                if (m_creature->GetHealthPercent() < 25.0f)
                 {
                     if (Unit *pAttumen = Unit::GetUnit(*m_creature, m_uiAttumenGUID))
                         Mount(pAttumen);
@@ -254,7 +254,7 @@ struct MANGOS_DLL_DECL boss_attumenAI : public ScriptedAI
 
         if (m_uiCleaveTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), SPELL_SHADOWCLEAVE);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_SHADOWCLEAVE);
             m_uiCleaveTimer = urand(10000, 16000);
         }
         else
@@ -262,7 +262,7 @@ struct MANGOS_DLL_DECL boss_attumenAI : public ScriptedAI
 
         if (m_uiCurseTimer < uiDiff)
         {
-            DoCast(m_creature->getVictim(), SPELL_INTANGIBLE_PRESENCE);
+            DoCastSpellIfCan(m_creature->getVictim(), SPELL_INTANGIBLE_PRESENCE);
             m_uiCurseTimer = 30000;
         }
         else
@@ -291,10 +291,13 @@ struct MANGOS_DLL_DECL boss_attumenAI : public ScriptedAI
                         target_list.push_back(target);
                     target = NULL;
                 }
-                if (target_list.size())
-                    target = *(target_list.begin()+rand()%target_list.size());
 
-                DoCast(target, SPELL_BERSERKER_CHARGE);
+                if (target_list.size())
+                {
+                    if (target = *(target_list.begin()+rand()%target_list.size()))
+                        DoCastSpellIfCan(target, SPELL_BERSERKER_CHARGE);
+                }
+
                 m_uiChargeTimer = 20000;
             }
             else
@@ -302,7 +305,7 @@ struct MANGOS_DLL_DECL boss_attumenAI : public ScriptedAI
         }
         else
         {
-            if ((m_creature->GetHealth()*100)/m_creature->GetMaxHealth() < 25)
+            if (m_creature->GetHealthPercent() < 25.0f)
             {
                 Creature *pMidnight = (Creature*)Unit::GetUnit(*m_creature, m_uiMidnightGUID);
 

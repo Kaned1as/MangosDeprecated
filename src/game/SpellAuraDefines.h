@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -296,7 +296,7 @@ enum AuraType
     SPELL_AURA_MOD_ENEMY_DODGE = 251,
     SPELL_AURA_252 = 252,
     SPELL_AURA_MOD_BLOCK_CRIT_CHANCE = 253,
-    SPELL_AURA_MOD_DISARM_OFFHAND = 254,
+    SPELL_AURA_MOD_DISARM_SHIELD = 254,
     SPELL_AURA_MOD_MECHANIC_DAMAGE_TAKEN_PERCENT = 255,
     SPELL_AURA_NO_REAGENT_USE = 256,
     SPELL_AURA_MOD_TARGET_RESIST_BY_SPELL_CLASS = 257,
@@ -304,7 +304,7 @@ enum AuraType
     SPELL_AURA_259 = 259,
     SPELL_AURA_SCREEN_EFFECT = 260,
     SPELL_AURA_PHASE = 261,
-    SPELL_AURA_262 = 262,
+    SPELL_AURA_IGNORE_UNIT_STATE = 262,
     SPELL_AURA_ALLOW_ONLY_ABILITY = 263,
     SPELL_AURA_264 = 264,
     SPELL_AURA_265 = 265,
@@ -349,7 +349,17 @@ enum AuraType
     SPELL_AURA_304 = 304,
     SPELL_AURA_MOD_MINIMUM_SPEED = 305,
     SPELL_AURA_306 = 306,
-    TOTAL_AURAS = 307
+    SPELL_AURA_307 = 307,
+    SPELL_AURA_308 = 308,
+    SPELL_AURA_309 = 309,
+    SPELL_AURA_310 = 310,
+    SPELL_AURA_311 = 311,
+    SPELL_AURA_312 = 312,
+    SPELL_AURA_313 = 313,
+    SPELL_AURA_314 = 314,
+    SPELL_AURA_315 = 315,
+    SPELL_AURA_316 = 316,
+    TOTAL_AURAS = 317
 };
 
 enum AreaAuraType

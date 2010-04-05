@@ -50,8 +50,8 @@ void guardAI::Aggro(Unit *who)
         switch(urand(0, 2))
         {
             case 0: DoScriptText(SAY_GUARD_SIL_AGGRO1, m_creature, who); break;
-            case 1: DoScriptText(SAY_GUARD_SIL_AGGRO1, m_creature, who); break;
-            case 2: DoScriptText(SAY_GUARD_SIL_AGGRO1, m_creature, who); break;
+            case 1: DoScriptText(SAY_GUARD_SIL_AGGRO2, m_creature, who); break;
+            case 2: DoScriptText(SAY_GUARD_SIL_AGGRO3, m_creature, who); break;
         }
     }
 
@@ -108,7 +108,7 @@ void guardAI::UpdateAI(const uint32 diff)
             SpellEntry const *info = NULL;
 
             //Select a healing spell if less than 30% hp
-            if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 30)
+            if (m_creature->GetHealthPercent() < 30.0f)
                 info = SelectSpell(m_creature, -1, -1, SELECT_TARGET_ANY_FRIEND, 0, 0, 0, 0, SELECT_EFFECT_HEALING);
 
             //No healing spell available, select a hostile spell
@@ -139,7 +139,7 @@ void guardAI::UpdateAI(const uint32 diff)
             SpellEntry const *info = NULL;
 
             //Select a healing spell if less than 30% hp ONLY 33% of the time
-            if (m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 30 && !urand(0, 2))
+            if (m_creature->GetHealthPercent() < 30.0f && !urand(0, 2))
                 info = SelectSpell(m_creature, -1, -1, SELECT_TARGET_ANY_FRIEND, 0, 0, 0, 0, SELECT_EFFECT_HEALING);
 
             //No healing spell available, See if we can cast a ranged spell (Range must be greater than ATTACK_DISTANCE)
@@ -164,7 +164,7 @@ void guardAI::UpdateAI(const uint32 diff)
                 GlobalCooldown = GENERIC_CREATURE_COOLDOWN;
 
             }                                               //If no spells available and we arn't moving run to target
-            else if ((*m_creature).GetMotionMaster()->GetCurrentMovementGeneratorType()!=TARGETED_MOTION_TYPE)
+            else if ((*m_creature).GetMotionMaster()->GetCurrentMovementGeneratorType()!=CHASE_MOTION_TYPE)
             {
                 //Cancel our current spell and then mutate new movement generator
                 m_creature->InterruptNonMeleeSpells(false);

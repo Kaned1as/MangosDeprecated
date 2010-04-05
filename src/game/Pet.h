@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2005-2009 MaNGOS <http://getmangos.com/>
+ * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #ifndef MANGOSSERVER_PET_H
 #define MANGOSSERVER_PET_H
 
-#include "ObjectDefines.h"
+#include "ObjectGuid.h"
 #include "Creature.h"
 #include "Unit.h"
 
@@ -127,8 +127,8 @@ typedef std::vector<uint32> AutoSpellList;
 
 #define ACTIVE_SPELLS_MAX           4
 
-#define PET_FOLLOW_DIST  1
-#define PET_FOLLOW_ANGLE (M_PI/2)
+#define PET_FOLLOW_DIST  1.0f
+#define PET_FOLLOW_ANGLE M_PI_F/2
 
 class Player;
 
@@ -143,7 +143,7 @@ class Pet : public Creature
 
         PetType getPetType() const { return m_petType; }
         void setPetType(PetType type) { m_petType = type; }
-        bool isControlled() const { return getPetType()==SUMMON_PET || getPetType()==HUNTER_PET;}
+        bool isControlled() const { return getPetType()==SUMMON_PET || getPetType()==HUNTER_PET; }
         bool isTemporarySummoned() const { return m_duration > 0; }
 
         bool IsPermanentPetFor(Player* owner);              // pet have tab in character windows and set UNIT_FIELD_PETNUMBER
@@ -230,6 +230,7 @@ class Pet : public Creature
         uint8 GetMaxTalentPointsForLevel(uint32 level);
         uint8 GetFreeTalentPoints() { return GetByteValue(UNIT_FIELD_BYTES_1, 1); }
         void SetFreeTalentPoints(uint8 points) { SetByteValue(UNIT_FIELD_BYTES_1, 1, points); }
+        void UpdateFreeTalentPoints(bool resetIfNeed = true);
 
         uint32  m_resetTalentsCost;
         time_t  m_resetTalentsTime;
@@ -260,11 +261,11 @@ class Pet : public Creature
 
         void SaveToDB(uint32, uint8)                        // overwrited of Creature::SaveToDB     - don't must be called
         {
-            assert(false);
+            ASSERT(false);
         }
         void DeleteFromDB()                                 // overwrited of Creature::DeleteFromDB - don't must be called
         {
-            assert(false);
+            ASSERT(false);
         }
 };
 #endif
