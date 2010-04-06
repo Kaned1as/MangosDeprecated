@@ -173,7 +173,7 @@ struct MANGOS_DLL_DECL mob_snobold_vassalAI : public ScriptedAI
 
     void JustDied(Unit* pKiller)
     {
-    if (defaultTarget) bsw->doRemove(SPELL_SNOBOLLED, defaultTarget);
+    if (defaultTarget && defaultTarget->isAlive()) bsw->doRemove(SPELL_SNOBOLLED, defaultTarget);
       if (pBoss && pBoss->isAlive()) bsw->doRemove(SPELL_RISING_ANGER,pBoss);
     }
 
