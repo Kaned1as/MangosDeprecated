@@ -5,7 +5,7 @@
 #include "precompiled.h"
 #ifdef DEF_BOSS_SPELL_WORKER_H
 
-extern DatabaseType SD2Database;
+//extern DatabaseType SD2Database;
 
 BossSpellWorker::BossSpellWorker(ScriptedAI* bossAI)
 {
@@ -20,6 +20,7 @@ BossSpellWorker::BossSpellWorker(ScriptedAI* bossAI)
         else currentDifficulty = RAID_DIFFICULTY_10MAN_NORMAL;
      debug_log("BSW: Initializing BossSpellWorker object for boss %u difficulty %u",bossID,currentDifficulty);
      LoadSpellTable();
+     Reset((uint8)currentDifficulty);
 };
 
 BossSpellWorker::~BossSpellWorker()
@@ -30,59 +31,27 @@ BossSpellWorker::~BossSpellWorker()
 void BossSpellWorker::Reset(uint8 _Difficulty)
 {
     currentDifficulty = setDifficulty(_Difficulty);
-    for (uint8 i = 0; i < bossSpellCount; ++i)
-        if (m_BossSpell[i].m_uiSpellTimerMin[currentDifficulty] != m_BossSpell[i].m_uiSpellTimerMax[currentDifficulty])
-                m_uiSpell_Timer[i] = urand(0,m_BossSpell[i].m_uiSpellTimerMax[currentDifficulty]);
-                else m_uiSpell_Timer[i] = m_BossSpell[i].m_uiSpellTimerMin[currentDifficulty];
+    resetTimers();
+};
+
+void BossSpellWorker::_resetTimer(uint8 m_uiSpellIdx)
+{
+    if (m_uiSpellIdx > bossSpellCount) return;
+    if (m_BossSpell[m_uiSpellIdx].m_uiSpellTimerMin[currentDifficulty] != m_BossSpell[m_uiSpellIdx].m_uiSpellTimerMax[currentDifficulty])
+            m_uiSpell_Timer[m_uiSpellIdx] = urand(0,m_BossSpell[m_uiSpellIdx].m_uiSpellTimerMax[currentDifficulty]);
+                else m_uiSpell_Timer[m_uiSpellIdx] = m_BossSpell[m_uiSpellIdx].m_uiSpellTimerMin[currentDifficulty];
 };
 
 void BossSpellWorker::LoadSpellTable()
 {
-    DatabaseType SD2Database;
-    std::string strSD2DBinfo = strSD2DBinfoString();
-
-    if (strSD2DBinfo.empty())
-    {
-        error_log("BSW: Missing Scriptdev2 database info from configuration file. Load database aborted.");
-        return;
-    }
-
-    //Initialize connection to DB
-    if (SD2Database.Initialize(strSD2DBinfo.c_str()))
-    {
-
     debug_log("BSW: Loading table of spells boss  %u difficulty %u", bossID , currentDifficulty);
-//    QueryResult* Result = SD2Database.PQuery("SELECT entry, spellID_N10, spellID_N25, spellID_H10, spellID_H25, timerMin_N10, timerMin_N25, timerMin_H10, timerMin_H25, timerMax_N10, timerMax_N25, timerMax_H10, timerMax_H25, StageMask_N, StageMask_H, CastType, isVisualEffect, isBugged FROM boss_spell_table WHERE entry = '%u'", bossID);
-    QueryResult* Result = SD2Database.PQuery(  "SELECT "
-                                               "entry, "
-                                               "spellID_N10, "
-                                               "spellID_N25, "
-                                               "spellID_H10, "
-                                               "spellID_H25, "
-                                               "timerMin_N10, "
-                                               "timerMin_N25, "
-                                               "timerMin_H10, "
-                                               "timerMin_H25, "
-                                               "timerMax_N10, "
-                                               "timerMax_N25, "
-                                               "timerMax_H10, "
-                                               "timerMax_H25, "
-                                               "data1, "
-                                               "data2, "
-                                               "data3, "
-                                               "data4, "
-                                               "locData_x, "
-                                               "locData_y, "
-                                               "locData_z, "
-                                               "varData, "
-                                               "StageMask_N, "
-                                               "StageMask_H, "
-                                               "CastType, "
-                                               "isVisualEffect, "
-                                               "isBugged, "
-                                               "textEntry "
-                                               "FROM boss_spell_table "
-                                               "WHERE entry = '%u'", bossID);
+
+      char query[MAX_QUERY_LEN];
+
+      sprintf(query, "SELECT entry, spellID_N10, spellID_N25, spellID_H10, spellID_H25, timerMin_N10, timerMin_N25, timerMin_H10, timerMin_H25, timerMax_N10, timerMax_N25, timerMax_H10, timerMax_H25, data1, data2, data3, data4, locData_x, locData_y, locData_z, varData, StageMask_N, StageMask_H, CastType, isVisualEffect, isBugged, textEntry FROM `boss_spell_table` WHERE entry = %u;\r\n", bossID);
+
+      QueryResult* Result = strSD2Pquery(query);
+
     if (Result)
     {
         uint32 uiCount = 0;
@@ -141,15 +110,7 @@ void BossSpellWorker::LoadSpellTable()
     {
         error_db_log("BSW: Boss spell table for boss %u is empty.", bossID);
         bossSpellCount = 0;
-    }
-    }
-    else
-    {
-        error_log("BSW: Unable to connect to Database. Load database aborted.");
-        return;
-    }
-
-    SD2Database.HaltDelayThread();
+    };
 }
 
 bool BossSpellWorker::_QuerySpellPeriod(uint8 m_uiSpellIdx, uint32 diff)
@@ -277,7 +238,7 @@ uint8 BossSpellWorker::FindSpellIDX(uint32 SpellID)
       for(uint8 i = 0; i < bossSpellCount; ++i)
         if (m_BossSpell[i].m_uiSpellEntry[RAID_DIFFICULTY_10MAN_NORMAL] == SpellID) return i;
 
-    error_log("BSW: spell not found in spelltable. Memory or database error?");
+    error_log("BSW: spell %u not found  in boss %u spelltable. Memory or database error?", SpellID, bossID);
     return SPELL_INDEX_ERROR;
 }
 
