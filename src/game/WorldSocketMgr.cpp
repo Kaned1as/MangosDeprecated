@@ -64,13 +64,13 @@ class ReactorRunnable : protected ACE_Task_Base
 
             imp = new ACE_Dev_Poll_Reactor ();
 
-            imp->max_notify_iterations (128);
+            imp->max_notify_iterations (256);
             imp->restart (1);
 
             #else
 
             imp = new ACE_TP_Reactor ();
-            imp->max_notify_iterations (128);
+            imp->max_notify_iterations (256);
 
             #endif
 
