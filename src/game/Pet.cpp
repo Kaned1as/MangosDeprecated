@@ -865,36 +865,6 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
     {
         case SUMMON_PET:
         {
-            if(owner->GetTypeId() == TYPEID_PLAYER)
-            {
-                switch(owner->getClass())
-                {
-                    case CLASS_WARLOCK:
-                    {
-
-                        //the damage bonus used for pets is either fire or shadow damage, whatever is higher
-                        uint32 fire  = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FIRE);
-                        uint32 shadow = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_SHADOW);
-                        uint32 val  = (fire > shadow) ? fire : shadow;
-
-                        SetBonusDamage(int32 (val * 0.15f));
-                        //bonusAP += val * 0.57;
-                        break;
-                    }
-                    case CLASS_MAGE:
-                    {
-                                                            //40% damage bonus of mage's frost damage
-                        float val = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FROST) * 0.4f;
-                        if(val < 0)
-                            val = 0;
-                        SetBonusDamage( int32(val));
-                        break;
-                    }
-                    default:
-                        break;
-                }
-            }
-
             SetBaseWeaponDamage(BASE_ATTACK, MINDAMAGE, float(petlevel - (petlevel / 4)) );
             SetBaseWeaponDamage(BASE_ATTACK, MAXDAMAGE, float(petlevel + (petlevel / 4)) );
 
@@ -927,6 +897,57 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                 SetCreateStat(STAT_STAMINA, 25);
                 SetCreateStat(STAT_INTELLECT, 28);
                 SetCreateStat(STAT_SPIRIT, 27);
+            }
+
+            if(owner->GetTypeId() == TYPEID_PLAYER)
+            {
+                switch(owner->getClass())
+                {
+                    case CLASS_WARLOCK:
+                    {
+
+                        //the damage bonus used for pets is either fire or shadow damage, whatever is higher
+                        uint32 fire  = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FIRE);
+                        uint32 shadow = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_SHADOW);
+                        uint32 val  = (fire > shadow) ? fire : shadow;
+
+                        SetBonusDamage(int32 (val * 0.15f));
+                        //bonusAP += val * 0.57;
+                        break;
+                    }
+                    case CLASS_MAGE:
+                    {
+                                                            //40% damage bonus of mage's frost damage
+                        float val = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_FROST) * 0.4f;
+                        if(val < 0)
+                            val = 0;
+                        SetBonusDamage( int32(val));
+                        break;
+                    }
+                    case CLASS_DEATH_KNIGHT:
+                    {
+                        setPowerType(POWER_ENERGY);
+                        float coef_ap = 0.30f;
+                        uint32 bonus_ap = uint32 ( owner->GetTotalAttackPowerValue ( BASE_ATTACK ) * coef_ap );
+                        uint32 bonus_armor = uint32 ( owner->GetUInt32Value ( UNIT_FIELD_RESISTANCES ) * 0.35f );
+                        uint32 base_hp = GetCreatureInfo()->maxhealth;
+                        uint32 bonus_health = uint32 ( ( ( Player* ) owner )->GetHealthBonusFromStamina() * 0.30f );
+
+                        SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( GetCreatureInfo()->mindmg * GetCreatureInfo()->dmg_multiplier ) );
+                        SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( GetCreatureInfo()->maxdmg * GetCreatureInfo()->dmg_multiplier ) );
+                        SetCreateHealth ( base_hp + bonus_health );
+                        SetUInt32Value ( UNIT_FIELD_ATTACK_POWER_MODS, GetCreatureInfo()->attackpower + bonus_ap );
+                        SetModifierValue ( UNIT_MOD_ARMOR, BASE_VALUE, GetArmor() + bonus_armor );
+
+                        SetMaxHealth ( base_hp + bonus_health );
+                        SetHealth ( base_hp + bonus_health );
+                        UpdateDamagePhysical ( BASE_ATTACK );
+                        UpdateArmor();
+                        break;
+                    }
+                    default:
+                        break;
+                }
             }
             break;
         }

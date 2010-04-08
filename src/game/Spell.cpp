@@ -3158,6 +3158,8 @@ void Spell::SendCastResult(SpellCastResult result)
     if(result == SPELL_CAST_OK)
         return;
 
+    sLog.outDebug("Spell Result: %i", result);
+
     if (m_caster->GetTypeId() != TYPEID_PLAYER)
         return;
 
@@ -5493,7 +5495,7 @@ SpellCastResult Spell::CheckPower()
 
     // Check power amount
     Powers powerType = Powers(m_spellInfo->powerType);
-    if((int32)m_caster->GetPower(powerType) < m_powerCost)
+    if((int32)m_caster->GetPower(powerType) < m_powerCost && !IsPassiveSpell(m_spellInfo->Id))
         return SPELL_FAILED_NO_POWER;
     else
         return SPELL_CAST_OK;

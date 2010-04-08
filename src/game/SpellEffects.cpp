@@ -296,9 +296,12 @@ void Spell::DoSummonSpecialPets(SpellEffectIndex eff_idx)
 
         spawnCreature->setFaction(m_caster->getFaction());
         spawnCreature->SetUInt32Value(UNIT_FIELD_FLAGS, UNIT_FLAG_PVP_ATTACKABLE);
+        if(m_caster->IsPvP())
+            spawnCreature->SetPvP(true);
 
         spawnCreature->InitStatsForLevel(level, m_caster);
         spawnCreature->AIM_Initialize();
+        spawnCreature->GetCharmInfo()->SetPetNumber ( pet_number, false );
         
         if(pet_entry == 29264) //spirit wolf + from shaman stats
         {
@@ -325,9 +328,6 @@ void Spell::DoSummonSpecialPets(SpellEffectIndex eff_idx)
             spawnCreature->UpdateArmor();
             spawnCreature->SetSheath(SHEATH_STATE_MELEE);
 
-
-            
-            spawnCreature->GetCharmInfo()->SetPetNumber ( pet_number, false );
             spawnCreature->InitPetCreateSpells();
             spawnCreature->InitLevelupSpellsForLevel();
 
@@ -349,7 +349,6 @@ void Spell::DoSummonSpecialPets(SpellEffectIndex eff_idx)
 
         if(pet_entry == 31216)
         {
-
             switch (m_spellInfo->EffectImplicitTargetA[eff_idx]) //setting follow angles for mirrors
             {
             case 49:
@@ -368,7 +367,6 @@ void Spell::DoSummonSpecialPets(SpellEffectIndex eff_idx)
             spawnCreature->SetMaxPower ( POWER_MANA, m_caster->GetPower(POWER_MANA) );
             spawnCreature->SetPower ( POWER_MANA, m_caster->GetMaxPower(POWER_MANA) );
             
-            spawnCreature->GetCharmInfo()->SetPetNumber ( pet_number, false );
             m_caster->AddGuardian ( spawnCreature );
             map->Add ( ( Creature* ) spawnCreature );
             m_caster->SetPet ( spawnCreature );
@@ -383,6 +381,32 @@ void Spell::DoSummonSpecialPets(SpellEffectIndex eff_idx)
 
             // Clone me!
             m_caster->CastSpell( spawnCreature, 45204, true );
+            if ( m_caster->GetTypeId() == TYPEID_PLAYER )
+            {
+                spawnCreature->GetCharmInfo()->SetReactState ( REACT_DEFENSIVE );
+                ( ( Player* ) m_caster )->RemovePetActionBar();
+            }
+        }
+
+        if(pet_entry == 26125)
+        {
+            std::string name = m_caster->GetName();
+            name.append ( petTypeSuffix[spawnCreature->getPetType() ] );
+            spawnCreature->SetName ( name );
+
+            spawnCreature->m_spells.clear();
+            spawnCreature->addSpell ( 47481 );
+            spawnCreature->addSpell ( 47482 );
+            spawnCreature->addSpell ( 47484 );
+            spawnCreature->addSpell ( 47468 );
+            spawnCreature->ToggleAutocast ( 47481, true );
+            spawnCreature->ToggleAutocast ( 47482, true );
+            spawnCreature->ToggleAutocast ( 47484, true );
+            spawnCreature->ToggleAutocast ( 47468, true );
+
+            map->Add ( ( Creature* ) spawnCreature );
+            m_caster->SetPet ( spawnCreature );
+
             if ( m_caster->GetTypeId() == TYPEID_PLAYER )
             {
                 spawnCreature->GetCharmInfo()->SetReactState ( REACT_DEFENSIVE );
@@ -4017,6 +4041,8 @@ void Spell::EffectSummonType(SpellEffectIndex eff_idx)
                         DoSummonTotem(eff_idx);
                     if(prop_id == 832) // scrapbot
                         DoSummonWild(eff_idx, summon_prop->FactionId);
+                    else if (prop_id == 829) // DK summon
+                        DoSummonSpecialPets(eff_idx);
                     else
                         DoSummonGuardian(eff_idx, summon_prop->FactionId);
                     break;
