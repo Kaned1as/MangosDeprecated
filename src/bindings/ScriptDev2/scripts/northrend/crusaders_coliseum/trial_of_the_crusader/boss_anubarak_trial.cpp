@@ -63,6 +63,7 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
     boss_anubarak_trialAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        bsw = NULL;
         Reset();
     }
 
@@ -76,7 +77,7 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
         if(!m_pInstance) return;
         stage = 0;
         intro = true;
-        bsw = new BossSpellWorker(this);
+        if (bsw) delete bsw; bsw = new BossSpellWorker(this);
         m_creature->SetRespawnDelay(DAY);
     }
 
@@ -200,7 +201,7 @@ struct MANGOS_DLL_DECL mob_swarm_scarabAI : public ScriptedAI
     {
         m_creature->SetInCombatWithZone();
         m_creature->SetRespawnDelay(DAY);
-        bsw = new BossSpellWorker(this);
+        if (bsw) delete bsw; bsw = new BossSpellWorker(this);
     }
 
     void KilledUnit(Unit* pVictim)
@@ -243,6 +244,7 @@ struct MANGOS_DLL_DECL mob_nerubian_borrowerAI : public ScriptedAI
     mob_nerubian_borrowerAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        bsw = NULL;
         Reset();
     }
 
@@ -256,7 +258,7 @@ struct MANGOS_DLL_DECL mob_nerubian_borrowerAI : public ScriptedAI
         m_creature->SetInCombatWithZone();
         m_creature->SetRespawnDelay(DAY);
         submerged = false;
-        bsw = new BossSpellWorker(this);
+        if (bsw) delete bsw; bsw = new BossSpellWorker(this);
     }
 
     void KilledUnit(Unit* pVictim)
