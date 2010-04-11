@@ -63,9 +63,10 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
     boss_anubarak_trialAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        bsw = NULL;
+        bsw = new BossSpellWorker(this);
         Reset();
     }
+    ~boss_anubarak_trialAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     uint8 stage;
@@ -77,7 +78,7 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
         if(!m_pInstance) return;
         stage = 0;
         intro = true;
-        if (bsw) delete bsw; bsw = new BossSpellWorker(this);
+        
         m_creature->SetRespawnDelay(DAY);
     }
 
@@ -191,8 +192,11 @@ struct MANGOS_DLL_DECL mob_swarm_scarabAI : public ScriptedAI
     mob_swarm_scarabAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+        bsw = new BossSpellWorker(this);
         Reset();
     }
+
+    ~mob_swarm_scarabAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -201,7 +205,7 @@ struct MANGOS_DLL_DECL mob_swarm_scarabAI : public ScriptedAI
     {
         m_creature->SetInCombatWithZone();
         m_creature->SetRespawnDelay(DAY);
-        if (bsw) delete bsw; bsw = new BossSpellWorker(this);
+        
     }
 
     void KilledUnit(Unit* pVictim)
@@ -244,9 +248,10 @@ struct MANGOS_DLL_DECL mob_nerubian_borrowerAI : public ScriptedAI
     mob_nerubian_borrowerAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        bsw = NULL;
+        bsw = new BossSpellWorker(this);
         Reset();
     }
+    ~mob_nerubian_borrowerAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     bool submerged;
@@ -258,7 +263,7 @@ struct MANGOS_DLL_DECL mob_nerubian_borrowerAI : public ScriptedAI
         m_creature->SetInCombatWithZone();
         m_creature->SetRespawnDelay(DAY);
         submerged = false;
-        if (bsw) delete bsw; bsw = new BossSpellWorker(this);
+        
     }
 
     void KilledUnit(Unit* pVictim)
