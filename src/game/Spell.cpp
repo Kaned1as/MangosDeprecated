@@ -2560,6 +2560,11 @@ void Spell::cast(bool skipCheck)
         return;
     }
 
+    // Ranger: Dash hackfix - w00t!! thx KAPATEJIb idea! ;)
+    if(m_spellInfo->SpellIconID == 959 && m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID)
+        if(const SpellEntry* spellInfo = sSpellStore.LookupEntry(m_spellInfo->Id))
+            const_cast<SpellEntry*>(spellInfo)->Stances |= FORM_CAT;
+
     // triggered cast called from Spell::prepare where it was already checked
     if(!skipCheck)
     {
@@ -5101,13 +5106,6 @@ SpellCastResult Spell::CheckCast(bool strict)
                 if(m_targets.getUnitTarget()->getPowerType() != POWER_MANA)
                     return SPELL_FAILED_BAD_TARGETS;
 
-                break;
-            }
-            case SPELL_AURA_MOD_INCREASE_SPEED:
-            {
-                // Ranger: Dash hackfix
-                if(m_spellInfo->SpellIconID == 959 && m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID && m_caster->m_form != FORM_CAT)
-                    return SPELL_FAILED_CASTER_AURASTATE;
                 break;
             }
             default:
