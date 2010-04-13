@@ -186,7 +186,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
             uint32 uiPositionCounter = 0;
             for(std::list<Creature*>::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
             {
-                if ((*itr)->isAlive())
+                if ((*itr) && (*itr)->isAlive())
                 {
                     if (uiPositionCounter == 0)
                     {
@@ -215,7 +215,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
                 if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
                     if (!m_lKaddrakGUIDList.empty())
                         for(std::list<Creature*>::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
-                            if ((*itr)->isAlive())
+                            if ((*itr) && (*itr)->isAlive())
                                 (*itr)->CastSpell(pTarget, m_bIsRegularMode ? SPELL_GLARE_OF_THE_TRIBUNAL_H : SPELL_GLARE_OF_THE_TRIBUNAL, true);
 
                 m_uiKaddrak_Encounter_timer = 1500;
