@@ -928,8 +928,8 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                             createResistance[i] += int32( (owner->GetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE)) * 0.40f);
 
                         float coef_ap = 0.57f;
-                        uint32 master_ap = uint32( owner->GetTotalAttackPowerValue ( BASE_ATTACK ) * coef_ap );
-                        SetUInt32Value ( UNIT_FIELD_ATTACK_POWER_MODS, GetCreatureInfo()->attackpower + master_ap );
+                        uint32 bonus_ap = uint32( val * coef_ap );
+                        SetUInt32Value( UNIT_FIELD_ATTACK_POWER_MODS, GetCreatureInfo()->attackpower + bonus_ap );
 
                         UpdateArmor();
 
