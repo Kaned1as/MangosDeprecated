@@ -945,6 +945,25 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                         UpdateArmor();
                         break;
                     }
+                    case CLASS_PRIEST:
+                    {
+                        // Ranger: Shadowfiend
+                        uint32 val = owner->GetUInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS + SPELL_SCHOOL_SHADOW);
+                        if(val < 0)
+                            val = 0;
+
+                        float min_damage =  (val * 357 / 100.0f) / 10.0f;
+                        float max_damage =  (val * 393 / 100.0f) / 10.0f;
+
+                        SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( min_damage ) );
+                        SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( max_damage ) );
+
+                        SetAttackTime(BASE_ATTACK, 1500);
+                        SetAttackTime(OFF_ATTACK, 1500);
+                        SetAttackTime(RANGED_ATTACK, 1500);
+
+                        break;
+                    }
                     default:
                         break;
                 }
