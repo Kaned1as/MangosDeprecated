@@ -913,6 +913,26 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
 
                         SetBonusDamage(int32 (val * 0.15f));
                         //bonusAP += val * 0.57;
+
+                        // Ranger: www.wowwiki.com/Minion - Minion scaling NOT FULL or FULL o_O?!
+                        float master_stamina = owner->GetStat(STAT_STAMINA) * 0.75f;
+                        SetCreateStat(STAT_STAMINA, GetStat(STAT_STAMINA) + master_stamina);
+
+                        float master_intellect = owner->GetStat(STAT_INTELLECT) * 0.30f;
+                        SetCreateStat(STAT_INTELLECT, GetStat(STAT_INTELLECT) + master_intellect);
+
+                        uint32 master_armor = uint32( owner->GetUInt32Value ( UNIT_FIELD_RESISTANCES ) * 0.35f );
+                        SetModifierValue( UNIT_MOD_ARMOR, BASE_VALUE, GetArmor() + master_armor );
+
+                        for (int i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
+                            createResistance[i] += int32( (owner->GetModifierValue(UnitMods(UNIT_MOD_RESISTANCE_START + i), BASE_VALUE)) * 0.40f);
+
+                        float coef_ap = 0.57f;
+                        uint32 master_ap = uint32( owner->GetTotalAttackPowerValue ( BASE_ATTACK ) * coef_ap );
+                        SetUInt32Value ( UNIT_FIELD_ATTACK_POWER_MODS, GetCreatureInfo()->attackpower + master_ap );
+
+                        UpdateArmor();
+
                         break;
                     }
                     case CLASS_MAGE:
