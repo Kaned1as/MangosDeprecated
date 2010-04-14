@@ -13674,6 +13674,10 @@ bool Unit::HandleMendingAuraProc( Aura* triggeredByAura )
                 caster->AddSpellMod(mod, false);
                 triggeredByAura->SetInUse(false);
             }
+
+            //Ranger: www.wowwiki.com/Spell_power_coefficient - Prayer of Mending (per charge) 80.57% - Patch 3.2.0
+            heal += int32(caster->SpellBaseHealingBonus(GetSpellSchoolMask(spellProto)) * 0.8057f);
+
         }
     }
 
