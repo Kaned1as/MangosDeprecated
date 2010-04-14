@@ -262,7 +262,7 @@ struct MANGOS_DLL_DECL mob_infernal_volcanoAI : public ScriptedAI
     void Reset()
     {
         Difficulty = m_pInstance->GetData(TYPE_DIFFICULTY);
-        m_Timer = 15000;
+        m_Timer = 30000;
         m_creature->SetRespawnDelay(DAY);
         if (Difficulty != RAID_DIFFICULTY_10MAN_HEROIC && Difficulty != RAID_DIFFICULTY_25MAN_HEROIC) 
         {
@@ -431,7 +431,7 @@ struct MANGOS_DLL_DECL mob_nether_portalAI : public ScriptedAI
             DoCast(m_creature,SPELL_NETHER_PORTAL,false);
             DoScriptText(-1713521,m_creature);
             --m_Count;
-            m_Timer = 60000;
+            m_Timer = 90000;
             } else m_Timer -= diff;
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
