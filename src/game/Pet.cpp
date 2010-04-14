@@ -927,12 +927,24 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                     }
                     case CLASS_DEATH_KNIGHT:
                     {
+                        bool glyph_found = false;
+
+                        if (owner->GetDummyAura(58686) && creature_ID == 26125)
+                            glyph_found = true;
+
                         setPowerType(POWER_ENERGY);
                         float coef_ap = 0.30f;
                         uint32 bonus_ap = uint32 ( owner->GetTotalAttackPowerValue ( BASE_ATTACK ) * coef_ap );
                         uint32 bonus_armor = uint32 ( owner->GetUInt32Value ( UNIT_FIELD_RESISTANCES ) * 0.35f );
                         uint32 base_hp = GetCreatureInfo()->maxhealth;
-                        uint32 bonus_health = uint32 ( ( ( Player* ) owner )->GetHealthBonusFromStamina() * 0.30f );
+                        uint32 healthfromstamina = uint32( ( ( Player* ) owner )->GetHealthBonusFromStamina());
+                        uint32 bonus_health = glyph_found ? uint32 ( healthfromstamina * 0.30f + healthfromstamina * 0.40f ) : uint32( healthfromstamina * 0.30f );
+
+                        if (glyph_found)
+                        {
+                            float dk_strength = owner->GetStat(STAT_STRENGTH);
+                            SetCreateStat(STAT_INTELLECT, GetStat(STAT_STRENGTH) + dk_strength * 0.40f);
+                        }
 
                         SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( GetCreatureInfo()->mindmg * GetCreatureInfo()->dmg_multiplier ) );
                         SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( GetCreatureInfo()->maxdmg * GetCreatureInfo()->dmg_multiplier ) );
@@ -942,6 +954,7 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
 
                         SetMaxHealth ( base_hp + bonus_health );
                         SetHealth ( base_hp + bonus_health );
+
                         UpdateDamagePhysical ( BASE_ATTACK );
                         UpdateArmor();
                         break;
