@@ -943,7 +943,7 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                         if (glyph_found)
                         {
                             float dk_strength = owner->GetStat(STAT_STRENGTH);
-                            SetCreateStat(STAT_INTELLECT, GetStat(STAT_STRENGTH) + dk_strength * 0.40f);
+                            SetCreateStat(STAT_STRENGTH, GetStat(STAT_STRENGTH) + dk_strength * 0.40f);
                         }
 
                         SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( GetCreatureInfo()->mindmg * GetCreatureInfo()->dmg_multiplier ) );
