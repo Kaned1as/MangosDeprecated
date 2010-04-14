@@ -956,12 +956,10 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                         float min_damage =  (val * 357 / 100.0f) / 10.0f;
                         float max_damage =  (val * 393 / 100.0f) / 10.0f;
 
-                        SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( min_damage ) );
-                        SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( max_damage ) );
+                        SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( cinfo->mindmg + min_damage ) );
+                        SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( cinfo->maxdmg + max_damage ) );
 
                         SetAttackTime(BASE_ATTACK, 1500);
-                        SetAttackTime(OFF_ATTACK, 1500);
-                        SetAttackTime(RANGED_ATTACK, 1500);
 
                         break;
                     }

@@ -445,17 +445,21 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
             m_maxduration = 1;
     }
 
-    m_duration = m_maxduration;
-
     sLog.outDebug("Aura: construct Spellid : %u, Aura : %u Duration : %d Target : %d Damage : %d", m_spellProto->Id, m_spellProto->EffectApplyAuraName[eff], m_maxduration, m_spellProto->EffectImplicitTargetA[eff],damage);
 
     SetModifier(AuraType(m_spellProto->EffectApplyAuraName[eff]), damage, m_spellProto->EffectAmplitude[eff], m_spellProto->EffectMiscValue[eff]);
 
+    //Apply haste to channeled spells
+    if(GetSpellProto()->AttributesEx & (SPELL_ATTR_EX_CHANNELED_1 | SPELL_ATTR_EX_CHANNELED_2) && m_modifier.periodictime)
+        ApplyHasteToPeriodic();
     // Apply periodic time mod
-    if(modOwner && m_modifier.periodictime)
+    else if(modOwner && m_modifier.periodictime)
         modOwner->ApplySpellMod(GetId(), SPELLMOD_ACTIVATION_TIME, m_modifier.periodictime);
 
-    // Start periodic on next tick or at aura apply
+    //Must be after haste
+    m_duration = m_maxduration;
+
+     // Start periodic on next tick or at aura apply
     if (!(m_spellProto->AttributesEx5 & SPELL_ATTR_EX5_START_PERIODIC_AT_APPLY))
         m_periodicTimer += m_modifier.periodictime;
 
@@ -1476,6 +1480,37 @@ bool Aura::isWeaponBuffCoexistableWith(Aura* ref)
 
     // form different weapons
     return ref->GetCastItemGUID() != GetCastItemGUID();
+}
+
+void Aura::ApplyHasteToPeriodic()
+{
+    if(!GetCaster() || !GetTarget())
+        return;
+    if(GetCaster()->GetTypeId() != TYPEID_PLAYER)
+        return;
+
+    int32 periodic = m_modifier.periodictime;
+    int32 duration = GetCaster()->CalculateSpellDuration(m_spellProto, m_effIndex, GetTarget());
+    int32 hastedduration = duration;
+    if(duration == 0 || periodic == 0)
+        return;
+
+    int32 ticks = duration / periodic;
+
+    Player* modOwner = GetCaster()->GetSpellModOwner();
+
+    if(modOwner)
+        modOwner->ApplySpellMod(GetId(), SPELLMOD_ACTIVATION_TIME, periodic);
+
+    if( !(GetSpellProto()->Attributes & (SPELL_ATTR_UNK4|SPELL_ATTR_TRADESPELL)) )
+        hastedduration = int32(duration * GetCaster()->GetFloatValue(UNIT_MOD_CAST_SPEED));
+
+    if(hastedduration != duration)
+    {
+        periodic = int32(periodic * GetCaster()->GetFloatValue(UNIT_MOD_CAST_SPEED));
+        m_maxduration = periodic * ticks;
+    }
+    m_modifier.periodictime = periodic;
 }
 
 /*********************************************************/
