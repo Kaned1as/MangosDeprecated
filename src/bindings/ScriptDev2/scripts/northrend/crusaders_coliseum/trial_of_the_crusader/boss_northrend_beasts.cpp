@@ -299,8 +299,8 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
                     m_pInstance->SetData(TYPE_NORTHREND_BEASTS, ACIDMAW_SUBMERGED);
                     break;}
         case 2: {
-                if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
-                    bsw->doCast(NPC_SLIME_POOL);
+                //if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
+                //    bsw->doCast(NPC_SLIME_POOL);
 
                 if (bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == ACIDMAW_SUBMERGED)
                         stage = 3;
