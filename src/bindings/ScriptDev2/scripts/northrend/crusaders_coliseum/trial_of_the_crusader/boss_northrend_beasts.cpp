@@ -19,10 +19,15 @@
 
 /* ScriptData
 SDName: northrend_beasts
-SD%Complete: 60% 
+SD%Complete: 90% 
 SDComment: by /dev/rsa
 SDCategory:
 EndScriptData */
+
+// not implemented:
+// snobolds link
+// snakes underground cast (not support in core)
+// aura 31 (SPELL_ADRENALINE) not applyed by undefined reason
 
 #include "precompiled.h"
 #include "trial_of_the_crusader.h"
@@ -64,6 +69,7 @@ SPELL_MASSIVE_CRASH    = 66683,
 SPELL_WHIRL            = 67345,
 SPELL_ARCTIC_BREATH    = 66689,
 SPELL_TRAMPLE          = 66734,
+SPELL_ADRENALINE       = 68667,
 SPELL_SNOBOLLED        = 66406,
 SPELL_BATTER           = 66408,
 SPELL_FIRE_BOMB        = 66313,
@@ -74,6 +80,8 @@ SPELL_SUBMERGE_0       = 53421,
 SPELL_ENRAGE           = 68335,
 SPELL_FROTHING_RAGE    = 66759,
 SPELL_STAGGERED_DAZE   = 66758,
+SPELL_SLIME_POOL_1     = 66881,
+SPELL_SLIME_POOL_2     = 66882,
 };
 
 struct MANGOS_DLL_DECL boss_gormokAI : public ScriptedAI
@@ -93,7 +101,6 @@ struct MANGOS_DLL_DECL boss_gormokAI : public ScriptedAI
     void Reset() {
 
         if(!m_pInstance) return;
-        
         SetEquipmentSlots(false, EQUIP_MAIN, EQUIP_OFFHAND, EQUIP_RANGED);
         m_creature->SetRespawnDelay(DAY);
         m_creature->SetInCombatWithZone();
@@ -175,6 +182,12 @@ struct MANGOS_DLL_DECL mob_snobold_vassalAI : public ScriptedAI
         bsw->doCast(SPELL_SNOBOLLED, defaultTarget);
     }
 
+    void JustReachedHome()
+    {
+        if (!m_pInstance) return;
+            m_creature->ForcedDespawn();
+    }
+
     void JustDied(Unit* pKiller)
     {
     if (defaultTarget && defaultTarget->isAlive()) bsw->doRemove(SPELL_SNOBOLLED, defaultTarget);
@@ -230,7 +243,6 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
         stage = 1;
         enraged = false;
         m_creature->SetInCombatWithZone();
-        
         m_creature->SetRespawnDelay(DAY);
     }
 
@@ -269,7 +281,11 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
 
                 bsw->timedCast(SPELL_PARALYTIC_BITE, uiDiff);
 
-                bsw->timedCast(SPELL_SLIME_POOL, uiDiff);
+                bsw->timedCast(SPELL_ACID_SPIT, uiDiff);
+
+                bsw->timedCast(SPELL_PARALYTIC_SPRAY, uiDiff);
+
+                bsw->timedCast(SPELL_SWEEP_0, uiDiff);
 
                 if (m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == ACIDMAW_SUBMERGED)
                      stage = 1;
@@ -283,11 +299,8 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
                     m_pInstance->SetData(TYPE_NORTHREND_BEASTS, ACIDMAW_SUBMERGED);
                     break;}
         case 2: {
-                bsw->timedCast(SPELL_ACID_SPIT, uiDiff);
-
-                bsw->timedCast(SPELL_PARALYTIC_SPRAY, uiDiff);
-
-                bsw->timedCast(SPELL_SWEEP_0, uiDiff);
+                if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
+                    bsw->doCast(NPC_SLIME_POOL);
 
                 if (bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == ACIDMAW_SUBMERGED)
                         stage = 3;
@@ -341,7 +354,6 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
         stage = 0;
         enraged = false;
         m_creature->SetInCombatWithZone();
-        
         m_creature->SetRespawnDelay(DAY);
     }
 
@@ -379,7 +391,11 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
 
                 bsw->timedCast(SPELL_MOLTEN_SPEW, uiDiff);
 
-                bsw->timedCast(SPELL_SLIME_POOL, uiDiff);
+                bsw->timedCast(SPELL_FIRE_SPIT, uiDiff);
+
+                bsw->timedCast(SPELL_BURNING_SPRAY, uiDiff);
+
+                bsw->timedCast(SPELL_SWEEP_0, uiDiff);
 
                 if (m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == DREADSCALE_SUBMERGED)
                      stage = 1;
@@ -394,11 +410,8 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
                     break;}
         case 2: {
 
-                bsw->timedCast(SPELL_FIRE_SPIT, uiDiff);
-
-                bsw->timedCast(SPELL_BURNING_SPRAY, uiDiff);
-
-                bsw->timedCast(SPELL_SWEEP_0, uiDiff);
+                if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
+                    bsw->doCast(NPC_SLIME_POOL);
 
                 if (bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == DREADSCALE_SUBMERGED) 
                          stage = 3;
@@ -432,6 +445,55 @@ CreatureAI* GetAI_boss_dreadscale(Creature* pCreature)
     return new boss_dreadscaleAI(pCreature);
 }
 
+struct MANGOS_DLL_DECL mob_slime_poolAI : public ScriptedAI
+{
+    mob_slime_poolAI(Creature *pCreature) : ScriptedAI(pCreature)
+    {
+        m_pInstance = ((ScriptedInstance*)pCreature->GetInstanceData());
+        bsw = new BossSpellWorker(this);
+        Reset();
+    }
+    ~mob_slime_poolAI() { delete bsw; }
+
+    ScriptedInstance *m_pInstance;
+    BossSpellWorker* bsw;
+    float m_Size;
+    uint8 Difficulty;
+
+    void Reset()
+    {
+        if(!m_pInstance) return;
+        Difficulty = m_pInstance->GetData(TYPE_DIFFICULTY);
+        if (Difficulty == RAID_DIFFICULTY_10MAN_HEROIC || Difficulty == RAID_DIFFICULTY_25MAN_HEROIC) 
+            m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->SetInCombatWithZone();
+        m_creature->SetSpeedRate(MOVE_RUN, 0.05f);
+        SetCombatMovement(false);
+        m_creature->GetMotionMaster()->MoveRandom();
+        bsw->doCast(SPELL_SLIME_POOL_2);
+        m_Size = m_creature->GetFloatValue(OBJECT_FIELD_SCALE_X);
+    }
+
+    void AttackStart(Unit *who)
+    {
+        return;
+    }
+
+    void UpdateAI(const uint32 uiDiff)
+    {
+            if (bsw->timedQuery(SPELL_SLIME_POOL_2,uiDiff)) {
+                m_Size = m_Size*1.036;
+                m_creature->SetFloatValue(OBJECT_FIELD_SCALE_X, m_Size);
+                }
+    }
+
+};
+
+CreatureAI* GetAI_mob_slime_pool(Creature* pCreature)
+{
+    return new mob_slime_poolAI(pCreature);
+}
+
 struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
 {
     boss_icehowlAI(Creature* pCreature) : ScriptedAI(pCreature)
@@ -452,7 +514,6 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
 
     void Reset() {
         if(!m_pInstance) return;
-        
         m_creature->SetRespawnDelay(DAY);
         MovementStarted = false;
         stage = 0;
@@ -516,7 +577,7 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
                 break;
                 }
         case 1: {
-                         if (bsw->doCast(SPELL_MASSIVE_CRASH) == CAST_OK);
+                         if (bsw->doCast(SPELL_MASSIVE_CRASH) == CAST_OK)
                              stage = 2;
                  break;
                 }
@@ -539,6 +600,7 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
                                     MovementStarted = true;
                                     m_creature->GetMotionMaster()->MovePoint(1, fPosX, fPosY, fPosZ);
                                     DoScriptText(-1713508,m_creature);
+                                    bsw->doCast(SPELL_ADRENALINE);
                                     stage = 4;
                                     }
                 break;
@@ -615,6 +677,11 @@ void AddSC_northrend_beasts()
     newscript = new Script;
     newscript->Name = "mob_snobold_vassal";
     newscript->GetAI = &GetAI_mob_snobold_vassal;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "mob_slime_pool";
+    newscript->GetAI = &GetAI_mob_slime_pool;
     newscript->RegisterSelf();
 
 }

@@ -40,11 +40,11 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
     bool needsave;
 
     uint32 m_uiDataDamageFjola;
-    uint32 m_uiDataDamageFjola_t;
     uint32 m_uiDataDamageEydis;
-    uint32 m_uiDataDamageEydis_t;
     uint32 m_uiFjolaCasting;
     uint32 m_uiEydisCasting;
+
+    uint32 m_auiCrusadersCount;
 
     uint64 m_uiBarrentGUID;
     uint64 m_uiTirionGUID;
@@ -108,6 +108,7 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
 
     uint64 m_uiMainGateDoorGUID;
 
+
     void Initialize()
     {
     for (uint8 i = 0; i < MAX_ENCOUNTERS; ++i)
@@ -122,15 +123,15 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
     m_uiTributeChest3GUID = 0;
     m_uiTributeChest4GUID = 0;
     m_uiDataDamageFjola = 0;
-    m_uiDataDamageFjola_t = 0;
     m_uiDataDamageEydis = 0;
-    m_uiDataDamageEydis_t = 0;
     m_uiLich0GUID = 0;
     m_uiLich1GUID = 0;
 
     m_auiNorthrendBeasts = NOT_STARTED;
 
     m_auiEventTimer = 1000;
+
+    m_auiCrusadersCount = 6;
 
     needsave = false;
     }
@@ -253,14 +254,16 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
         case TYPE_STAGE:     m_auiEncounter[0] = uiData; break;
         case TYPE_BEASTS:    m_auiEncounter[1] = uiData; break;
         case TYPE_JARAXXUS:  m_auiEncounter[2] = uiData; break;
-        case TYPE_CRUSADERS: m_auiEncounter[3] = uiData;
-                            if (uiData == DONE) {
-                             if (GameObject* pChest = instance->GetGameObject(m_uiCrusadersCacheGUID))
-                             if (pChest && !pChest->isSpawned()) {
-                                      pChest->SetRespawnTime(7*DAY);
-                              };
-                            };
-         break;
+        case TYPE_CRUSADERS: if (uiData == FAIL && (m_auiEncounter[3] == FAIL || m_auiEncounter[3] == NOT_STARTED))
+                             m_auiEncounter[3] = NOT_STARTED;
+                             else  m_auiEncounter[3] = uiData;
+                             if (uiData == DONE) {
+                                   if (GameObject* pChest = instance->GetGameObject(m_uiCrusadersCacheGUID))
+                                       if (pChest && !pChest->isSpawned())
+                                             pChest->SetRespawnTime(7*DAY);
+                                   };
+                             break;
+        case TYPE_CRUSADERS_COUNT:  m_auiCrusadersCount = uiData; break;
         case TYPE_VALKIRIES: if (m_auiEncounter[4] == SPECIAL && uiData == SPECIAL) uiData = DONE;
                              m_auiEncounter[4] = uiData; break;
         case TYPE_LICH_KING: m_auiEncounter[5] = uiData; break;
@@ -298,8 +301,8 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
         case TYPE_EVENT:     m_auiEncounter[8] = uiData; uiData = NOT_STARTED; break;
         case TYPE_EVENT_TIMER:      m_auiEventTimer = uiData; uiData = NOT_STARTED; break;
         case TYPE_NORTHREND_BEASTS: m_auiNorthrendBeasts = uiData; break;
-        case DATA_DAMAGE_FJOLA:     m_uiDataDamageFjola += uiData; uiData = NOT_STARTED; break;
-        case DATA_DAMAGE_EYDIS:     m_uiDataDamageEydis += uiData; uiData = NOT_STARTED; break;
+        case DATA_HEALTH_FJOLA:     m_uiDataDamageFjola = uiData; uiData = NOT_STARTED; break;
+        case DATA_HEALTH_EYDIS:     m_uiDataDamageEydis = uiData; uiData = NOT_STARTED; break;
         case DATA_CASTING_FJOLA:    m_uiFjolaCasting = uiData; uiData = NOT_STARTED; break;
         case DATA_CASTING_EYDIS:    m_uiEydisCasting = uiData; uiData = NOT_STARTED; break;
         }
@@ -403,14 +406,17 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
             case TYPE_DIFFICULTY:   return Difficulty;
             case TYPE_NORTHREND_BEASTS:    return m_auiNorthrendBeasts;
             case TYPE_EVENT_TIMER:  return m_auiEventTimer;
+            case TYPE_CRUSADERS_COUNT:  return m_auiCrusadersCount;
             case TYPE_EVENT_NPC: switch (m_auiEncounter[8]) 
                                  {
                                  case 110:
                                  case 140:
                                  case 150:
                                  case 200:
+                                 case 205:
                                  case 210:
                                  case 300:
+                                 case 305:
                                  case 310:
                                  case 400:
                                  case 1010:
@@ -471,6 +477,7 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
                                  case 1110:
                                  case 1120:
                                  case 1130:
+                                 case 1135:
                                  case 1140:
                                  case 1150:
                                  case 1160:
@@ -485,16 +492,11 @@ struct MANGOS_DLL_DECL instance_trial_of_the_crusader : public ScriptedInstance
                                  };
                                  return m_auiEventNPCId;
 
-        case DATA_DAMAGE_FJOLA: m_uiDataDamageFjola_t = m_uiDataDamageFjola;
-                                m_uiDataDamageFjola = 0;
-                                return m_uiDataDamageFjola_t;
-        case DATA_DAMAGE_EYDIS: m_uiDataDamageEydis_t = m_uiDataDamageEydis;
-                                m_uiDataDamageEydis = 0;
-                                return m_uiDataDamageEydis_t;
+        case DATA_HEALTH_FJOLA: return m_uiDataDamageFjola;
+        case DATA_HEALTH_EYDIS: return m_uiDataDamageEydis;
         case DATA_CASTING_FJOLA: return m_uiFjolaCasting;
         case DATA_CASTING_EYDIS: return m_uiEydisCasting;
         }
-
         return 0;
     }
 
