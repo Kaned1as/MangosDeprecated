@@ -5175,6 +5175,15 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     RemoveSingleSpellAurasFromStack(24659);
                     return true;
                 }
+                // Deadly Precision
+                case 71563:
+                {
+                    if (!procSpell || procSpell->Id == 71564)
+                        return false;
+                    // Need remove one 24659 aura
+                    RemoveSingleSpellAurasFromStack(71564);
+                    return true;
+                }
                 // Restless Strength
                 case 24661:
                 {

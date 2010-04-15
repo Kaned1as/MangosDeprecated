@@ -2698,6 +2698,24 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                     m_target->RemoveAurasDueToSpell(spellId);
                     return;
                 }
+                case 71563:                                 // Deadly Precision
+                {
+                    uint32 spellId = 71564;
+                    if (apply)
+                    {
+                        SpellEntry const *spell = sSpellStore.LookupEntry(spellId);
+                        Unit* caster = GetCaster();
+                        if (!spell || !caster)
+                            return;
+
+                        for (uint32 i = 0; i < spell->StackAmount; ++i)
+                            caster->CastSpell(m_target, spellId, true, NULL, NULL, GetCasterGUID());
+
+                        return;
+                    }
+                    m_target->RemoveAurasDueToSpell(spellId);
+                    return;
+                }
                 case 24661:                                 // Restless Strength
                 {
                     uint32 spellId = 24662;
