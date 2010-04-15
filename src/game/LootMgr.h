@@ -277,8 +277,7 @@ struct Loot
 
         PlayersLooting.clear();
         items.clear();
-        while(!prioritized_items.empty())
-            prioritized_items.pop();
+        
         quest_items.clear();
         gold = 0;
         unlootedCount = 0;
