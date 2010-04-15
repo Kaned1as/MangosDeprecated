@@ -410,8 +410,8 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
                     break;}
         case 2: {
 
-                if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
-                    bsw->doCast(NPC_SLIME_POOL);
+                //if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
+                //    bsw->doCast(NPC_SLIME_POOL);
 
                 if (bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == DREADSCALE_SUBMERGED) 
                          stage = 3;
