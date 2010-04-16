@@ -474,6 +474,7 @@ struct MANGOS_DLL_DECL npc_fizzlebang_tocAI : public ScriptedAI
 
     void Reset()
     {
+        pPortal = NULL;
         m_creature->SetRespawnDelay(DAY);
         m_creature->GetMotionMaster()->MovePoint(1, SpawnLoc[27].x, SpawnLoc[27].y, SpawnLoc[27].z);
     }
