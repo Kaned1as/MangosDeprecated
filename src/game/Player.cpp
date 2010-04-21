@@ -16464,7 +16464,10 @@ void Player::SaveToDB()
 
     ss << uint32(m_atLoginFlags) << ", ";
 
-    ss << GetZoneId() << ", ";
+    if (!GetMap()) 
+        ss << (uint32)0 << ", ";
+    else
+        ss << GetZoneId() << ", ";
 
     ss << (uint64)m_deathExpireTime << ", '";
 

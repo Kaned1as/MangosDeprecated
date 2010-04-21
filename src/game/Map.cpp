@@ -347,9 +347,12 @@ void Map::AddNotifier(Creature* obj, Cell const&, CellPair const&)
     obj->SetNeedNotify();
 }
 
-void
+bool
 Map::EnsureGridCreated(const GridPair &p)
 {
+    if ((p.x_coord > MAX_NUMBER_OF_GRIDS) || (p.y_coord > MAX_NUMBER_OF_GRIDS))
+        return false; 
+        
     if(!getNGrid(p.x_coord, p.y_coord))
     {
         Guard guard(*this);
@@ -371,6 +374,7 @@ Map::EnsureGridCreated(const GridPair &p)
                 LoadMapAndVMap(gx,gy);
         }
     }
+    return true;
 }
 
 void
@@ -403,10 +407,14 @@ Map::EnsureGridLoadedAtEnter(const Cell &cell, Player *player)
 
 bool Map::EnsureGridLoaded(const Cell &cell)
 {
-    EnsureGridCreated(GridPair(cell.GridX(), cell.GridY()));
+    if (!EnsureGridCreated(GridPair(cell.GridX(), cell.GridY()))) 
+        return false;
+
     NGridType *grid = getNGrid(cell.GridX(), cell.GridY());
 
-    ASSERT(grid != NULL);
+    if (!grid)
+        return false;    
+
     if( !isGridObjectDataLoaded(cell.GridX(), cell.GridY()) )
     {
         ObjectGridLoader loader(*grid, this, cell);
@@ -1599,9 +1607,10 @@ inline GridMap *Map::GetGrid(float x, float y)
     int gy=(int)(32-y/SIZE_OF_GRIDS);                       //grid y
 
     // ensure GridMap is loaded
-    EnsureGridCreated(GridPair(63-gx,63-gy));
-
-    return GridMaps[gx][gy];
+    if (!EnsureGridCreated(GridPair(63-gx,63-gy)))
+        return NULL;
+    else 
+        return GridMaps[gx][gy];
 }
 
 float Map::GetHeight(float x, float y, float z, bool pUseVmaps) const
