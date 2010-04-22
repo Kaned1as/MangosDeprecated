@@ -371,7 +371,16 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     Spell *spell = new Spell(mover, spellInfo, false);
     spell->m_cast_count = cast_count;                       // set count of casts
-    spell->prepare(&targets);
+
+    //statistics counting
+    uint32 diff_time = getMSTime();
+    spell->prepare(&targets); //original line
+    diff_time = getMSTime() - diff_time;
+    if(diff_time > sStatMgr.spell_work.first)
+    {
+        sStatMgr.spell_work.first = diff_time;
+        sStatMgr.spell_work.second = spellId;
+    }
 }
 
 void WorldSession::HandleCancelCastOpcode(WorldPacket& recvPacket)

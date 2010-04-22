@@ -49,6 +49,7 @@
 #include <limits>
 
 INSTANTIATE_SINGLETON_1(ObjectMgr);
+StatMgr* StatMgr::_gestalt = NULL;
 
 ScriptMapMap sQuestEndScripts;
 ScriptMapMap sQuestStartScripts;

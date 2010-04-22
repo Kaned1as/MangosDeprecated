@@ -390,6 +390,33 @@ class IdGenerator
         T m_nextGuid;
 };
 
+#ifndef STATMGR
+#define STATMGR
+// Синглетон и ебись все конём!
+class MANGOS_DLL_DECL StatMgr
+{
+    private:
+        static StatMgr * _gestalt;
+    protected:
+        StatMgr() 
+        {
+            spell_work.first = 0;
+            spell_work.second = 0;
+        }
+    public:
+        // Единственность
+        static StatMgr& Instance()
+        {
+            if(!_gestalt) _gestalt = new StatMgr();
+            return *_gestalt;
+        }
+
+        std::pair<uint32, uint32> spell_work;
+};
+
+#define sStatMgr StatMgr::Instance()
+#endif
+
 class ObjectMgr
 {
     friend class PlayerDumpReader;

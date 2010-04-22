@@ -103,6 +103,8 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     //PSendSysMessage(LANG_USING_EVENT_AI,sWorld.GetCreatureEventAIVersion());
     PSendSysMessage(LANG_CONNECTED_USERS, activeClientsNum, maxActiveClientsNum, queuedClientsNum, maxQueuedClientsNum);
     PSendSysMessage(LANG_UPTIME, str.c_str());
+    PSendSysMessage("Statistics counting: max spell handle time %u ms", sStatMgr.spell_work.first);
+    PSendSysMessage("Statistics counting: max spell handle time spell id %u", sStatMgr.spell_work.second);
 
     return true;
 }
