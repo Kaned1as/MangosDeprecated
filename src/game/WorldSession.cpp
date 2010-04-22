@@ -439,7 +439,16 @@ void WorldSession::LogoutPlayer(bool Save)
         // e.g if he got disconnected during a transfer to another map
         // calls to GetMap in this case may cause crashes
         Map* _map = _player->GetMap();
-        _map->Remove(_player, true);
+        //megai2: may create memleack in some cases, but not in crash when stupid devs set map=NULL and try to do logout.
+        //megai2: or may not fix crash ^^
+        if (_map)
+          _map->Remove(_player, true);
+        else {
+          //megai2: extracted from map.remove(..) code
+          _player->CleanupsBeforeDelete();
+          sObjectAccessor.RemoveObject(_player);
+          delete _player;
+        }
         SetPlayer(NULL);                                    // deleted in Remove call
 
         ///- Send the 'logout complete' packet to the client
