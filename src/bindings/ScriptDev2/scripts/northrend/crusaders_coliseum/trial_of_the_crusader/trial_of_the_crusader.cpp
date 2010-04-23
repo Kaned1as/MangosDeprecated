@@ -209,6 +209,7 @@ bool GossipSelect_npc_toc_announcer(Player* pPlayer, Creature* pCreature, uint32
 {
     ScriptedInstance* pInstance;
     pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
+    if (!pInstance) return false;
 
 pPlayer->CLOSE_GOSSIP_MENU();
 
@@ -242,6 +243,7 @@ switch(uiAction) {
     };
 
     case GOSSIP_ACTION_INFO_DEF+5: {
+       if (pInstance->GetData(TYPE_LICH_KING) != DONE) return false;
        if (GameObject* pGoFloor = pInstance->instance->GetGameObject(pInstance->GetData64(GO_ARGENT_COLISEUM_FLOOR)))
           {
            pGoFloor->SetUInt32Value(GAMEOBJECT_DISPLAYID,9060);
@@ -250,21 +252,23 @@ switch(uiAction) {
            }
            pCreature->CastSpell(pCreature,69016,false);
 
-           pInstance->SetData(TYPE_ANUBARAK,IN_PROGRESS);
-                pCreature->SummonCreature(NPC_ANUBARAK, SpawnLoc[19].x, SpawnLoc[19].y, SpawnLoc[19].z, 5, TEMPSUMMON_CORPSE_TIMED_DESPAWN, DESPAWN_TIME);
-                if (Creature* pTemp = (Creature*)Unit::GetUnit((*pCreature),pInstance->GetData64(NPC_ANUBARAK))) {
+           Creature* pTemp = (Creature*)Unit::GetUnit((*pCreature),pInstance->GetData64(NPC_ANUBARAK));
+           if (!pTemp || !pTemp->isAlive())
+                         pCreature->SummonCreature(NPC_ANUBARAK, SpawnLoc[19].x, SpawnLoc[19].y, SpawnLoc[19].z, 5, TEMPSUMMON_CORPSE_TIMED_DESPAWN, DESPAWN_TIME);
+           if (pTemp) {
                         pTemp->GetMotionMaster()->MovePoint(0, SpawnLoc[20].x, SpawnLoc[20].y, SpawnLoc[20].z);
                         pTemp->AddSplineFlag(SPLINEFLAG_WALKMODE);
                         pTemp->SetInCombatWithZone();
                         }
-               pInstance->SetData(TYPE_STAGE,9);
-               if (pCreature->GetVisibility() == VISIBILITY_ON)
+           pInstance->SetData(TYPE_STAGE,9);
+           pInstance->SetData(TYPE_ANUBARAK,IN_PROGRESS);
+           if (pCreature->GetVisibility() == VISIBILITY_ON)
                    pCreature->SetVisibility(VISIBILITY_OFF);
     break;
     };
 
     case GOSSIP_ACTION_INFO_DEF+6: {
-    pInstance->SetData(TYPE_STAGE,9);
+    pInstance->SetData(TYPE_STAGE,10);
     break;
     };
 
@@ -301,12 +305,10 @@ struct MANGOS_DLL_DECL boss_lich_king_tocAI : public ScriptedAI
         MovementStarted = false;
         m_creature->SetRespawnDelay(DAY);
         pPortal = m_creature->SummonCreature(NPC_TRIGGER, SpawnLoc[2].x, SpawnLoc[2].y, SpawnLoc[2].z, 5, TEMPSUMMON_CORPSE_TIMED_DESPAWN, DESPAWN_TIME);
-        if(pPortal)
-        {
-            pPortal->SetRespawnDelay(DAY);
-            pPortal->CastSpell(pPortal, 51807, false);
-            pPortal->SetDisplayId(17612);
-        }
+        pPortal->SetRespawnDelay(DAY);
+        pPortal->CastSpell(pPortal, 51807, false);
+        pPortal->SetDisplayId(17612);
+        if(pInstance) pInstance->SetData(TYPE_LICH_KING,IN_PROGRESS);
     }
 
     void AttackStart(Unit *who)
@@ -425,8 +427,7 @@ struct MANGOS_DLL_DECL boss_lich_king_tocAI : public ScriptedAI
                pInstance->SetData(TYPE_STAGE,9);
                Event=false;
                m_creature->ForcedDespawn();
-               if(pPortal)
-                   pPortal->ForcedDespawn();
+               pPortal->ForcedDespawn();
                pInstance->SetData(TYPE_EVENT,5090);
                UpdateTimer = 20000;
                break;
@@ -473,15 +474,14 @@ struct MANGOS_DLL_DECL npc_fizzlebang_tocAI : public ScriptedAI
     {
         DoScriptText(-1713715, m_creature, pKiller);
         pInstance->SetData(TYPE_EVENT, 1180);
-        if(pPortal)
-            pPortal->ForcedDespawn();
+        if (pPortal) pPortal->ForcedDespawn();
     }
 
     void Reset()
     {
-        pPortal = NULL;
         m_creature->SetRespawnDelay(DAY);
         m_creature->GetMotionMaster()->MovePoint(1, SpawnLoc[27].x, SpawnLoc[27].y, SpawnLoc[27].z);
+        pPortal = NULL;
     }
 
     void UpdateAI(const uint32 diff)
@@ -507,16 +507,14 @@ struct MANGOS_DLL_DECL npc_fizzlebang_tocAI : public ScriptedAI
                case 1130:
                     m_creature->GetMotionMaster()->MovementExpired();
                     pPortal = m_creature->SummonCreature(NPC_PORTAL, SpawnLoc[1].x, SpawnLoc[1].y, SpawnLoc[1].z, 5, TEMPSUMMON_CORPSE_TIMED_DESPAWN, DESPAWN_TIME);
-                    if (pPortal) 
-                        pPortal->SetRespawnDelay(DAY);
+                    if (pPortal) pPortal->SetRespawnDelay(DAY);
                     DoScriptText(-1713512, m_creature);
                     pInstance->SetData(TYPE_EVENT, 1135);
                     UpdateTimer = 4000;
                     break;
                case 1135:
                     m_creature->GetMotionMaster()->MovementExpired();
-                    if (pPortal)
-                        pPortal->SetDisplayId(15900);
+                    if (pPortal) pPortal->SetDisplayId(15900);
                     pInstance->SetData(TYPE_EVENT, 1140);
                     UpdateTimer = 4000;
                     break;

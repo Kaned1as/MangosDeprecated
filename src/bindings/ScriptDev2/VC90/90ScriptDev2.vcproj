@@ -472,6 +472,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\scripts\eastern_kingdoms\redridge_mountains.cpp"
+					>
+				</File>
+				<File
 					RelativePath="..\scripts\eastern_kingdoms\searing_gorge.cpp"
 					>
 				</File>
@@ -1064,6 +1068,10 @@
 					>
 					<File
 						RelativePath="..\scripts\eastern_kingdoms\uldaman\boss_ironaya.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\eastern_kingdoms\uldaman\instance_uldaman.cpp"
 						>
 					</File>
 					<File
