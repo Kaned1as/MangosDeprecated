@@ -7442,6 +7442,15 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                     if (GetStat(STAT_AGILITY)  > stat) { trigger_spell_id = 67772;                               }
                     break;
                 }
+                case 64568:
+                {
+                    if(GetHealthPercent() > 35.0)
+                        return false;
+                    basepoints[0] = auraSpellInfo->CalculateSimpleValue(EFFECT_INDEX_0);
+                    trigger_spell_id = 64569;
+                    target = this;
+                    break;
+                }
             }
             break;
         case SPELLFAMILY_MAGE:
