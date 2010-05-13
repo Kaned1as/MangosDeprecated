@@ -499,4 +499,5 @@ class MANGOS_DLL_SPEC WorldObject : public Object
         float m_positionZ;
         float m_orientation;
 };
+
 #endif
