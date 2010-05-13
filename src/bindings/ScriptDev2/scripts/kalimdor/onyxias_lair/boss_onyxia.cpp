@@ -166,8 +166,10 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
 
     void JustSummoned(Creature *pSummoned)
     {
-        pSummoned->GetMotionMaster()->MovePoint(0, SpawnLocs[3][0], SpawnLocs[3][1], SpawnLocs[3][2]);
-        pSummoned->SetInCombatWithZone();
+        if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0))
+            pSummoned->AI()->AttackStart(pTarget);
+
+        ++m_uiSummonCount;
     }
 
     void KilledUnit(Unit* pVictim)
@@ -344,8 +346,8 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
             {
                 if (m_creature->GetMotionMaster()->GetCurrentMovementGeneratorType() != POINT_MOTION_TYPE)
                 {
-                    if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
-                        DoCastSpellIfCan(pTarget, Regular ? SPELL_FIREBALL : H_SPELL_FIREBALL);
+                    if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
+                        DoCastSpellIfCan(pTarget, SPELL_FIREBALL);
 
                     m_uiEngulfingFlamesTimer = 8000;
                 }
@@ -371,7 +373,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
                 {
                     m_bIsSummoningWhelps = false;
                     m_uiSummonCount = 0;
-                    m_uiSummonWhelpsTimer = 300000;
+                    m_uiSummonWhelpsTimer = 85000;
                 }
             }
             else
@@ -385,7 +387,7 @@ struct MANGOS_DLL_DECL boss_onyxiaAI : public ScriptedAI
             if(SummonGuardTimer < uiDiff)
             {
                 m_creature->SummonCreature(NPC_GUARD, SpawnLocs[2][0], SpawnLocs[2][1], SpawnLocs[2][2], 0.0f, TEMPSUMMON_TIMED_OR_CORPSE_DESPAWN, 30000);
-                SummonGuardTimer = 360000;
+                SummonGuardTimer = 30000;
             }
             else 
                 SummonGuardTimer -= uiDiff;

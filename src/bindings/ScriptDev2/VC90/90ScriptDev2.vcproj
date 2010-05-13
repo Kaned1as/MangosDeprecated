@@ -1078,6 +1078,10 @@
 						RelativePath="..\scripts\eastern_kingdoms\uldaman\uldaman.cpp"
 						>
 					</File>
+					<File
+						RelativePath="..\scripts\eastern_kingdoms\uldaman\uldaman.h"
+						>
+					</File>
 				</Filter>
 				<Filter
 					Name="zulaman"
@@ -1702,6 +1706,10 @@
 							>
 						</File>
 						<File
+							RelativePath="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\instance_trial_of_the_champion.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\trial_of_the_champion.cpp"
 							>
 						</File>
@@ -1709,10 +1717,6 @@
 							RelativePath="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\trial_of_the_champion.h"
 							>
 						</File>
-					</Filter>
-					<Filter
-						Name="trial_of_the_crusader"
-						>
 					</Filter>
 					<Filter
 						Name="trial_of_the_crusader"
@@ -1735,10 +1739,6 @@
 						</File>
 						<File
 							RelativePath="..\scripts\northrend\crusaders_coliseum\trial_of_the_crusader\boss_twin_valkyr.cpp"
-							>
-						</File>
-						<File
-							RelativePath="..\scripts\northrend\crusaders_coliseum\trial_of_the_champion\instance_trial_of_the_champion.cpp"
 							>
 						</File>
 						<File
@@ -1772,10 +1772,6 @@
 					</File>
 					<File
 						RelativePath="..\scripts\northrend\draktharon_keep\boss_trollgore.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\scripts\northrend\draktharon_keep\draktharon_keep.h"
 						>
 					</File>
 				</Filter>
@@ -2140,6 +2136,10 @@
 					</File>
 					<File
 						RelativePath="..\scripts\northrend\vault_of_archavon\boss_koralon.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\vault_of_archavon\boss_toravon.cpp"
 						>
 					</File>
 					<File

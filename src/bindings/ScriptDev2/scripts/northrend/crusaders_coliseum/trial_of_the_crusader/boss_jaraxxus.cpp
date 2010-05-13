@@ -73,7 +73,6 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~boss_jaraxxusAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     uint8 Difficulty;
@@ -87,7 +86,7 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
         if(!m_pInstance) return;
         Difficulty = m_pInstance->GetData(TYPE_DIFFICULTY);
         m_pInstance->SetData(TYPE_JARAXXUS, NOT_STARTED);
-        SetEquipmentSlots(false, EQUIP_MAIN, EQUIP_OFFHAND, EQUIP_RANGED);
+//        SetEquipmentSlots(false, EQUIP_MAIN, EQUIP_OFFHAND, EQUIP_RANGED);
         m_portalsCount = 1;
         if (Difficulty == RAID_DIFFICULTY_10MAN_HEROIC || Difficulty == RAID_DIFFICULTY_25MAN_HEROIC) 
         {
@@ -136,7 +135,7 @@ struct MANGOS_DLL_DECL boss_jaraxxusAI : public ScriptedAI
         bsw->timedCast(SPELL_FEL_LIGHTING, uiDiff);
 
         if (bsw->timedQuery(SPELL_INCINERATE_FLESH, uiDiff)) {
-                    if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM,1))
+                    if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,1))
                            {
                            DoScriptText(-1713522,m_creature,pTarget);
                            bsw->doCast(SPELL_INCINERATE_FLESH,pTarget);
@@ -189,7 +188,7 @@ struct MANGOS_DLL_DECL mob_legion_flameAI : public ScriptedAI
         m_creature->SetInCombatWithZone();
         m_creature->SetRespawnDelay(DAY);
 
-        if (Unit* pTarget= SelectUnit(SELECT_TARGET_RANDOM, 0) ) {
+        if (Unit* pTarget= m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0) ) {
                 m_creature->GetMotionMaster()->MoveChase(pTarget);
                 m_creature->SetSpeedRate(MOVE_RUN, 0.5);
                 }
@@ -260,7 +259,7 @@ struct MANGOS_DLL_DECL mob_infernal_volcanoAI : public ScriptedAI
     void Reset()
     {
         Difficulty = m_pInstance->GetData(TYPE_DIFFICULTY);
-        m_Timer = 30000;
+        m_Timer = 15000;
         m_creature->SetRespawnDelay(DAY);
         if (Difficulty != RAID_DIFFICULTY_10MAN_HEROIC && Difficulty != RAID_DIFFICULTY_25MAN_HEROIC) 
         {
@@ -323,7 +322,6 @@ struct MANGOS_DLL_DECL mob_fel_infernalAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_fel_infernalAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -427,7 +425,7 @@ struct MANGOS_DLL_DECL mob_nether_portalAI : public ScriptedAI
             DoCast(m_creature,SPELL_NETHER_PORTAL,false);
             DoScriptText(-1713521,m_creature);
             --m_Count;
-            m_Timer = 90000;
+            m_Timer = 60000;
             } else m_Timer -= diff;
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
@@ -449,7 +447,6 @@ struct MANGOS_DLL_DECL mob_mistress_of_painAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_mistress_of_painAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;

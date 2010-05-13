@@ -159,12 +159,12 @@ CanCastResult BossSpellWorker::_BSWSpellSelector(uint8 m_uiSpellIdx, Unit* pTarg
                    break;
 
             case CAST_ON_RANDOM:
-                   pTarget = SelectUnit(SELECT_TARGET_RANDOM);
+                   pTarget = boss->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
                    return _BSWCastOnTarget(pTarget, m_uiSpellIdx);
                    break;
 
             case CAST_ON_BOTTOMAGGRO:
-                   pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0);
+                   pTarget = boss->SelectAttackingTarget(ATTACKING_TARGET_BOTTOMAGGRO,0);
                    return _BSWCastOnTarget(pTarget, m_uiSpellIdx);
                    break;
 
@@ -338,6 +338,7 @@ CanCastResult BossSpellWorker::_BSWDoCast(uint8 m_uiSpellIdx, Unit* pTarget)
     if (!pTarget->isAlive()) return CAST_FAIL_OTHER;
     SpellTable* pSpell = &m_BossSpell[m_uiSpellIdx];
     debug_log("BSW: Casting bugged spell number %u type %u",pSpell->m_uiSpellEntry[currentDifficulty], pSpell->m_CastTarget);
+    pTarget->InterruptNonMeleeSpells(false);
     pTarget->CastSpell(pTarget, pSpell->m_uiSpellEntry[currentDifficulty], false);
          return CAST_OK;
 };
@@ -375,7 +376,15 @@ Unit* BossSpellWorker::_doSummon(uint8 m_uiSpellIdx, TempSummonType summontype, 
     } else return boss->SummonCreature(pSpell->m_uiSpellEntry[currentDifficulty], pSpell->LocData.x, pSpell->LocData.y, pSpell->LocData.z, 0, summontype, delay);
 };
 
-bool BossSpellWorker::_doRemove(uint8 m_uiSpellIdx, Unit* pTarget)
+Unit* BossSpellWorker::_doSummonAtPosition(uint8 m_uiSpellIdx, TempSummonType summontype, uint32 delay, float fPosX, float fPosY, float fPosZ)
+{
+    SpellTable* pSpell = &m_BossSpell[m_uiSpellIdx];
+
+    debug_log("BSW: Summoning creature number %u type %u despawn delay %u at position %f %f %f",pSpell->m_uiSpellEntry[currentDifficulty], pSpell->m_CastTarget, delay, fPosX, fPosY, fPosZ);
+    return boss->SummonCreature(pSpell->m_uiSpellEntry[currentDifficulty], fPosX, fPosY, fPosZ, 0, summontype, delay);
+};
+
+bool BossSpellWorker::_doRemove(uint8 m_uiSpellIdx, Unit* pTarget, SpellEffectIndex index)
 {
     SpellTable* pSpell = &m_BossSpell[m_uiSpellIdx];
 
@@ -396,13 +405,13 @@ bool BossSpellWorker::_doRemove(uint8 m_uiSpellIdx, Unit* pTarget)
 
                 case CAST_ON_SUMMONS:
                 case CAST_ON_VICTIM:
-                case CAST_ON_RANDOM:
                 case CAST_ON_BOTTOMAGGRO:
                 case CAST_ON_TARGET:
                 case APPLY_AURA_TARGET:
                      if (!pTarget) return false;
                      break;
 
+                case CAST_ON_RANDOM:
                 case CAST_ON_ALLPLAYERS:
                   {
                     Map::PlayerList const& pPlayers = pMap->GetPlayers();
@@ -421,8 +430,8 @@ bool BossSpellWorker::_doRemove(uint8 m_uiSpellIdx, Unit* pTarget)
           if (pTarget) {
               if (pTarget->isAlive()) {
                   if ( pTarget->HasAura(pSpell->m_uiSpellEntry[currentDifficulty]) &&
-                       pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], EFFECT_INDEX_0)->GetStackAmount() > 1) {
-                           if (pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], EFFECT_INDEX_0)->modStackAmount(-1)) 
+                       pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], index)->GetStackAmount() > 1) {
+                           if (pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], index)->modStackAmount(-1)) 
                                          return true;
                                else return false;
                                }
@@ -525,38 +534,6 @@ CanCastResult BossSpellWorker::_DoCastSpellIfCan(Unit* pTarget, uint32 uiSpell, 
 }
 
 // Copypasting from sc_creature.cpp :( Hung if call from bossAI->
-
-Unit*  BossSpellWorker::_SelectUnit(SelectAggroTarget target, uint32 uiPosition)
-{
-    //ThreatList m_threatlist;
-    ThreatList const& threatlist = boss->getThreatManager().getThreatList();
-    ThreatList::const_iterator itr = threatlist.begin();
-    ThreatList::const_reverse_iterator ritr = threatlist.rbegin();
-
-    if (uiPosition >= threatlist.size() || threatlist.empty())
-        return NULL;
-
-    switch (target)
-    {
-        case SELECT_TARGET_RANDOM:
-            advance(itr, uiPosition +  (rand() % (threatlist.size() - uiPosition)));
-            return Unit::GetUnit((*boss),(*itr)->getUnitGuid());
-            break;
-
-        case SELECT_TARGET_TOPAGGRO:
-            advance(itr, uiPosition);
-            return Unit::GetUnit((*boss),(*itr)->getUnitGuid());
-            break;
-
-        case SELECT_TARGET_BOTTOMAGGRO:
-            advance(ritr, uiPosition);
-            return Unit::GetUnit((*boss),(*ritr)->getUnitGuid());
-            break;
-    }
-
-    error_log("BSW: Cannot find target for spell :(");
-    return NULL;
-}
 
 Unit* BossSpellWorker::SelectLowHPFriendly(float fRange, uint32 uiMinHPDiff)
 {

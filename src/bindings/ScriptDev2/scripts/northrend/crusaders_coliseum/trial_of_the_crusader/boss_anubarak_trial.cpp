@@ -70,7 +70,6 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~boss_anubarak_trialAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     uint8 stage;
@@ -84,6 +83,8 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
         intro = true;
         m_creature->SetRespawnDelay(DAY);
         pTarget = NULL;
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
     }
 
 
@@ -97,8 +98,6 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
         if (!intro) return;
         DoScriptText(-1713554,m_creature);
         intro = false;
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-        m_creature->RemoveFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NOT_SELECTABLE);
         m_creature->SetInCombatWithZone();
     }
 
@@ -150,7 +149,7 @@ struct MANGOS_DLL_DECL boss_anubarak_trialAI : public ScriptedAI
                     break;}
             case 2: {
                     if (bsw->timedQuery(SPELL_SPIKE_CALL, uiDiff)) {
-                         pTarget = bsw->SelectUnit();
+                         pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0);
 //                         bsw->doCast(SPELL_SPIKE_CALL);
 //                         This summon not supported in database. Temporary override.
                          Unit* spike = bsw->doSummon(NPC_SPIKE,TEMPSUMMON_TIMED_DESPAWN,60000);
@@ -207,7 +206,6 @@ struct MANGOS_DLL_DECL mob_swarm_scarabAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_swarm_scarabAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -261,7 +259,6 @@ struct MANGOS_DLL_DECL mob_nerubian_borrowerAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_nerubian_borrowerAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     bool submerged;
@@ -338,7 +335,6 @@ struct MANGOS_DLL_DECL mob_frost_sphereAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_frost_sphereAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -376,7 +372,6 @@ struct MANGOS_DLL_DECL mob_anubarak_spikeAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_anubarak_spikeAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;

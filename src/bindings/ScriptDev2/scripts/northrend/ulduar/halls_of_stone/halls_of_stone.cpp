@@ -186,7 +186,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
             uint32 uiPositionCounter = 0;
             for(std::list<Creature*>::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
             {
-                if ((*itr) && (*itr)->isAlive())
+                if ((*itr)->isAlive())
                 {
                     if (uiPositionCounter == 0)
                     {
@@ -212,10 +212,10 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
         {
             if (m_uiKaddrak_Encounter_timer < uiDiff)
             {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     if (!m_lKaddrakGUIDList.empty())
                         for(std::list<Creature*>::iterator itr = m_lKaddrakGUIDList.begin(); itr != m_lKaddrakGUIDList.end(); ++itr)
-                            if ((*itr) && (*itr)->isAlive())
+                            if ((*itr)->isAlive())
                                 (*itr)->CastSpell(pTarget, m_bIsRegularMode ? SPELL_GLARE_OF_THE_TRIBUNAL_H : SPELL_GLARE_OF_THE_TRIBUNAL, true);
 
                 m_uiKaddrak_Encounter_timer = 1500;
@@ -227,7 +227,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
         {
             if (m_uiMarnak_Encounter_timer < uiDiff)
             {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     if (Creature* pTemp = m_creature->SummonCreature(NPC_DARK_MATTER_TARGET, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 1000))
                     {
                         pTemp->SetDisplayId(11686);
@@ -244,7 +244,7 @@ struct MANGOS_DLL_DECL mob_tribuna_controllerAI : public ScriptedAI
         {
             if (m_uiAbedneum_Encounter_timer < uiDiff)
             {
-                if (Unit* pTarget = SelectUnit(SELECT_TARGET_RANDOM, 0))
+                if (Unit* pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0))
                     if (Creature* pTemp = m_creature->SummonCreature(NPC_SEARING_GAZE_TARGET, pTarget->GetPositionX(), pTarget->GetPositionY(), pTarget->GetPositionZ(), 0.0f, TEMPSUMMON_TIMED_DESPAWN, 10000))
                     {
                         pTemp->SetDisplayId(11686);

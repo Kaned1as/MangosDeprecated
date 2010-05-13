@@ -93,7 +93,6 @@ struct MANGOS_DLL_DECL boss_gormokAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~boss_gormokAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     uint8 SnoboldsCount;
@@ -158,7 +157,6 @@ struct MANGOS_DLL_DECL mob_snobold_vassalAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_snobold_vassalAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -191,16 +189,12 @@ struct MANGOS_DLL_DECL mob_snobold_vassalAI : public ScriptedAI
     void JustDied(Unit* pKiller)
     {
     if (defaultTarget && defaultTarget->isAlive()) bsw->doRemove(SPELL_SNOBOLLED, defaultTarget);
-      if (pBoss && pBoss->isAlive()) bsw->doRemove(SPELL_RISING_ANGER,pBoss);
+//      if (pBoss && pBoss->isAlive()) bsw->doRemove(SPELL_RISING_ANGER,pBoss);
+//      This string - not offlike, in off this buff not removed! especially for small servers.
     }
 
     void UpdateAI(const uint32 uiDiff)
     {
-        if (m_pInstance->GetData(TYPE_NORTHREND_BEASTS) != GORMOK_IN_PROGRESS) {
-                if (defaultTarget && defaultTarget->isAlive())
-                      bsw->doRemove(SPELL_SNOBOLLED, defaultTarget);
-            m_creature->ForcedDespawn();
-            }
 
         if (!m_creature->SelectHostileTarget() || !m_creature->getVictim())
             return;
@@ -231,7 +225,6 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~boss_acidmawAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -244,6 +237,7 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
         enraged = false;
         m_creature->SetInCombatWithZone();
         m_creature->SetRespawnDelay(DAY);
+        m_pInstance->SetData(TYPE_NORTHREND_BEASTS, ACIDMAW_SUBMERGED);
     }
 
     void JustDied(Unit* pKiller)
@@ -258,7 +252,7 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
     void JustReachedHome()
     {
         if (!m_pInstance) return;
-        if (m_pInstance->GetData(TYPE_NORTHREND_BEASTS) != FAIL)
+        if (m_pInstance->GetData(TYPE_BEASTS) == IN_PROGRESS)
                         m_pInstance->SetData(TYPE_NORTHREND_BEASTS, FAIL);
             m_creature->ForcedDespawn();
     }
@@ -293,6 +287,7 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
                     break;}
         case 1: {
                     m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->InterruptNonMeleeSpells(true);
                     bsw->doCast(SPELL_SUBMERGE_0);
                     stage = 2;
                     DoScriptText(-1713557,m_creature);
@@ -302,7 +297,8 @@ struct MANGOS_DLL_DECL boss_acidmawAI : public ScriptedAI
                 //if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
                 //    bsw->doCast(NPC_SLIME_POOL);
 
-                if (bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == ACIDMAW_SUBMERGED)
+                if ((bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == ACIDMAW_SUBMERGED)
+                    || m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == DREADSCALE_SUBMERGED)
                         stage = 3;
                     break;}
         case 3: {
@@ -342,7 +338,6 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~boss_dreadscaleAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -369,7 +364,7 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
     void JustReachedHome()
     {
         if (!m_pInstance) return;
-        if (m_pInstance->GetData(TYPE_NORTHREND_BEASTS) != FAIL)
+        if (m_pInstance->GetData(TYPE_BEASTS) == IN_PROGRESS)
                         m_pInstance->SetData(TYPE_NORTHREND_BEASTS, FAIL);
             m_creature->ForcedDespawn();
     }
@@ -403,6 +398,7 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
                     break;}
         case 1: {
                     m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
+                    m_creature->InterruptNonMeleeSpells(true);
                     bsw->doCast(SPELL_SUBMERGE_0);
                     stage = 2;
                     DoScriptText(-1713557,m_creature);
@@ -413,7 +409,8 @@ struct MANGOS_DLL_DECL boss_dreadscaleAI : public ScriptedAI
                 //if (bsw->timedQuery(SPELL_SLIME_POOL, uiDiff))
                 //    bsw->doCast(NPC_SLIME_POOL);
 
-                if (bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == DREADSCALE_SUBMERGED) 
+                if ((bsw->timedQuery(SPELL_SUBMERGE_0, uiDiff) && m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == DREADSCALE_SUBMERGED)
+                    || m_pInstance->GetData(TYPE_NORTHREND_BEASTS) == ACIDMAW_SUBMERGED)
                          stage = 3;
                     break;}
         case 3: {
@@ -453,7 +450,6 @@ struct MANGOS_DLL_DECL mob_slime_poolAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~mob_slime_poolAI() { delete bsw; }
 
     ScriptedInstance *m_pInstance;
     BossSpellWorker* bsw;
@@ -504,7 +500,6 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
         bsw = new BossSpellWorker(this);
         Reset();
     }
-    ~boss_icehowlAI() { delete bsw; }
 
     ScriptedInstance* m_pInstance;
     BossSpellWorker* bsw;
@@ -584,7 +579,7 @@ struct MANGOS_DLL_DECL boss_icehowlAI : public ScriptedAI
                  break;
                 }
         case 2: {
-                        if (pTarget = bsw->SelectUnit()) {
+                        if (pTarget = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM,0)) {
                         TrampleCasted = false;
                         m_creature->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
                         stage = 3;
