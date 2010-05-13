@@ -80,7 +80,8 @@ struct MANGOS_DLL_DECL boss_koralonAI : public ScriptedAI
         {
             if(BBTickTimer < diff)
             {
-                DoCastSpellIfCan(NULL, Regular ? SP_BB_EFFECT : H_SP_BB_EFFECT, true);
+                Unit *target = m_creature->SelectAttackingTarget(ATTACKING_TARGET_RANDOM, 0);
+                if(target) DoCastSpellIfCan(target, Regular ? SP_BB_EFFECT : H_SP_BB_EFFECT, true);
                 BBTickTimer = 1000;
                 ++BBTicks;
                 if(BBTicks > 2) BB = false;
