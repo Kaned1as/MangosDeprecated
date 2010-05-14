@@ -109,15 +109,15 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 	
 	//calculate total memory reserved by all SQL storages
 	uint32 total_mem = 0;
-	total_mem += (sCreatureStorage.GetTotalSize() % 1024);
-	total_mem += (sCreatureDataAddonStorage.GetTotalSize() % 1024);
-	total_mem += (sCreatureModelStorage.GetTotalSize() % 1024);
-	total_mem += (sCreatureInfoAddonStorage.GetTotalSize() % 1024);
-	total_mem += (sEquipmentStorage.GetTotalSize() % 1024);
-	total_mem += (sGOStorage.GetTotalSize() % 1024);
-	total_mem += (sItemStorage.GetTotalSize() % 1024);
-	total_mem += (sPageTextStore.GetTotalSize() % 1024);
-	total_mem += (sInstanceTemplate.GetTotalSize() % 1024);
+	total_mem += (sCreatureStorage.GetTotalSize() / 1024);
+	total_mem += (sCreatureDataAddonStorage.GetTotalSize() / 1024);
+	total_mem += (sCreatureModelStorage.GetTotalSize() / 1024);
+	total_mem += (sCreatureInfoAddonStorage.GetTotalSize() / 1024);
+	total_mem += (sEquipmentStorage.GetTotalSize() / 1024);
+	total_mem += (sGOStorage.GetTotalSize() / 1024);
+	total_mem += (sItemStorage.GetTotalSize() / 1024);
+	total_mem += (sPageTextStore.GetTotalSize() / 1024);
+	total_mem += (sInstanceTemplate.GetTotalSize() / 1024);
 	PSendSysMessage("Total memory use by SQL storages: %u", total_mem);
 
     return true;
