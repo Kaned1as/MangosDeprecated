@@ -74,11 +74,11 @@ void SQLStorage::Free ()
 
 uint32 SQLStorage::GetTotalSize()
 {
-    uint32 line_size=0;
+	uint32 line_size=0;
 
-    for(uint32 x=0;x<iNumFields;x++)
+	for(uint32 x=0;x<iNumFields;x++)
 		if (dst_format[x]==FT_STRING)
-			line_size += sizeof(char*);
+			line_size += sizeof(char) * MaxEntry;
 		else if (dst_format[x]==FT_LOGIC)
 			line_size += sizeof(bool);
 		else if (dst_format[x]==FT_BYTE)
@@ -86,7 +86,7 @@ uint32 SQLStorage::GetTotalSize()
 		else
 			line_size += 4;
 
-	return iNumFields*line_size;
+	return line_size * RecordCount;
 }
 
 void SQLStorage::Load()
