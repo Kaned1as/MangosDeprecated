@@ -67,7 +67,7 @@ class SQLStorage
 
         void Load();
         void Free();
-
+		uint32 GetTotalSize();
     private:
         void init(const char * _entry_field, const char * sqlname)
         {

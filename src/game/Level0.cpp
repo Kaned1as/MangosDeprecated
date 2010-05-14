@@ -106,6 +106,19 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     PSendSysMessage(LANG_UPTIME, str.c_str());
     PSendSysMessage("Statistics counting: max spell handle time %u ms", sStatMgr.spell_work.first);
     PSendSysMessage("Statistics counting: max spell handle time spell id %u", sStatMgr.spell_work.second);
+	
+	//calculate total memory reserved by all SQL storages
+	uint32 total_mem = 0;
+	total_mem += (sCreatureStorage.GetTotalSize() % 1024);
+	total_mem += (sCreatureDataAddonStorage.GetTotalSize() % 1024);
+	total_mem += (sCreatureModelStorage.GetTotalSize() % 1024);
+	total_mem += (sCreatureInfoAddonStorage.GetTotalSize() % 1024);
+	total_mem += (sEquipmentStorage.GetTotalSize() % 1024);
+	total_mem += (sGOStorage.GetTotalSize() % 1024);
+	total_mem += (sItemStorage.GetTotalSize() % 1024);
+	total_mem += (sPageTextStore.GetTotalSize() % 1024);
+	total_mem += (sInstanceTemplate.GetTotalSize() % 1024);
+	PSendSysMessage("Total memory use by SQL storages: %u", total_mem);
 
     return true;
 }

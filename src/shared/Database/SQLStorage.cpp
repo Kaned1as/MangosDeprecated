@@ -72,6 +72,23 @@ void SQLStorage::Free ()
     delete [] data;
 }
 
+uint32 SQLStorage::GetTotalSize()
+{
+    uint32 line_size=0;
+
+    for(uint32 x=0;x<iNumFields;x++)
+		if (dst_format[x]==FT_STRING)
+			line_size += sizeof(char*);
+		else if (dst_format[x]==FT_LOGIC)
+			line_size += sizeof(bool);
+		else if (dst_format[x]==FT_BYTE)
+			line_size += sizeof(char);
+		else
+			line_size += 4;
+
+	return iNumFields*line_size;
+}
+
 void SQLStorage::Load()
 {
     SQLStorageLoader loader;
