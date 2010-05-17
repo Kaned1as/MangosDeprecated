@@ -2906,7 +2906,8 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
         case SPELLFAMILY_WARLOCK:
         {
             // Haunt
-            if (GetSpellProto()->SpellIconID == 3172 && (GetSpellProto()->SpellFamilyFlags & UI64LIT(0x0004000000000000)))
+            /* disable heal from spell. bug - http://forum.wow-russian.300murlocs.com/index.php?&showtopic=107701
+			if (GetSpellProto()->SpellIconID == 3172 && (GetSpellProto()->SpellFamilyFlags & UI64LIT(0x0004000000000000)))
             {
                 // NOTE: for avoid use additional field damage stored in dummy value (replace unused 100%
                 if (apply)
@@ -2919,6 +2920,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                         m_target->CastCustomSpell(caster,48210,&bp0,NULL,NULL,true);
                 }
             }
+			*/
             break;
         }
         case SPELLFAMILY_PRIEST:
