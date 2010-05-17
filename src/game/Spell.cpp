@@ -1300,6 +1300,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                 case 31347:                                 // Doom TODO: exclude top threat target from target selection
                 case 33711:                                 // Murmur's Touch
                 case 38794:                                 // Murmur's Touch (h)
+                case 71641:  case 71610:                    // Echoes of Light
                     unMaxTargets = 1;
                     break;
                 case 28542:                                 // Life Drain
