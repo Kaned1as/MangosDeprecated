@@ -16444,14 +16444,14 @@ void Player::SaveToDB()
     CharacterDatabase.BeginTransaction();
 
     /* WoWArmory */
-    std::ostringstream ps;
+/*    std::ostringstream ps;
     ps << "REPLACE INTO armory_character_stats (guid,data) VALUES ('" << GetGUIDLow() << "', '";
     for(uint16 i = 0; i < m_valuesCount; +i )
    {
         ps << GetUInt32Value(i) << " ";
     }
     ps << "')";
-    CharacterDatabase.Execute( ps.str().c_str() );
+    CharacterDatabase.Execute( ps.str().c_str() ); */
     /* WoWArmory */
 
     CharacterDatabase.PExecute("DELETE FROM characters WHERE guid = '%u'",GetGUIDLow());
