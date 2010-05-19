@@ -74,19 +74,33 @@ void SQLStorage::Free ()
 
 uint32 SQLStorage::GetTotalSize()
 {
-	uint32 line_size=0;
+	uint32 offset=0, line_size = 0;
 
-	for(uint32 x=0;x<iNumFields;x++)
-		if (dst_format[x]==FT_STRING)
-			line_size += sizeof(char) * MaxEntry;
-		else if (dst_format[x]==FT_LOGIC)
-			line_size += sizeof(bool);
-		else if (dst_format[x]==FT_BYTE)
-			line_size += sizeof(char);
-		else
-			line_size += 4;
+    // Циклы нужны в принципе лишь для того, чтобы вычленить индекс строки по её смещению в массиве индексов. В отличие от других типов данных, строка сама представляет собой массив.
+    // Поэтому в массиве индексов хранится не сама строка (видимо, слишком жирно) а лишь указатель на неё, сама строка отдельно. 
+    for(uint32 x=0;x<iNumFields;x++)
+        if (dst_format[x]==FT_STRING)
+        {
+            // Цикл пробегает по всем строкам таблицы. В данном случае я подсчитываю размер строк, находящихся в колонке по нужному смещению от первой
+            for(uint32 y=0;y<MaxEntry;y++)
+                if(pIndex[y])
+                    // Итак, pIndex - массив данных по индексам. Находим нужный указатель на массив символов (на одну из строк), он имеет тип (char**)
+                    // И обращаемся не к самому указателю, а к переменной, находящейся по адресу этого указателя (!!!), то есть *(char**), то есть непосредственно к массиву символов!
+                    // Дальше всё просто - считаем его размер ;) Вуаля!
+                    line_size += strlen( *(char**)(pIndex[y]+offset)) * sizeof(char);
 
-	return line_size * RecordCount;
+            offset += sizeof(char*); // здесь считаем размер указателей на строки
+                                     // Указатель на массив символов, то есть (char**) (размер её, как и у всех указателей - 4 байта в х32 и 8 байт в х64)
+        }
+        else if (dst_format[x]==FT_LOGIC)
+            offset += sizeof(bool);
+        else if (dst_format[x]==FT_BYTE)
+            offset += sizeof(char);
+        else
+            offset += 4;
+
+    // считаем размер = число переменных (включая указатели на строки) * число_строк  + сумма размеров строк
+	return (offset * RecordCount + line_size);
 }
 
 void SQLStorage::Load()
