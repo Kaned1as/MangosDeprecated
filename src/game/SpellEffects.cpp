@@ -5965,6 +5965,30 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     unitTarget->CastSpell(unitTarget, damage, false);
                     break;
                 }
+                case 58983: //Big Blizzard Bear
+                {
+                    if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
+                        return;
+
+                    // Prevent stacking of mounts
+                    unitTarget->RemoveSpellsCausingAura(SPELL_AURA_MOUNTED);
+
+                    if (uint16 skillval = ((Player*)unitTarget)->GetSkillValue(SKILL_RIDING))
+                    {
+                        switch (skillval)
+                        {
+                            case 75: 
+                                unitTarget->CastSpell(unitTarget, 58997, true); 
+                                break;
+                            case 150: 
+                            case 225:
+                            case 300:
+                                unitTarget->CastSpell(unitTarget, 58999, true); 
+                                break;
+                        }
+                    }
+                    return;
+                }
                 case 54729:                                 // Winged Steed of the Ebon Blade
                 {
                     if (!unitTarget || unitTarget->GetTypeId() != TYPEID_PLAYER)
