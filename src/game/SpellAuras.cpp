@@ -5614,6 +5614,7 @@ void Aura::HandleAuraModIncreaseHealth(bool apply, bool Real)
         case 28726:                                         // Nightmare Seed ( Nightmare Seed )
         case 34511:                                         // Valor (Bulwark of Kings, Bulwark of the Ancient Kings)
         case 44055: case 55915: case 55917: case 67596:     // Tremendous Fortitude (Battlemaster's Alacrity)
+        case 31616:                                         // Shaman Nature's Guardian
         case 50322:                                         // Survival Instincts
         case 54443:                                         // Demonic Empowerment (Voidwalker)
         case 55233:                                         // Vampiric Blood
@@ -8581,6 +8582,16 @@ bool Aura::IsCritFromAbilityAura(Unit* caster, uint32& damage)
         damage = caster->SpellCriticalDamageBonus(m_spellProto, damage, m_target);
         return true;
     }
+
+    // Special exception for Rupture spell, damage can crit after patch 3.3.3
+	if (m_spellProto->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellProto->SpellFamilyFlags & UI64LIT(0x000000000000100000))
+	{
+		if(caster->IsSpellCrit(m_target, m_spellProto, GetSpellSchoolMask(m_spellProto)))
+		{
+			damage = caster->SpellCriticalDamageBonus(m_spellProto, damage, m_target);
+			return true;
+		}
+	}
     return false;
 }
 
