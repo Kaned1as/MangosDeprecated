@@ -215,6 +215,7 @@ extern void AddSC_boss_ptheradras();
 extern void AddSC_boss_onyxia();                            //onyxias_lair
 extern void AddSC_boss_amnennar_the_coldbringer();          //razorfen_downs
 extern void AddSC_razorfen_downs();
+extern void AddSC_instance_razorfen_kraul();                //razorfen_kraul
 extern void AddSC_boss_ayamiss();                           //ruins_of_ahnqiraj
 extern void AddSC_boss_kurinnaxx();
 extern void AddSC_boss_moam();
@@ -228,6 +229,7 @@ extern void AddSC_boss_skeram();
 extern void AddSC_boss_twinemperors();
 extern void AddSC_mob_anubisath_sentinel();
 extern void AddSC_instance_temple_of_ahnqiraj();
+extern void AddSC_instance_wailing_caverns();               // Wailing Caverns
 extern void AddSC_zulfarrak();                              //zulfarrak
 // culling of stratholme
 extern void AddSC_boss_lord_epoch();
@@ -391,6 +393,9 @@ extern void AddSC_boss_festergut();
 extern void AddSC_boss_proffesor_putricide();
 extern void AddSC_blood_prince_council();
 extern void AddSC_boss_blood_queen_lanathel();
+extern void AddSC_boss_valithria_dreamwalker();
+extern void AddSC_boss_sindragosa();
+extern void AddSC_boss_lich_king_icc();
 
 extern void AddSC_instance_forge_of_souls();
 extern void AddSC_boss_devourer_of_souls();
@@ -676,16 +681,16 @@ void AddScripts()
     AddSC_wetlands();
 
     //kalimdor
-    AddSC_instance_blackfathom_deeps();                     //blackfathom_deeps
-    AddSC_boss_aeonus();                                    //COT, dark_portal
+    AddSC_instance_blackfathom_deeps();                     // blackfathom deeps
+    AddSC_boss_aeonus();                                    // Opening the Dark Portal
     AddSC_boss_chrono_lord_deja();
     AddSC_boss_temporus();
     AddSC_dark_portal();
     AddSC_instance_dark_portal();
-    AddSC_hyjal();                                          //COT, hyjal
+    AddSC_hyjal();                                          // Battle of Mount Hyjal
     AddSC_boss_archimonde();
     AddSC_instance_mount_hyjal();
-    AddSC_boss_captain_skarloc();                           //COT, old_hillsbrad
+    AddSC_boss_captain_skarloc();                           // Escape from Durnholde Keep
     AddSC_boss_epoch_hunter();
     AddSC_boss_lieutenant_drake();
     AddSC_instance_old_hillsbrad();
@@ -697,6 +702,7 @@ void AddScripts()
     AddSC_boss_onyxia();                                    //onyxias_lair
     AddSC_boss_amnennar_the_coldbringer();                  //razorfen_downs
     AddSC_razorfen_downs();
+    AddSC_instance_razorfen_kraul();                        //razorfen_kraul
     AddSC_boss_ayamiss();                                   //ruins_of_ahnqiraj
     AddSC_boss_kurinnaxx();
     AddSC_boss_moam();
@@ -710,6 +716,7 @@ void AddScripts()
     AddSC_boss_twinemperors();
     AddSC_mob_anubisath_sentinel();
     AddSC_instance_temple_of_ahnqiraj();
+    AddSC_instance_wailing_caverns();                       // Wailing Caverns
     AddSC_zulfarrak();                                      //zulfarrak
 
     AddSC_ashenvale();
@@ -866,6 +873,9 @@ void AddScripts()
     AddSC_boss_proffesor_putricide();
     AddSC_blood_prince_council();
     AddSC_boss_blood_queen_lanathel();
+    AddSC_boss_valithria_dreamwalker();
+    AddSC_boss_sindragosa();
+    AddSC_boss_lich_king_icc();
 
     AddSC_instance_forge_of_souls();
     AddSC_boss_devourer_of_souls();

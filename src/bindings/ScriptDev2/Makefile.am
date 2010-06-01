@@ -279,6 +279,8 @@ scripts/kalimdor/maraudon/boss_princess_theradras.cpp \
 scripts/kalimdor/onyxias_lair/boss_onyxia.cpp \
 scripts/kalimdor/razorfen_downs/boss_amnennar_the_coldbringer.cpp \
 scripts/kalimdor/razorfen_downs/razorfen_downs.cpp \
+scripts/kalimdor/razorfen_kraul/instance_razorfen_kraul.cpp \
+scripts/kalimdor/razorfen_kraul/razorfen_kraul.h \
 scripts/kalimdor/ruins_of_ahnqiraj/boss_ayamiss.cpp \
 scripts/kalimdor/ruins_of_ahnqiraj/boss_buru.cpp \
 scripts/kalimdor/ruins_of_ahnqiraj/boss_kurinnaxx.cpp \
@@ -301,6 +303,7 @@ scripts/kalimdor/temple_of_ahnqiraj/instance_temple_of_ahnqiraj.cpp \
 scripts/kalimdor/temple_of_ahnqiraj/mob_anubisath_sentinel.cpp \
 scripts/kalimdor/temple_of_ahnqiraj/temple_of_ahnqiraj.h \
 scripts/kalimdor/wailing_caverns/instance_wailing_caverns.cpp \
+scripts/kalimdor/wailing_caverns/wailing_caverns.h \
 scripts/kalimdor/zulfarrak/zulfarrak.cpp \
 scripts/northrend/borean_tundra.cpp \
 scripts/northrend/dalaran.cpp \
