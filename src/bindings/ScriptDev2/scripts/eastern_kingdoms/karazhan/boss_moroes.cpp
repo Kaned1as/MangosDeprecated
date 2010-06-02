@@ -556,7 +556,7 @@ struct MANGOS_DLL_DECL boss_lady_catriona_von_indiAI : public boss_moroes_guestA
 
         if (m_uiHolyFire_Timer < uiDiff)
         {
-            DoCastSpellIfCan(m_creature->getVictim(), SPELL_HOLYFIRE);
+            DoCast(m_creature->getVictim(), SPELL_HOLYFIRE);
             m_uiHolyFire_Timer = 22000;
         }
         else
