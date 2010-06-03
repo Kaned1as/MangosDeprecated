@@ -574,7 +574,7 @@ struct MANGOS_DLL_DECL npc_fizzlebang_tocAI : public ScriptedAI
                     pInstance->SetData(TYPE_EVENT, 1135);
                     break;
                case 1135:
-                    if (pTrigger) pTrigger->SetFloatValue(OBJECT_FIELD_SCALE_X, 2.0f);
+                    if (pTrigger && pTrigger->IsInWorld()) pTrigger->SetFloatValue(OBJECT_FIELD_SCALE_X, 2.0f);
                     m_creature->HandleEmoteCommand(EMOTE_ONESHOT_SPELLCAST_OMNI);
                     UpdateTimer = 3000;
                     pInstance->SetData(TYPE_EVENT, 1140);
