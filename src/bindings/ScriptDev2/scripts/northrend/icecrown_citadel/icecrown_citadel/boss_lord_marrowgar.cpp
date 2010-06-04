@@ -258,12 +258,14 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public ScriptedAI
 
     void KilledUnit(Unit* _Victim)
     {
-        if (pVictim) pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
+        if (pVictim && pVictim->IsInWorld() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
+            pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
     }
 
     void JustDied(Unit* Killer)
     {
-        if (pVictim) pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
+        if (pVictim && pVictim->IsInWorld() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
+            pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
     }
 
     void UpdateAI(const uint32 uiDiff)
