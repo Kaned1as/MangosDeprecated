@@ -256,12 +256,6 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public ScriptedAI
                         }
     }
 
-    void DamageTaken(Unit* pDoneBy, uint32 &uiDamage)
-    {
-        if (uiDamage > m_creature->GetHealth())
-            if (pVictim) pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
-    }
-
     void KilledUnit(Unit* _Victim)
     {
         if (pVictim) pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
