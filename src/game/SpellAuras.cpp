@@ -366,7 +366,7 @@ pAuraHandler AuraHandler[TOTAL_AURAS]=
     &Aura::HandleNULL,                                      //313 0 spells in 3.3
     &Aura::HandleNULL,                                      //314 1 test spell (reduce duration of silince/magic)
     &Aura::HandleNULL,                                      //315 underwater walking
-    &Aura::HandleNULL                                       //316 makes haste affect HOT/DOT ticks
+    &Aura::HandleNoImmediateEffect                                       //316 makes haste affect HOT/DOT ticks
 };
 
 static AuraType const frozenAuraTypes[] = { SPELL_AURA_MOD_ROOT, SPELL_AURA_MOD_STUN, SPELL_AURA_NONE };
@@ -439,6 +439,20 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
 
     if(!m_permanent && modOwner)
     {
+        if (modOwner->HasAuraType(SPELL_AURA_PERIODIC_HASTE) && (m_modifier.periodictime > 0)) {
+            Unit::AuraList tmpMap = target->GetAurasByType(SPELL_AURA_PERIODIC_HASTE);
+            for(Unit::AuraList::const_iterator itr = tmpMap.begin(); itr != tmpMap.end(); ++itr)
+            {
+                if (itr->second->isAffectedOnSpell(m_spellProto))
+                {
+                    float hasteMod = modOwner->GetFloatValue(UNIT_MOD_CAST_SPEED);
+                    m_modifier.periodictime *= hasteMod;
+                    m_maxduration *= hasteMod;
+                    break;
+                }
+            } 
+        }
+
         modOwner->ApplySpellMod(GetId(), SPELLMOD_DURATION, m_maxduration);
         // Get zero duration aura after - need set m_maxduration > 0 for apply/remove aura work
         if (m_maxduration<=0)
