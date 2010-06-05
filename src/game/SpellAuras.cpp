@@ -443,7 +443,7 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
             Unit::AuraList tmpMap = target->GetAurasByType(SPELL_AURA_PERIODIC_HASTE);
             for(Unit::AuraList::const_iterator itr = tmpMap.begin(); itr != tmpMap.end(); ++itr)
             {
-                if (itr->second->isAffectedOnSpell(m_spellProto))
+                if ((*itr)->second->isAffectedOnSpell(m_spellProto))
                 {
                     float hasteMod = modOwner->GetFloatValue(UNIT_MOD_CAST_SPEED);
                     m_modifier.periodictime *= hasteMod;
