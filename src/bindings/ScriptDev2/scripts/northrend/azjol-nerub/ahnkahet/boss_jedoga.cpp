@@ -411,7 +411,7 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
                 {
                     if(Creature *pTemp = m_creature->SummonCreature(NPC_TWILIGHT_VOLUNTEER, VolunteerLoc[i].x, VolunteerLoc[i].y, VolunteerLoc[i].z, VolunteerLoc[i].o, TEMPSUMMON_CORPSE_DESPAWN, 0))
                         pTemp->SetFlag(UNIT_FIELD_FLAGS, UNIT_FLAG_NON_ATTACKABLE);
-                    
+
                 }
                 m_uiSubPhase = 0;
                 m_uiPhase = PHASE_FIGHT;
@@ -451,7 +451,7 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
             //Health check
             if(m_uiCheckTimer <= uiDiff)
             {
-                uint8 health = m_creature->GetHealth()*100 / m_creature->GetMaxHealth();                    
+                uint8 health = m_creature->GetHealth()*100 / m_creature->GetMaxHealth();
                 if(m_uiLastSacrifaceHP == 0 && health <= 75)
                 {
                     m_uiLastSacrifaceHP = 75;
@@ -496,7 +496,7 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
             else if(m_uiSubPhase == SUBPHASE_CALL_VOLUNTEER)
             {
                 pVolunteer = SelectRandomVolunteer(150.0f);
-                if(pVolunteer)
+                if(pVolunteer && pVolunteer->AI())
                 {
                     switch(urand(0, 1))
                     {
@@ -511,7 +511,7 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
             {
                 if(m_uiCheckTimer <= uiDiff)
                 {
-                    if(pVolunteer && pVolunteer->isAlive()){
+                    if(pVolunteer && pVolunteer->isAlive() && pVolunteer->AI()){
                         m_bVolunteerDied = false;
                         if(((npc_twilight_volunteerAI*)pVolunteer->AI())->m_bIsVulunteerNear)
                             m_uiSubPhase = SUBPHASE_SACRIFACE;
@@ -520,7 +520,7 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
                         m_bVolunteerDied = true;
                         m_uiSubPhase = SUBPHASE_SACRIFACE;
                     }
-                       
+
                     m_uiCheckTimer = 1000;
                 }else m_uiCheckTimer -= uiDiff;
             }
@@ -531,10 +531,10 @@ struct MANGOS_DLL_DECL boss_jedogaAI : public ScriptedAI
                     case 0: DoScriptText(SAY_SACRIFICE_1, m_creature); break;
                     case 1: DoScriptText(SAY_SACRIFICE_2, m_creature); break;
                 }
-                
+
                 if(pVolunteer && pVolunteer->isAlive())
                     ((npc_twilight_volunteerAI*)pVolunteer->AI())->Sacriface(SACRIFACE_DIE);
-                
+
                 if(!m_bVolunteerDied)
                     DoCast(m_creature, SPELL_GIFT_OF_THE_HERALD);
                 m_creature->GetMap()->CreatureRelocation(m_creature, CENTER_X, CENTER_Y, GROUND_Z, JEDOGA_O);
