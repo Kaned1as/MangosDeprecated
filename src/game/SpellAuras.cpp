@@ -447,6 +447,8 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
                 {
                     float hasteMod = modOwner->GetFloatValue(UNIT_MOD_CAST_SPEED);
                     m_modifier.periodictime *= hasteMod;
+                    if (m_modifier.periodictime<=0)
+                        m_modifier.periodictime = 1;
                     m_maxduration *= hasteMod;
                     break;
                 }
