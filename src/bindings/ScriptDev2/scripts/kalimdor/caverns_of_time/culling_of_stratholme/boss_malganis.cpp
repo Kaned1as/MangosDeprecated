@@ -100,7 +100,8 @@ struct MANGOS_DLL_DECL boss_malganisAI : public ScriptedAI
 		MindBlast_Timer = 11300;
 		Sleep_Timer = 17300;
 		Vampire_Timer = 30000;
-
+        Arthas = NULL;
+        Malganis = NULL;
 		if(Finish == true) {}
 		else
 			Finish = false;

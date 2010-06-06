@@ -258,13 +258,13 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public ScriptedAI
 
     void KilledUnit(Unit* _Victim)
     {
-        if (pVictim && pVictim->IsInWorld() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
+        if (pVictim && pVictim->IsInWorld() && pVictim->isAlive() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
             pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
     }
 
     void JustDied(Unit* Killer)
     {
-        if (pVictim && pVictim->IsInWorld() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
+        if (pVictim && pVictim->IsInWorld() && pVictim->isAlive() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
             pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
     }
 
@@ -272,7 +272,7 @@ struct MANGOS_DLL_DECL mob_bone_spikeAI : public ScriptedAI
     {
         if(m_pInstance && m_pInstance->GetData(TYPE_MARROWGAR) != IN_PROGRESS)
         {
-            if (pVictim && pVictim->IsInWorld() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE)) 
+            if (pVictim && pVictim->IsInWorld() && pVictim->isAlive() && pVictim->HasAura(SPELL_BONE_STRIKE_IMPALE))
                 pVictim->RemoveAurasDueToSpell(SPELL_BONE_STRIKE_IMPALE);
             m_creature->ForcedDespawn();
         }
