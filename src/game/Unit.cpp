@@ -5941,8 +5941,8 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     if (!healingAura)
                         return false;
 
-                    int32 healingfromticks = SpellHealingBonus(pVictim, procSpell, (healingAura->GetModifier()->m_amount* GetSpellAuraMaxTicks(procSpell)), DOT);
-                    basepoints[0] = healingfromticks * triggerAmount / 100;
+                    int32 healingfromticks = SpellHealingBonus(pVictim, procSpell, (healingAura->GetModifier()->m_amount), DOT) * GetSpellAuraMaxTicks(procSpell);
+                    basepoints[0] = (healingfromticks * triggerAmount) / 100;
                     triggered_spell_id = 63544;
                     break;
                 }
