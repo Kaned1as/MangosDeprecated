@@ -216,31 +216,31 @@ struct MANGOS_DLL_DECL boss_malganisAI : public ScriptedAI
 			}
 
 			if(m_creature->GetHealth()*100 / m_creature->GetMaxHealth() < 5)
-            {
-				// adding kill credit for the players to be able to complete the quest
-                Map *map = m_creature->GetMap();
-                Map::PlayerList const& players = map->GetPlayers();
-                if (!players.isEmpty() && map->IsDungeon())
-                {
-                    for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
-                    {
-						if (Player* pPlayer = itr->getSource()) 
-                            pPlayer->KilledMonsterCredit(NPC_MALGANIS, m_creature->GetGUID());
-                    }
-                }
-				Finish = true;
-            }
+                        {
+  			    // adding kill credit for the players to be able to complete the quest
+                            Map *map = m_creature->GetMap();
+                            Map::PlayerList const& players = map->GetPlayers();
+                            if (!players.isEmpty() && map->IsDungeon())
+                            { 
+                                for(Map::PlayerList::const_iterator itr = players.begin(); itr != players.end(); ++itr)
+                                {
+                                    if (Player* pPlayer = itr->getSource()) 
+                                        pPlayer->KilledMonsterCredit(NPC_MALGANIS, m_creature->GetGUID());
+                                }
+                            }
+                            Finish = true;
+                        }
 
 			if(Arthas)
 			{
-				if(Arthas->isDead())
+				if(Arthas->isDead() && m_creature)
 				{
 					m_creature->setFaction(35);
-                    m_creature->RemoveAllAuras();
-                    m_creature->DeleteThreatList();
-                    m_creature->CombatStop(true);
-                    m_creature->InterruptNonMeleeSpells(false);
-                    m_creature->SetVisibility(VISIBILITY_OFF);
+                                        m_creature->RemoveAllAuras();
+                                        m_creature->DeleteThreatList();
+                                        m_creature->CombatStop(true);
+                                        m_creature->InterruptNonMeleeSpells(false);
+                                        m_creature->SetVisibility(VISIBILITY_OFF);
 				}
 			}
 		}
@@ -248,9 +248,9 @@ struct MANGOS_DLL_DECL boss_malganisAI : public ScriptedAI
 		if(Finish == true)
 		{
 			switch(Step)
-            {
-				case 1:
-					Outro = true;
+                        {
+		case 1:
+		    Outro = true;
                     Malganis = m_creature;
                     DoScriptText(SAY_MALGANIS_ESCAPE01, Malganis);
                     if (Creature* pArthas = GetClosestCreatureWithEntry(m_creature, NPC_ARTHAS, 150.0f))
