@@ -5888,7 +5888,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                 }
                 // Glyph of Life Tap
                 case 63320:
-                {
+                { 
                     triggered_spell_id = 63321;
                     break;
                 }
@@ -5958,6 +5958,11 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
 
                     int32 damagefromticks = SpellDamageBonus(pVictim, procSpell, (leachAura->GetModifier()->m_amount), DOT) * GetSpellAuraMaxTicks(procSpell);
                     basepoints[0] = damagefromticks * triggerAmount / 100;
+
+                    //megai2: 75999 heal effect  
+                    int32 healAmt = (basepoints[0] * 15) / 100;
+                    CastCustomSpell(this,75999,&healAmt,NULL,NULL,true,castItem,triggeredByAura);
+
                     triggered_spell_id = 63675;
                     break;
                 }

@@ -439,22 +439,6 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
 
     if(!m_permanent && modOwner)
     {
-        if (modOwner->HasAuraType(SPELL_AURA_PERIODIC_HASTE) && (m_modifier.periodictime > 0)) {
-            Unit::AuraList tmpMap = target->GetAurasByType(SPELL_AURA_PERIODIC_HASTE);
-            for(Unit::AuraList::const_iterator itr = tmpMap.begin(); itr != tmpMap.end(); ++itr)
-            {
-                if ((*itr)->isAffectedOnSpell(m_spellProto))
-                {
-                    float hasteMod = modOwner->GetFloatValue(UNIT_MOD_CAST_SPEED);
-                    m_modifier.periodictime *= hasteMod;
-                    if (m_modifier.periodictime<=0)
-                        m_modifier.periodictime = 1;
-                    m_maxduration *= hasteMod;
-                    break;
-                }
-            } 
-        }
-
         modOwner->ApplySpellMod(GetId(), SPELLMOD_DURATION, m_maxduration);
         // Get zero duration aura after - need set m_maxduration > 0 for apply/remove aura work
         if (m_maxduration<=0)
@@ -469,8 +453,22 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
     if(GetSpellProto()->AttributesEx & (SPELL_ATTR_EX_CHANNELED_1 | SPELL_ATTR_EX_CHANNELED_2) && m_modifier.periodictime)
         ApplyHasteToPeriodic();
     // Apply periodic time mod
-    else if(modOwner && m_modifier.periodictime)
-        modOwner->ApplySpellMod(GetId(), SPELLMOD_ACTIVATION_TIME, m_modifier.periodictime);
+    else if(modOwner && m_modifier.periodictime) {
+        if (modOwner->HasAuraType(SPELL_AURA_PERIODIC_HASTE)) {
+            Unit::AuraList tmpMap = target->GetAurasByType(SPELL_AURA_PERIODIC_HASTE);
+            for(Unit::AuraList::const_iterator itr = tmpMap.begin(); itr != tmpMap.end(); ++itr)
+            {
+                // Check EffectClassMask
+                uint32 const *tmpPtr = (*itr)->getAuraSpellClassMask();
+                if (tmpPtr[2] & m_spellProto->SpellFamilyFlags2)
+                {
+                    ApplyHasteToPeriodic()
+                    break;                
+                } 
+            }
+        } else 
+            modOwner->ApplySpellMod(GetId(), SPELLMOD_ACTIVATION_TIME, m_modifier.periodictime);
+    }
 
     //Must be after haste
     m_duration = m_maxduration;
