@@ -462,7 +462,7 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
                 uint32 const *tmpPtr = (*itr)->getAuraSpellClassMask();
                 if (tmpPtr[2] & m_spellProto->SpellFamilyFlags2)
                 {
-                    ApplyHasteToPeriodic()
+                    ApplyHasteToPeriodic();
                     break;                
                 } 
             }
