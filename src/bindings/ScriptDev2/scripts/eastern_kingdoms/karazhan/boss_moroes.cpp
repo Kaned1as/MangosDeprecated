@@ -487,7 +487,7 @@ struct MANGOS_DLL_DECL boss_baron_rafe_dreugerAI : public boss_moroes_guestAI
         else
             m_uiSealOfCommand_Timer -= uiDiff;
 
-        if (m_uiJudgementOfCommand_Timer < uiDiff)
+        if ((m_uiJudgementOfCommand_Timer < uiDiff) && m_creature->getVictim())
         {
             DoCastSpellIfCan(m_creature->getVictim(), SPELL_JUDGEMENTOFCOMMAND);
             m_uiJudgementOfCommand_Timer = m_uiSealOfCommand_Timer + 29000;
@@ -495,7 +495,7 @@ struct MANGOS_DLL_DECL boss_baron_rafe_dreugerAI : public boss_moroes_guestAI
         else
             m_uiJudgementOfCommand_Timer -= uiDiff;
 
-        if (m_uiHammerOfJustice_Timer < uiDiff)
+        if ((m_uiHammerOfJustice_Timer < uiDiff) && m_creature->getVictim())
         {
             DoCastSpellIfCan(m_creature->getVictim(), SPELL_HAMMEROFJUSTICE);
             m_uiHammerOfJustice_Timer = 12000;
