@@ -103,13 +103,13 @@ void Player::ApplySpellPowerBonus(int32 amount, bool apply)
 
 void Player::UpdateSpellDamageAndHealingBonus()
 {
-    // Magic damage modifiers implemented in Unit::SpellDamageBonus
+    // Magic damage modifiers implemented in Unit::SpellDamageBonusDone
     // This information for client side use only
     // Get healing bonus for all schools
-    SetStatInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, SpellBaseHealingBonus(SPELL_SCHOOL_MASK_ALL));
+    SetStatInt32Value(PLAYER_FIELD_MOD_HEALING_DONE_POS, SpellBaseHealingBonusDone(SPELL_SCHOOL_MASK_ALL));
     // Get damage bonus for all schools
     for(int i = SPELL_SCHOOL_HOLY; i < MAX_SPELL_SCHOOL; ++i)
-        SetStatInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS+i, SpellBaseDamageBonus(SpellSchoolMask(1 << i)));
+        SetStatInt32Value(PLAYER_FIELD_MOD_DAMAGE_DONE_POS+i, SpellBaseDamageBonusDone(SpellSchoolMask(1 << i)));
 }
 
 bool Player::UpdateAllStats()
@@ -293,7 +293,7 @@ void Player::UpdateAttackPowerAndDamage(bool ranged )
             case CLASS_DRUID:
             {
                 //Check if Predatory Strikes is skilled
-                float mLevelMult = 0.0f;
+                float mLevelBonus = 0.0f;
                 float mBonusWeaponAtt = 0.0f;
                 switch(m_form)
                 {
@@ -305,15 +305,18 @@ void Player::UpdateAttackPowerAndDamage(bool ranged )
                         Unit::AuraList const& mDummy = GetAurasByType(SPELL_AURA_DUMMY);
                         for(Unit::AuraList::const_iterator itr = mDummy.begin(); itr != mDummy.end(); ++itr)
                         {
+                            if((*itr)->GetSpellProto()->SpellIconID != 1563)
+                                continue;
+
                             // Predatory Strikes (effect 0)
-                            if ((*itr)->GetSpellProto()->SpellIconID == 1563 && (*itr)->GetEffIndex() == EFFECT_INDEX_0 && IsInFeralForm())
-                                mLevelMult = getLevel() * (*itr)->GetModifier()->m_amount / 100.0f;
+                            if ((*itr)->GetEffIndex() == EFFECT_INDEX_0 && IsInFeralForm())
+                                mLevelBonus = getLevel() * (*itr)->GetModifier()->m_amount / 100.0f;
                             // Predatory Strikes (effect 1)
-                            else if ((*itr)->GetSpellProto()->SpellIconID == 1563 && (*itr)->GetEffIndex() == EFFECT_INDEX_1)
-                            {
+                            else if ((*itr)->GetEffIndex() == EFFECT_INDEX_1)
                                 mBonusWeaponAtt = (*itr)->GetModifier()->m_amount * m_baseFeralAP / 100.0f;
+
+                            if (mLevelBonus != 0.0f && mBonusWeaponAtt != 0.0f)
                                 break;
-                            }
                         }
                         break;
                     }
@@ -323,10 +326,10 @@ void Player::UpdateAttackPowerAndDamage(bool ranged )
                 switch(m_form)
                 {
                     case FORM_CAT:
-                        val2 = GetStat(STAT_STRENGTH)*2.0f + GetStat(STAT_AGILITY) - 20.0f + mLevelMult + m_baseFeralAP + mBonusWeaponAtt; break;
+                        val2 = GetStat(STAT_STRENGTH)*2.0f + GetStat(STAT_AGILITY) - 20.0f + mLevelBonus + m_baseFeralAP + mBonusWeaponAtt; break;
                     case FORM_BEAR:
                     case FORM_DIREBEAR:
-                        val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f + mLevelMult + m_baseFeralAP + mBonusWeaponAtt; break;
+                        val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f + mLevelBonus + m_baseFeralAP + mBonusWeaponAtt; break;
                     case FORM_MOONKIN:
                         val2 = GetStat(STAT_STRENGTH)*2.0f - 20.0f + m_baseFeralAP + mBonusWeaponAtt; break;
                     default:
@@ -575,8 +578,7 @@ void Player::UpdateDodgePercentage()
     // Dodge from SPELL_AURA_MOD_DODGE_PERCENT aura
     value += GetTotalAuraModifier(SPELL_AURA_MOD_DODGE_PERCENT);
     // Dodge from rating
-    //megai2: may be done in dbc, maybe not...
-    value += GetRatingBonusValue(CR_DODGE) * 0.85f;
+    value += GetRatingBonusValue(CR_DODGE);
     value = value < 0.0f ? 0.0f : value;
     SetStatFloatValue(PLAYER_DODGE_PERCENTAGE, value);
 }
@@ -876,8 +878,8 @@ bool Pet::UpdateStats(Stats stat)
         if(owner)
             if (owner->getClass() == CLASS_WARLOCK)
                 value += float(owner->GetStat(stat)) * 0.75f;
-            else
-                value += float(owner->GetStat(stat)) * 0.3f;
+            else                
+                value += float(owner->GetStat(stat)) * 0.45f;
     }
                                                             //warlock's and mage's pets gain 30% of owner's intellect
     else if ( stat == STAT_INTELLECT && getPetType() == SUMMON_PET )

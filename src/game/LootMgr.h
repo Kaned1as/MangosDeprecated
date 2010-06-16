@@ -26,30 +26,10 @@
 #include <map>
 #include <vector>
 
-enum RollType
-{
-    ROLL_PASS         = 0,
-    ROLL_NEED         = 1,
-    ROLL_GREED        = 2,
-    ROLL_DISENCHANT   = 3,
-    MAX_ROLL_TYPE     = 4
-};
-
-#define ALL_ROLL_TYPE_MASK 0x0F
-
 #define MAX_NR_LOOT_ITEMS 255
 // note: the client cannot show more than 16 items total
 #define MAX_NR_QUEST_ITEMS 32
 // unrelated to the number of quest items shown, just for reserve
-
-enum LootMethod
-{
-    FREE_FOR_ALL      = 0,
-    ROUND_ROBIN       = 1,
-    MASTER_LOOT       = 2,
-    GROUP_LOOT        = 3,
-    NEED_BEFORE_GREED = 4
-};
 
 enum PermissionTypes
 {
@@ -121,8 +101,11 @@ struct LootItem
     bool AllowedForPlayer(Player const * player) const;
 };
 
-struct PriorLootItem
+typedef std::vector<LootItem> LootItemList;
+
+class PriorLootItem
 {
+    public:
         bool operator () (LootItem const& left, LootItem const& right) const;
 };
 
@@ -245,7 +228,7 @@ struct Loot
     QuestItemMap const& GetPlayerFFAItems() const { return PlayerFFAItems; }
     QuestItemMap const& GetPlayerNonQuestNonFFAConditionalItems() const { return PlayerNonQuestNonFFAConditionalItems; }
 
-    std::vector<LootItem> items;
+    LootItemList items;
     std::priority_queue<LootItem, std::vector<LootItem>, PriorLootItem>  prioritized_items;
     uint32 gold;
     uint8 unlootedCount;
@@ -277,7 +260,6 @@ struct Loot
 
         PlayersLooting.clear();
         items.clear();
-        
         quest_items.clear();
         gold = 0;
         unlootedCount = 0;
@@ -309,7 +291,7 @@ struct Loot
         QuestItemList* FillQuestLoot(Player* player);
         QuestItemList* FillNonQuestNonFFAConditionalLoot(Player* player);
 
-        std::vector<LootItem> quest_items;
+        LootItemList quest_items;
         std::set<uint64> PlayersLooting;
         QuestItemMap PlayerQuestItems;
         QuestItemMap PlayerFFAItems;

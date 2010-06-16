@@ -89,6 +89,7 @@ scripts/eastern_kingdoms/blackrock_depths/boss_high_interrogator_gerstahn.cpp \
 scripts/eastern_kingdoms/blackrock_depths/boss_magmus.cpp \
 scripts/eastern_kingdoms/blackrock_depths/boss_tomb_of_seven.cpp \
 scripts/eastern_kingdoms/blackrock_depths/instance_blackrock_depths.cpp \
+scripts/eastern_kingdoms/blackrock_spire/blackrock_spire.h \
 scripts/eastern_kingdoms/blackrock_spire/boss_drakkisath.cpp \
 scripts/eastern_kingdoms/blackrock_spire/boss_gyth.cpp \
 scripts/eastern_kingdoms/blackrock_spire/boss_halycon.cpp \
@@ -101,6 +102,7 @@ scripts/eastern_kingdoms/blackrock_spire/boss_rend_blackhand.cpp \
 scripts/eastern_kingdoms/blackrock_spire/boss_shadow_hunter_voshgajin.cpp \
 scripts/eastern_kingdoms/blackrock_spire/boss_the_beast.cpp \
 scripts/eastern_kingdoms/blackrock_spire/boss_warmaster_voone.cpp \
+scripts/eastern_kingdoms/blackrock_spire/instance_blackrock_spire.cpp \
 scripts/eastern_kingdoms/blackwing_lair/boss_broodlord_lashlayer.cpp \
 scripts/eastern_kingdoms/blackwing_lair/boss_chromaggus.cpp \
 scripts/eastern_kingdoms/blackwing_lair/boss_ebonroc.cpp \
@@ -341,7 +343,7 @@ scripts/northrend/icecrown_citadel/frozen_halls/forge_of_souls/boss_devourer_of_
 scripts/northrend/icecrown_citadel/frozen_halls/forge_of_souls/boss_bronjahm.cpp \
 scripts/northrend/icecrown_citadel/frozen_halls/pit_of_saron/instance_pit_of_saron.cpp \
 scripts/northrend/icecrown_citadel/frozen_halls/pit_of_saron/boss_forgemaster_gafrost.cpp \
-scripts/northrend/icecrown_citadel/frozen_halls/pit_of_saron/boss_scourgelord_tirannus.cpp \
+scripts/northrend/icecrown_citadel/frozen_halls/pit_of_saron/boss_scourgelord_tyrannus.cpp \
 scripts/northrend/icecrown_citadel/frozen_halls/pit_of_saron/boss_krick_and_ick.cpp \
 scripts/northrend/icecrown_citadel/frozen_halls/halls_of_reflection/instance_halls_of_reflection.cpp \
 scripts/northrend/icecrown_citadel/frozen_halls/halls_of_reflection/boss_falryn.cpp \
@@ -362,6 +364,13 @@ scripts/northrend/icecrown_citadel/icecrown_citadel/boss_the_lich_king.cpp \
 scripts/northrend/icecrown_citadel/icecrown_citadel/boss_valithria_dreamwalker.cpp \
 scripts/northrend/icecrown_citadel/icecrown_citadel/gunship_battle.cpp \
 scripts/northrend/icecrown_citadel/icecrown_citadel/icecrown_spire.cpp \
+scripts/northrend/icecrown_citadel/icecrown_citadel/def_spire.h \
+scripts/northrend/ruby_sanctum/def_ruby_sanctum.h \
+scripts/northrend/ruby_sanctum/instance_ruby_sanctum.cpp \
+scripts/northrend/ruby_sanctum/boss_halion.cpp \
+scripts/northrend/ruby_sanctum/boss_zarithian.cpp \
+scripts/northrend/ruby_sanctum/boss_baltharus.cpp \
+scripts/northrend/ruby_sanctum/boss_ragefire.cpp \
 scripts/northrend/naxxramas/boss_anubrekhan.cpp \
 scripts/northrend/naxxramas/boss_faerlina.cpp \
 scripts/northrend/naxxramas/boss_four_horsemen.cpp \
@@ -551,10 +560,12 @@ scripts/northrend/violet_hold/boss_lavanthor.cpp \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/def_culling_of_stratholme.h \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/boss_lord_epoch.cpp \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/culling_of_stratholme.cpp \
+scripts/kalimdor/caverns_of_time/culling_of_stratholme/culling_of_stratholmeai.cpp \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/boss_malganis.cpp \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/boss_meathook.cpp \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/instance_culling_of_stratholme.cpp \
 scripts/kalimdor/caverns_of_time/culling_of_stratholme/boss_salramm.cpp \
+scripts/kalimdor/caverns_of_time/culling_of_stratholme/boss_infinite_corruptor.cpp \
 scripts/world/areatrigger_scripts.cpp \
 scripts/world/boss_emeriss.cpp \
 scripts/world/boss_lethon.cpp \

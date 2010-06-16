@@ -29,6 +29,8 @@ enum Gender
     GENDER_NONE                        = 2
 };
 
+#define MAX_GENDER                       3
+
 // Race value is index in ChrRaces.dbc
 enum Races
 {
@@ -621,7 +623,7 @@ enum SpellEffects
     SPELL_EFFECT_KILL_CREDIT               = 90,
     SPELL_EFFECT_THREAT_ALL                = 91,
     SPELL_EFFECT_ENCHANT_HELD_ITEM         = 92,
-    SPELL_EFFECT_93                        = 93,            // old SPELL_EFFECT_SUMMON_PHANTASM
+    SPELL_EFFECT_BREAK_PLAYER_TARGETING    = 93,
     SPELL_EFFECT_SELF_RESURRECT            = 94,
     SPELL_EFFECT_SKINNING                  = 95,
     SPELL_EFFECT_CHARGE                    = 96,
@@ -691,7 +693,9 @@ enum SpellEffects
     SPELL_EFFECT_160                       = 160,
     SPELL_EFFECT_TALENT_SPEC_COUNT         = 161,
     SPELL_EFFECT_TALENT_SPEC_SELECT        = 162,
-    TOTAL_SPELL_EFFECTS                    = 163
+    SPELL_EFFECT_163                       = 163,
+    SPELL_EFFECT_164                       = 164,
+    TOTAL_SPELL_EFFECTS                    = 165
 };
 
 enum SpellCastResult
@@ -1051,7 +1055,7 @@ enum Targets
     TARGET_GAMEOBJECT_ITEM             = 26,
     TARGET_MASTER                      = 27,
     TARGET_ALL_ENEMY_IN_AREA_CHANNELED = 28,
-    TARGET_ALL_FRIENDLY_UNITS_AROUND_CASTER = 30,           // in TargetB used only with TARGET_ALL_AROUND_CASTER and in self casting range in TargetA
+    TARGET_ALL_FRIENDLY_UNITS_AROUND_CASTER = 30,           // select friendly for caster object faction (in different original caster faction) in TargetB used only with TARGET_ALL_AROUND_CASTER and in self casting range in TargetA
     TARGET_ALL_FRIENDLY_UNITS_IN_AREA  = 31,
     TARGET_MINION                      = 32,
     TARGET_ALL_PARTY                   = 33,
@@ -1142,6 +1146,16 @@ enum SpellPreventionType
     SPELL_PREVENTION_TYPE_NONE      = 0,
     SPELL_PREVENTION_TYPE_SILENCE   = 1,
     SPELL_PREVENTION_TYPE_PACIFY    = 2
+};
+
+enum DamageEffectType
+{
+    DIRECT_DAMAGE           = 0,                            // used for normal weapon damage (not for class abilities or spells)
+    SPELL_DIRECT_DAMAGE     = 1,                            // spell/class abilities damage
+    DOT                     = 2,
+    HEAL                    = 3,
+    NODAMAGE                = 4,                            // used also in case when damage applied to health but not applied to spell channelInterruptFlags/etc
+    SELF_DAMAGE             = 5
 };
 
 enum GameobjectTypes
@@ -1938,6 +1952,8 @@ enum CreatureEliteType
 // values based at Holidays.dbc
 enum HolidayIds
 {
+    HOLIDAY_NONE                     = 0,
+
     HOLIDAY_FIREWORKS_SPECTACULAR    = 62,
     HOLIDAY_FEAST_OF_WINTER_VEIL     = 141,
     HOLIDAY_NOBLEGARDEN              = 181,
@@ -1962,22 +1978,6 @@ enum HolidayIds
     HOLIDAY_WOTLK_LAUNCH             = 406,
     HOLIDAY_DAY_OF_DEAD              = 409,
     HOLIDAY_CALL_TO_ARMS_ISLE_OF_C   = 420
-};
-
-// values based at QuestInfo.dbc
-enum QuestTypes
-{
-    QUEST_TYPE_ELITE               = 1,
-    QUEST_TYPE_LIFE                = 21,
-    QUEST_TYPE_PVP                 = 41,
-    QUEST_TYPE_RAID                = 62,
-    QUEST_TYPE_DUNGEON             = 81,
-    QUEST_TYPE_WORLD_EVENT         = 82,
-    QUEST_TYPE_LEGENDARY           = 83,
-    QUEST_TYPE_ESCORT              = 84,
-    QUEST_TYPE_HEROIC              = 85,
-    QUEST_TYPE_RAID_10             = 88,
-    QUEST_TYPE_RAID_25             = 89
 };
 
 // values based at QuestSort.dbc
@@ -2553,24 +2553,25 @@ enum ResponseCodes
     CHAR_LOGIN_NO_CHARACTER                                = 0x53,
     CHAR_LOGIN_LOCKED_FOR_TRANSFER                         = 0x54,
     CHAR_LOGIN_LOCKED_BY_BILLING                           = 0x55,
+    CHAR_LOGIN_LOCKED_BY_MOBILE_AH                         = 0x56,
 
-    CHAR_NAME_SUCCESS                                      = 0x56,
-    CHAR_NAME_FAILURE                                      = 0x57,
-    CHAR_NAME_NO_NAME                                      = 0x58,
-    CHAR_NAME_TOO_SHORT                                    = 0x59,
-    CHAR_NAME_TOO_LONG                                     = 0x5A,
-    CHAR_NAME_INVALID_CHARACTER                            = 0x5B,
-    CHAR_NAME_MIXED_LANGUAGES                              = 0x5C,
-    CHAR_NAME_PROFANE                                      = 0x5D,
-    CHAR_NAME_RESERVED                                     = 0x5E,
-    CHAR_NAME_INVALID_APOSTROPHE                           = 0x5F,
-    CHAR_NAME_MULTIPLE_APOSTROPHES                         = 0x60,
-    CHAR_NAME_THREE_CONSECUTIVE                            = 0x61,
-    CHAR_NAME_INVALID_SPACE                                = 0x62,
-    CHAR_NAME_CONSECUTIVE_SPACES                           = 0x63,
-    CHAR_NAME_RUSSIAN_CONSECUTIVE_SILENT_CHARACTERS        = 0x64,
-    CHAR_NAME_RUSSIAN_SILENT_CHARACTER_AT_BEGINNING_OR_END = 0x65,
-    CHAR_NAME_DECLENSION_DOESNT_MATCH_BASE_NAME            = 0x66
+    CHAR_NAME_SUCCESS                                      = 0x57,
+    CHAR_NAME_FAILURE                                      = 0x58,
+    CHAR_NAME_NO_NAME                                      = 0x59,
+    CHAR_NAME_TOO_SHORT                                    = 0x5A,
+    CHAR_NAME_TOO_LONG                                     = 0x5B,
+    CHAR_NAME_INVALID_CHARACTER                            = 0x5C,
+    CHAR_NAME_MIXED_LANGUAGES                              = 0x5D,
+    CHAR_NAME_PROFANE                                      = 0x5E,
+    CHAR_NAME_RESERVED                                     = 0x5F,
+    CHAR_NAME_INVALID_APOSTROPHE                           = 0x60,
+    CHAR_NAME_MULTIPLE_APOSTROPHES                         = 0x61,
+    CHAR_NAME_THREE_CONSECUTIVE                            = 0x62,
+    CHAR_NAME_INVALID_SPACE                                = 0x63,
+    CHAR_NAME_CONSECUTIVE_SPACES                           = 0x64,
+    CHAR_NAME_RUSSIAN_CONSECUTIVE_SILENT_CHARACTERS        = 0x65,
+    CHAR_NAME_RUSSIAN_SILENT_CHARACTER_AT_BEGINNING_OR_END = 0x66,
+    CHAR_NAME_DECLENSION_DOESNT_MATCH_BASE_NAME            = 0x67
 };
 
 /// Ban function modes
@@ -2598,14 +2599,14 @@ enum BattleGroundTypeId
     BATTLEGROUND_AB            = 3,
     BATTLEGROUND_NA            = 4,
     BATTLEGROUND_BE            = 5,
-    BATTLEGROUND_AA            = 6,
+    BATTLEGROUND_AA            = 6,                         // all arenas
     BATTLEGROUND_EY            = 7,
     BATTLEGROUND_RL            = 8,
     BATTLEGROUND_SA            = 9,
     BATTLEGROUND_DS            = 10,
     BATTLEGROUND_RV            = 11,
     BATTLEGROUND_IC            = 30,
-    BATTLEGROUND_ABG           = 32
+    BATTLEGROUND_RB            = 32                         // random battleground
 };
 #define MAX_BATTLEGROUND_TYPE_ID 33
 
@@ -2669,11 +2670,38 @@ enum TotemSlot
 
 #define MAX_TOTEM_SLOT  4
 
+enum TradeStatus
+{
+    TRADE_STATUS_BUSY           = 0,
+    TRADE_STATUS_BEGIN_TRADE    = 1,
+    TRADE_STATUS_OPEN_WINDOW    = 2,
+    TRADE_STATUS_TRADE_CANCELED = 3,
+    TRADE_STATUS_TRADE_ACCEPT   = 4,
+    TRADE_STATUS_BUSY_2         = 5,
+    TRADE_STATUS_NO_TARGET      = 6,
+    TRADE_STATUS_BACK_TO_TRADE  = 7,
+    TRADE_STATUS_TRADE_COMPLETE = 8,
+    // 9?
+    TRADE_STATUS_TARGET_TO_FAR  = 10,
+    TRADE_STATUS_WRONG_FACTION  = 11,
+    TRADE_STATUS_CLOSE_WINDOW   = 12,
+    // 13?
+    TRADE_STATUS_IGNORE_YOU     = 14,
+    TRADE_STATUS_YOU_STUNNED    = 15,
+    TRADE_STATUS_TARGET_STUNNED = 16,
+    TRADE_STATUS_YOU_DEAD       = 17,
+    TRADE_STATUS_TARGET_DEAD    = 18,
+    TRADE_STATUS_YOU_LOGOUT     = 19,
+    TRADE_STATUS_TARGET_LOGOUT  = 20,
+    TRADE_STATUS_TRIAL_ACCOUNT  = 21,                       // Trial accounts can not perform that action
+    TRADE_STATUS_ONLY_CONJURED  = 22                        // You can only trade conjured items... (cross realm BG related).
+};
+
 // we need to stick to 1 version or half of the stuff will work for someone
 // others will not and opposite
-// will only support WoW, WoW:TBC and WoW:WotLK 3.3.2 client build 11403...
+// will only support WoW, WoW:TBC and WoW:WotLK 3.3.3 client build 11723...
 
-#define EXPECTED_MANGOSD_CLIENT_BUILD        {11403, 0}
+#define EXPECTED_MANGOSD_CLIENT_BUILD        {11723, 0}
 
 // max supported expansion level in mangosd
 // NOTE: not set it more that supported by targeted client version with all expansions installed

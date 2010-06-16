@@ -566,11 +566,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\game\BattleGroundABG.cpp"
+				RelativePath="..\..\src\game\BattleGroundRB.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\src\game\BattleGroundABG.h"
+				RelativePath="..\..\src\game\BattleGroundRB.h"
 				>
 			</File>
 			<File
@@ -670,6 +670,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\src\game\Camera.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\Camera.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\src\game\Cell.h"
 				>
 			</File>
@@ -743,6 +751,14 @@
 			</File>
 			<File
 				RelativePath="..\..\src\game\GridDefines.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\GridMap.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\GridMap.h"
 				>
 			</File>
 			<File
@@ -1533,6 +1549,14 @@
 		<Filter
 			Name="Tool"
 			>
+			<File
+				RelativePath="..\..\src\game\CharacterDatabaseCleaner.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\game\CharacterDatabaseCleaner.h"
+				>
+			</File>
 			<File
 				RelativePath="..\..\src\game\Language.h"
 				>

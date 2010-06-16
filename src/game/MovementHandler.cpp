@@ -195,7 +195,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð°Ð½Ñ‚Ð¸Ñ‡Ð¸Ñ‚Ð°]:|cff00ff00|r |c0000FF00Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸ÑŽ Ð²ÑÐµÑ… ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¾Ð² Ñ‚ÐµÑ…Ð½Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¸! ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ñ‡Ð¸Ñ‚ÐµÑ€, Ð½Ð¸Ðº: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°: " << Reason << ". Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°/Ð½Ð°Ð±Ð»ÑŽÐ´ÐµÐ½Ð¸Ðµ. Ð’Ð¾Ð·Ð¼Ð¾Ð¶ÐµÐ½ Ñ„Ð°ÐºÑ‚ Ð»Ð¾Ð¶Ð½Ð¾Ð³Ð¾ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ. Ð£Ð´Ð°Ñ‡Ð½Ð¾Ð¹ Ð¾Ñ…Ð¾Ñ‚Ñ‹.|r";
+            anticheatmessage << "|cffffcc00[Ñîîáùåíèå àíòè÷èòà]:|cff00ff00|r |c0000FF00Âíèìàíèþ âñåõ ñîòðóäíèêîâ òåõíè÷åñêîé ïîääåðæêè! Îáíàðóæåí ÷èòåð, íèê: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, ïðè÷èíà: " << Reason << ". Òðåáóåòñÿ ïðîâåðêà/íàáëþäåíèå. Âîçìîæåí ôàêò ëîæíîãî ñðàáàòûâàíèÿ. Óäà÷íîé îõîòû.|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
         }
 
@@ -203,7 +203,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð°Ð½Ñ‚Ð¸Ñ‡Ð¸Ñ‚Ð°]:|cff00ff00|r |c00F074FEÐ’Ð½Ð¸Ð¼Ð°Ð½Ð¸ÑŽ Ð²ÑÐµÑ… ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¾Ð² Ñ‚ÐµÑ…Ð½Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¸! ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ñ‡Ð¸Ñ‚ÐµÑ€, Ð½Ð¸Ðº: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c00F074FE, Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°: " << Reason << ". Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°/Ð½Ð°Ð±Ð»ÑŽÐ´ÐµÐ½Ð¸Ðµ. Ð’ÐÐ˜ÐœÐÐÐ˜Ð•! Ð’Ñ‹ÑÐ¾ÐºÐ°Ñ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð»Ð¾Ð¶Ð½Ð¾Ð³Ð¾ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ!|r";
+            anticheatmessage << "|cffffcc00[Ñîîáùåíèå àíòè÷èòà]:|cff00ff00|r |c00F074FEÂíèìàíèþ âñåõ ñîòðóäíèêîâ òåõíè÷åñêîé ïîääåðæêè! Îáíàðóæåí ÷èòåð, íèê: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c00F074FE, ïðè÷èíà: " << Reason << ". Òðåáóåòñÿ ïðîâåðêà/íàáëþäåíèå. ÂÍÈÌÀÍÈÅ! Âûñîêàÿ âåðîÿòíîñòü ëîæíîãî ñðàáàòûâàíèÿ!|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
             return true;
         }
@@ -212,7 +212,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð°Ð½Ñ‚Ð¸Ñ‡Ð¸Ñ‚Ð°]:|cff00ff00|r Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸ÑŽ Ð²ÑÐµÑ… ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¾Ð² Ñ‚ÐµÑ…Ð½Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¸! ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ñ‡Ð¸Ñ‚ÐµÑ€, Ð½Ð¸Ðº: " << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ", Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°: " << Reason << ". Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°/Ð½Ð°Ð±Ð»ÑŽÐ´ÐµÐ½Ð¸Ðµ. |cffff0000Ð’ÐÐ˜ÐœÐÐÐ˜Ð•! ÐžÑ‡ÐµÐ½ÑŒ Ð²Ñ‹ÑÐ¾ÐºÐ°Ñ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð»Ð¾Ð¶Ð½Ð¾Ð³Ð¾ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ!|r";
+            anticheatmessage << "|cffffcc00[Ñîîáùåíèå àíòè÷èòà]:|cff00ff00|r Âíèìàíèþ âñåõ ñîòðóäíèêîâ òåõíè÷åñêîé ïîääåðæêè! Îáíàðóæåí ÷èòåð, íèê: " << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ", ïðè÷èíà: " << Reason << ". Òðåáóåòñÿ ïðîâåðêà/íàáëþäåíèå. |cffff0000ÂÍÈÌÀÍÈÅ! Î÷åíü âûñîêàÿ âåðîÿòíîñòü ëîæíîãî ñðàáàòûâàíèÿ!|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
             return true;
         }
@@ -339,7 +339,7 @@ bool WorldSession::Anti__CheatOccurred(uint32 CurTime,const char* Reason,float S
 
 void WorldSession::HandleMoveWorldportAckOpcode( WorldPacket & /*recv_data*/ )
 {
-    sLog.outDebug( "WORLD: got MSG_MOVE_WORLDPORT_ACK." );
+    DEBUG_LOG( "WORLD: got MSG_MOVE_WORLDPORT_ACK." );
     HandleMoveWorldportAckOpcode();
 }
 
@@ -386,6 +386,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
     {
         //if player wasn't added to map, reset his map pointer!
         GetPlayer()->ResetMap();
+
         sLog.outError("WorldSession::HandleMoveWorldportAckOpcode: player %s (%d) was teleported far but couldn't be added to map. (map:%u, x:%f, y:%f, "
             "z:%f) We port him to his homebind instead..", GetPlayer()->GetName(), GetPlayer()->GetGUIDLow(), loc.mapid, loc.coord_x, loc.coord_y, loc.coord_z);
         // teleport the player home
@@ -477,7 +478,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
 
 void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
 {
-    sLog.outDebug("MSG_MOVE_TELEPORT_ACK");
+    DEBUG_LOG("MSG_MOVE_TELEPORT_ACK");
 
     ObjectGuid guid;
 
@@ -488,7 +489,7 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
     DEBUG_LOG("Guid: %s", guid.GetString().c_str());
     DEBUG_LOG("Flags %u, time %u", flags, time/IN_MILLISECONDS);
 
-    Unit *mover = _player->m_mover;
+    Unit *mover = _player->GetMover();
     Player *plMover = mover->GetTypeId() == TYPEID_PLAYER ? (Player*)mover : NULL;
 
     if(!plMover || !plMover->IsBeingTeleportedNear())
@@ -532,10 +533,10 @@ void WorldSession::HandleMoveTeleportAck(WorldPacket& recv_data)
 void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 {
     uint32 opcode = recv_data.GetOpcode();
-    sLog.outDebug("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
+    DEBUG_LOG("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
     recv_data.hexlike();
 
-    Unit *mover = _player->m_mover;
+    Unit *mover = _player->GetMover();
     Player *plMover = mover->GetTypeId() == TYPEID_PLAYER ? (Player*)mover : NULL;
 
     // ignore, waiting processing in WorldSession::HandleMoveWorldportAckOpcode and WorldSession::HandleMoveTeleportAck
@@ -605,7 +606,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     {
         plMover->m_transport->RemovePassenger(plMover);
         plMover->m_transport = NULL;
-        movementInfo.SetTransportData(0, 0.0f, 0.0f, 0.0f, 0.0f, 0, -1);
+        movementInfo.ClearTransportData();
     }
 
     // fall damage generation (ignore in flight case that can be triggered also at lags in moment teleportation to another map).
@@ -739,7 +740,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
             {
                 Anti__CheatOccurred(CurTime,"Fly hack",
                                     ((uint8)(GetPlayer()->HasAuraType(SPELL_AURA_FLY))) +
-                                    ((uint8)(GetPlayer()->HasAuraType(SPELL_AURA_MOD_INCREASE_FLIGHT_SPEED))*2),
+                                    ((uint8)(GetPlayer()->HasAuraType(SPELL_AURA_MOD_FLIGHT_SPEED_MOUNTED))*2),
                                     NULL,GetPlayer()->GetPositionZ()-Anti__MapZ);
             }
              
@@ -770,7 +771,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
     WorldPacket data(opcode, recv_data.size());
     data.appendPackGUID(mover->GetGUID());                  // write guid
     movementInfo.Write(data);                               // write data
-    GetPlayer()->SendMessageToSet(&data, false);
+    mover->SendMessageToSetExcept(&data, _player);
 
     if(plMover)                                             // nothing is charmed, or player charmed
     {
@@ -800,7 +801,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
                 // TODO: discard movement packets after the player is rooted
                 if(plMover->isAlive())
                 {
-                    plMover->EnvironmentalDamage(DAMAGE_FALL_TO_VOID, GetPlayer()->GetMaxHealth());
+                    plMover->EnvironmentalDamage(DAMAGE_FALL_TO_VOID, plMover->GetMaxHealth());
                     // pl can be alive if GM/etc
                     if(!plMover->isAlive())
                     {
@@ -826,7 +827,7 @@ void WorldSession::HandleMovementOpcodes( WorldPacket & recv_data )
 void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
 {
     uint32 opcode = recv_data.GetOpcode();
-    sLog.outDebug("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
+    DEBUG_LOG("WORLD: Recvd %s (%u, 0x%X) opcode", LookupOpcodeName(opcode), opcode, opcode);
     /* extract packet */
     ObjectGuid guid;
     MovementInfo movementInfo;
@@ -887,7 +888,7 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
         }
         else                                                // must be lesser - cheating
         {
-            sLog.outBasic("Player %s from account id %u kicked for incorrect speed (must be %f instead %f)",
+            BASIC_LOG("Player %s from account id %u kicked for incorrect speed (must be %f instead %f)",
                 _player->GetName(),_player->GetSession()->GetAccountId(),_player->GetSpeed(move_type), newspeed);
             _player->GetSession()->KickPlayer();
         }
@@ -896,37 +897,23 @@ void WorldSession::HandleForceSpeedChangeAck(WorldPacket &recv_data)
 
 void WorldSession::HandleSetActiveMoverOpcode(WorldPacket &recv_data)
 {
-    sLog.outDebug("WORLD: Recvd CMSG_SET_ACTIVE_MOVER");
+    DEBUG_LOG("WORLD: Recvd CMSG_SET_ACTIVE_MOVER");
     recv_data.hexlike();
 
-    uint64 guid;
+    ObjectGuid guid;
     recv_data >> guid;
 
-    //Ranger: crashfix?
-    if (!_player || !_player->IsInWorld())
+    if(_player->GetMover()->GetObjectGuid() != guid)
     {
-        sLog.outError("HandleSetActiveMoverOpcode: _player is NULL or not present in world!");
-        return;
-    }
-    if (!_player->m_mover || !_player->m_mover->IsInWorld())
-    {
-        sLog.outError("HandleSetActiveMoverOpcode: _player->m_mover is NULL or not present in world!");
-        _player->SetMover(_player);
-        _player->GetSession()->KickPlayer();                    //Ranger: kick is good?
-        return;
-    }
-
-    if(_player->m_mover->GetGUID() != guid)
-    {
-        sLog.outError("HandleSetActiveMoverOpcode: incorrect mover guid: mover is " I64FMT " and should be " I64FMT, _player->m_mover->GetGUID(), guid);
-        _player->GetSession()->KickPlayer();                    //Ranger: kick is good?
+        sLog.outError("HandleSetActiveMoverOpcode: incorrect mover guid: mover is %s and should be %s",
+            _player->GetMover()->GetObjectGuid().GetString().c_str(), guid.GetString().c_str());
         return;
     }
 }
 
 void WorldSession::HandleMoveNotActiveMover(WorldPacket &recv_data)
 {
-    sLog.outDebug("WORLD: Recvd CMSG_MOVE_NOT_ACTIVE_MOVER");
+    DEBUG_LOG("WORLD: Recvd CMSG_MOVE_NOT_ACTIVE_MOVER");
     recv_data.hexlike();
 
     ObjectGuid old_mover_guid;
@@ -935,9 +922,12 @@ void WorldSession::HandleMoveNotActiveMover(WorldPacket &recv_data)
     recv_data >> old_mover_guid.ReadAsPacked();
     recv_data >> mi;
 
-    if(_player->m_mover->GetObjectGuid() == old_mover_guid)
+    if(_player->GetMover()->GetObjectGuid() == old_mover_guid)
     {
-        sLog.outError("HandleMoveNotActiveMover: incorrect mover guid: mover is " I64FMT " and should be " I64FMT " instead of " UI64FMTD, _player->m_mover->GetGUID(), _player->GetGUID(), old_mover_guid.GetRawValue());
+        sLog.outError("HandleMoveNotActiveMover: incorrect mover guid: mover is %s and should be %s instead of %s",
+            _player->GetMover()->GetObjectGuid().GetString().c_str(),
+            _player->GetObjectGuid().GetString().c_str(),
+            old_mover_guid.GetString().c_str());
         recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
     }
@@ -947,7 +937,7 @@ void WorldSession::HandleMoveNotActiveMover(WorldPacket &recv_data)
 
 void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
 {
-    sLog.outDebug("WORLD: Recvd CMSG_DISMISS_CONTROLLED_VEHICLE");
+    DEBUG_LOG("WORLD: Recvd CMSG_DISMISS_CONTROLLED_VEHICLE");
     recv_data.hexlike();
 
     ObjectGuid guid;
@@ -973,7 +963,7 @@ void WorldSession::HandleDismissControlledVehicle(WorldPacket &recv_data)
 
 void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
 {
-    //sLog.outDebug("WORLD: Recvd CMSG_MOUNTSPECIAL_ANIM");
+    //DEBUG_LOG("WORLD: Recvd CMSG_MOUNTSPECIAL_ANIM");
 
     WorldPacket data(SMSG_MOUNTSPECIAL_ANIM, 8);
     data << uint64(GetPlayer()->GetGUID());
@@ -983,7 +973,7 @@ void WorldSession::HandleMountSpecialAnimOpcode(WorldPacket& /*recvdata*/)
 
 void WorldSession::HandleMoveKnockBackAck( WorldPacket & recv_data )
 {
-    sLog.outDebug("CMSG_MOVE_KNOCK_BACK_ACK");
+    DEBUG_LOG("CMSG_MOVE_KNOCK_BACK_ACK");
 
     ObjectGuid guid;                                        // guid - unused
     MovementInfo movementInfo;
@@ -995,7 +985,7 @@ void WorldSession::HandleMoveKnockBackAck( WorldPacket & recv_data )
 
 void WorldSession::HandleMoveHoverAck( WorldPacket& recv_data )
 {
-    sLog.outDebug("CMSG_MOVE_HOVER_ACK");
+    DEBUG_LOG("CMSG_MOVE_HOVER_ACK");
 
     ObjectGuid guid;                                        // guid - unused
     MovementInfo movementInfo;
@@ -1008,7 +998,7 @@ void WorldSession::HandleMoveHoverAck( WorldPacket& recv_data )
 
 void WorldSession::HandleMoveWaterWalkAck(WorldPacket& recv_data)
 {
-    sLog.outDebug("CMSG_MOVE_WATER_WALK_ACK");
+    DEBUG_LOG("CMSG_MOVE_WATER_WALK_ACK");
 
     ObjectGuid guid;                                        // guid - unused
     MovementInfo movementInfo;

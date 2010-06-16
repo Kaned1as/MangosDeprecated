@@ -45,7 +45,7 @@ libmangosgame_a_SOURCES = \
 	BattleGround.cpp \
 	BattleGroundAA.cpp \
 	BattleGroundAB.cpp \
-	BattleGroundABG.cpp \
+	BattleGroundRB.cpp \
 	BattleGroundAV.cpp \
 	BattleGroundBE.cpp \
 	BattleGroundDS.cpp \
@@ -59,7 +59,7 @@ libmangosgame_a_SOURCES = \
 	BattleGround.h \
 	BattleGroundAA.h \
 	BattleGroundAB.h \
-	BattleGroundABG.h \
+	BattleGroundRB.h \
 	BattleGroundAV.h \
 	BattleGroundBE.h \
 	BattleGroundDS.h \
@@ -76,6 +76,8 @@ libmangosgame_a_SOURCES = \
 	Calendar.cpp \
 	Calendar.h \
 	CalendarHandler.cpp \
+	Camera.cpp \
+	Camera.h \
 	Cell.h \
 	CellImpl.h \
 	Channel.cpp \
@@ -83,6 +85,8 @@ libmangosgame_a_SOURCES = \
 	ChannelHandler.cpp \
 	ChannelMgr.cpp \
 	ChannelMgr.h \
+	CharacterDatabaseCleaner.cpp \
+	CharacterDatabaseCleaner.h \
 	CharacterHandler.cpp \
 	Chat.cpp \
 	Chat.h \
@@ -130,6 +134,8 @@ libmangosgame_a_SOURCES = \
 	GossipDef.cpp \
 	GossipDef.h \
 	GridDefines.h \
+	GridMap.cpp \
+	GridMap.h \
 	GridNotifiers.cpp \
 	GridNotifiers.h \
 	GridNotifiersImpl.h \

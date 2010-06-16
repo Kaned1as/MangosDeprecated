@@ -306,7 +306,7 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
     _LoadSpellCooldowns();
 
     owner->SetPet(this);                                    // in DB stored only full controlled creature
-    sLog.outDebug("New Pet has guid %u", GetGUIDLow());
+    DEBUG_LOG("New Pet has guid %u", GetGUIDLow());
 
     if (owner->GetTypeId() == TYPEID_PLAYER)
     {
@@ -466,7 +466,7 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
             SetUInt32Value( UNIT_DYNAMIC_FLAGS, 0x00 );
             RemoveFlag (UNIT_FIELD_FLAGS, UNIT_FLAG_SKINNABLE);
 
-             //lose happiness when died and not in BG/Arena
+            //lose happiness when died and not in BG/Arena
             MapEntry const* mapEntry = sMapStore.LookupEntry(GetMapId());
             if(!mapEntry || (mapEntry->map_type != MAP_ARENA && mapEntry->map_type != MAP_BATTLEGROUND))
                 ModifyPower(POWER_HAPPINESS, -HAPPINESS_LEVEL_SIZE);
@@ -754,7 +754,7 @@ bool Pet::CreateBaseAtCreature(Creature* creature)
 
     uint32 guid = creature->GetMap()->GenerateLocalLowGuid(HIGHGUID_PET);
 
-    sLog.outBasic("Create pet");
+    BASIC_LOG("Create pet");
     uint32 pet_number = sObjectMgr.GeneratePetNumber();
     if(!Create(guid, creature->GetMap(), creature->GetPhaseMask(), creature->GetEntry(), pet_number))
         return false;
@@ -927,24 +927,12 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
                     }
                     case CLASS_DEATH_KNIGHT:
                     {
-                        bool glyph_found = false;
-
-                        if (owner->GetDummyAura(58686) && creature_ID == 26125)
-                            glyph_found = true;
-
                         setPowerType(POWER_ENERGY);
                         float coef_ap = 0.30f;
                         uint32 bonus_ap = uint32 ( owner->GetTotalAttackPowerValue ( BASE_ATTACK ) * coef_ap );
                         uint32 bonus_armor = uint32 ( owner->GetUInt32Value ( UNIT_FIELD_RESISTANCES ) * 0.35f );
                         uint32 base_hp = GetCreatureInfo()->maxhealth;
-                        uint32 healthfromstamina = uint32( ( ( Player* ) owner )->GetHealthBonusFromStamina());
-                        uint32 bonus_health = glyph_found ? uint32 ( healthfromstamina * 0.30f + healthfromstamina * 0.40f ) : uint32( healthfromstamina * 0.30f );
-
-                        if (glyph_found)
-                        {
-                            float dk_strength = owner->GetStat(STAT_STRENGTH);
-                            SetCreateStat(STAT_STRENGTH, GetStat(STAT_STRENGTH) + dk_strength * 0.40f);
-                        }
+                        uint32 bonus_health = uint32 ( ( ( Player* ) owner )->GetHealthBonusFromStamina() * 0.30f );
 
                         SetBaseWeaponDamage ( BASE_ATTACK, MINDAMAGE, uint32 ( GetCreatureInfo()->mindmg * GetCreatureInfo()->dmg_multiplier ) );
                         SetBaseWeaponDamage ( BASE_ATTACK, MAXDAMAGE, uint32 ( GetCreatureInfo()->maxdmg * GetCreatureInfo()->dmg_multiplier ) );
@@ -954,7 +942,6 @@ bool Pet::InitStatsForLevel(uint32 petlevel, Unit* owner)
 
                         SetMaxHealth ( base_hp + bonus_health );
                         SetHealth ( base_hp + bonus_health );
-
                         UpdateDamagePhysical ( BASE_ATTACK );
                         UpdateArmor();
                         break;
@@ -1121,7 +1108,7 @@ void Pet::_LoadSpellCooldowns()
 
             _AddCreatureSpellCooldown(spell_id,db_time);
 
-            sLog.outDebug("Pet (Number: %u) spell %u cooldown loaded (%u secs).", m_charmInfo->GetPetNumber(), spell_id, uint32(db_time-curTime));
+            DEBUG_LOG("Pet (Number: %u) spell %u cooldown loaded (%u secs).", m_charmInfo->GetPetNumber(), spell_id, uint32(db_time-curTime));
         }
         while( result->NextRow() );
 
@@ -1251,7 +1238,7 @@ void Pet::_LoadAuras(uint32 timediff)
                     remaincharges = spellproto->procCharges;
             }
             else
-                remaincharges = -1;
+                remaincharges = 0;
 
             /// do not load single target auras (unless they were cast by the player)
             if (caster_guid != GetGUID() && IsSingleTargetSpell(spellproto))

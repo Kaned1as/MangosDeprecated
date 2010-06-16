@@ -21,7 +21,7 @@
 
 DROP TABLE IF EXISTS `character_db_version`;
 CREATE TABLE `character_db_version` (
-  `required_9687_01_characters_character_queststatus_daily` bit(1) default NULL
+  `required_10051_01_characters_character_aura` bit(1) default NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Last applied sql update to DB';
 
 --
@@ -256,6 +256,9 @@ CREATE TABLE `characters` (
   `ammoId` int(10) UNSIGNED NOT NULL default '0',
   `knownTitles` longtext,
   `actionBars` tinyint(3) UNSIGNED NOT NULL default '0',
+  `deleteInfos_Account` int(11) UNSIGNED default NULL,
+  `deleteInfos_Name` varchar(12) default NULL,
+  `deleteDate` bigint(20) default NULL,
   PRIMARY KEY  (`guid`),
   KEY `idx_account` (`account`),
   KEY `idx_online` (`online`),
@@ -816,7 +819,8 @@ CREATE TABLE `character_spell` (
   `spell` int(11) unsigned NOT NULL default '0' COMMENT 'Spell Identifier',
   `active` tinyint(3) unsigned NOT NULL default '1',
   `disabled` tinyint(3) unsigned NOT NULL default '0',
-  PRIMARY KEY  (`guid`,`spell`)
+  PRIMARY KEY  (`guid`,`spell`),
+  KEY `Idx_spell` (`spell`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Player System';
 
 --
@@ -880,13 +884,12 @@ CREATE TABLE `character_stats` (
   `blockPct` float UNSIGNED NOT NULL default '0',
   `dodgePct` float UNSIGNED NOT NULL default '0',
   `parryPct` float UNSIGNED NOT NULL default '0',
-  `critPct` float UNSIGNED NOT NULL default '0',  
+  `critPct` float UNSIGNED NOT NULL default '0',
   `rangedCritPct` float UNSIGNED NOT NULL default '0',
   `spellCritPct` float UNSIGNED NOT NULL default '0',
   `attackPower` int(10) UNSIGNED NOT NULL default '0',
   `rangedAttackPower` int(10) UNSIGNED NOT NULL default '0',
   `spellPower` int(10) UNSIGNED NOT NULL default '0',
-   
   PRIMARY KEY  (`guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -1030,7 +1033,7 @@ CREATE TABLE `groups` (
   `icon6` int(11) unsigned NOT NULL,
   `icon7` int(11) unsigned NOT NULL,
   `icon8` int(11) unsigned NOT NULL,
-  `isRaid` tinyint(1) unsigned NOT NULL,
+  `groupType` tinyint(1) unsigned NOT NULL,
   `difficulty` tinyint(3) unsigned NOT NULL default '0',
   `raiddifficulty` int(11) UNSIGNED NOT NULL default '0',
   PRIMARY KEY  (`groupId`),
@@ -1368,6 +1371,7 @@ CREATE TABLE `item_instance` (
   `guid` int(11) unsigned NOT NULL default '0',
   `owner_guid` int(11) unsigned NOT NULL default '0',
   `data` longtext,
+  `text` longtext,
   PRIMARY KEY  (`guid`),
   KEY `idx_owner_guid` (`owner_guid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=DYNAMIC COMMENT='Item System';
@@ -1379,26 +1383,6 @@ CREATE TABLE `item_instance` (
 LOCK TABLES `item_instance` WRITE;
 /*!40000 ALTER TABLE `item_instance` DISABLE KEYS */;
 /*!40000 ALTER TABLE `item_instance` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
--- Table structure for table `item_text`
---
-
-DROP TABLE IF EXISTS `item_text`;
-CREATE TABLE `item_text` (
-  `id` int(11) unsigned NOT NULL default '0',
-  `text` longtext,
-  PRIMARY KEY  (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Item System';
-
---
--- Dumping data for table `item_text`
---
-
-LOCK TABLES `item_text` WRITE;
-/*!40000 ALTER TABLE `item_text` DISABLE KEYS */;
-/*!40000 ALTER TABLE `item_text` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1414,7 +1398,7 @@ CREATE TABLE `mail` (
   `sender` int(11) unsigned NOT NULL default '0' COMMENT 'Character Global Unique Identifier',
   `receiver` int(11) unsigned NOT NULL default '0' COMMENT 'Character Global Unique Identifier',
   `subject` longtext,
-  `itemTextId` int(11) unsigned NOT NULL default '0',
+  `body` longtext,
   `has_items` tinyint(3) unsigned NOT NULL default '0',
   `expire_time` bigint(40) NOT NULL default '0',
   `deliver_time` bigint(40) NOT NULL default '0',
@@ -1583,7 +1567,8 @@ DROP TABLE IF EXISTS `saved_variables`;
 CREATE TABLE `saved_variables` (
     `NextArenaPointDistributionTime` bigint(40) UNSIGNED NOT NULL DEFAULT '0',
     `NextDailyQuestResetTime` bigint(40) unsigned NOT NULL default '0',
-    `NextWeeklyQuestResetTime` bigint(40) unsigned NOT NULL default '0'
+    `NextWeeklyQuestResetTime` bigint(40) unsigned NOT NULL default '0',
+    `cleaning_flags` int(11) unsigned NOT NULL default '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 ROW_FORMAT=FIXED COMMENT='Variable Saves';
 
 --
