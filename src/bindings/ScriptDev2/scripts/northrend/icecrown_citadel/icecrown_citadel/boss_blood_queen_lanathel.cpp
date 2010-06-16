@@ -88,7 +88,8 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public ScriptedAI
         MirrorMarked = NULL;
         MirrorTarget = NULL;
         bsw->resetTimers();
-        memset(&Darkfallen, 0, sizeof(Darkfallen));
+        for(uint8 i =0; i<5; ++i)
+            Darkfallen[i] = NULL;
         darkfallened = 0;
         MirrorDamage = 0;
         m_creature->SetUInt32Value(UNIT_FIELD_BYTES_0, 0);
@@ -171,7 +172,7 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public ScriptedAI
        else if (darkfallened > 0)
        {
           for(uint8 i = 0; i < darkfallened; ++i)
-              if (Darkfallen[i]) 
+              if (Darkfallen[i] && Darkfallen[i]->IsInMap(m_creature))
                  if (Darkfallen[i]->isAlive() && Darkfallen[i]->HasAura(SPELL_PACT_OF_DARKFALLEN))
                    for(uint8 j = 0; j < darkfallened; ++j)
                       if (j != i && Darkfallen[j])
@@ -188,11 +189,11 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public ScriptedAI
     void doBloodMirror(bool command)
     {
 
-        if (MirrorMarked)
+        if (MirrorMarked && MirrorMarked->IsInMap(m_creature))
             if (!MirrorMarked->isAlive() || !MirrorMarked->HasAura(SPELL_BLOOD_MIRROR_1))
                MirrorMarked = NULL;
 
-        if (MirrorTarget)
+        if (MirrorTarget && MirrorTarget->IsInMap(m_creature))
             if (!MirrorTarget->isAlive() || !MirrorTarget->HasAura(SPELL_BLOOD_MIRROR_2))
                MirrorTarget = NULL;
 

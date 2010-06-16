@@ -119,7 +119,7 @@ struct MANGOS_DLL_DECL boss_deathbringer_saurfangAI : public ScriptedAI
 
         for (Map::PlayerList::const_iterator i = pList.begin(); i != pList.end(); ++i)
            if (Player* pPlayer = i->getSource())
-               if (pPlayer && pPlayer->isAlive())
+               if (pPlayer && pPlayer->isAlive() && pPlayer->IsInMap(m_creature))
                   if (pPlayer->HasAura(SPELL_MARK))
                      bsw->doRemove(SPELL_MARK,pPlayer);
     }
