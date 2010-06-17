@@ -215,7 +215,7 @@ struct MANGOS_DLL_DECL boss_blood_queen_lanathelAI : public ScriptedAI
     {
         uint32 tempdamage = MirrorDamage;
 
-        if (MirrorTarget)
+        if (MirrorTarget && MirrorTarget->IsInMap(m_creature))
            if (MirrorTarget->isAlive())
                m_creature->DealDamage(MirrorTarget, tempdamage, NULL, SPELL_DIRECT_DAMAGE, SPELL_SCHOOL_MASK_SHADOW, NULL, false);
         MirrorDamage -= tempdamage;
