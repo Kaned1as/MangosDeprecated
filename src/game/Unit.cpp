@@ -6013,9 +6013,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                         return false;
 
                     //megai2: Hasbro was here? o_O
-                    int32 healingfromticks = healingAura->GetModifier()->m_amount * GetSpellAuraMaxTicks(procSpell);
-                    healingfromticks = SpellHealingBonusDone(pVictim, procSpell, healingfromticks, HEAL);
-                    healingfromticks = pVictim->SpellHealingBonusTaken(this, procSpell, healingfromticks, HEAL);
+                    int32 healingfromticks = SpellDamageBonusDone(pVictim, procSpell, (healingAura->GetModifier()->m_amount), DOT) * GetSpellAuraMaxTicks(procSpell);
                     basepoints[0] = healingfromticks * triggerAmount / 100;
                     triggered_spell_id = 63544;
                     break;
@@ -6029,14 +6027,12 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     if (triggeredByAura->GetEffIndex() != EFFECT_INDEX_1)
                         return false;
 
-                    Aura* leachAura = pVictim->GetAura(SPELL_AURA_PERIODIC_LEECH, SPELLFAMILY_PRIEST, UI64LIT(0x02000000), NULL, GetGUID());
-                    if (!leachAura)
+                    Aura* leechAura = pVictim->GetAura(SPELL_AURA_PERIODIC_LEECH, SPELLFAMILY_PRIEST, UI64LIT(0x02000000), NULL, GetGUID());
+                    if (!leechAura)
                         return false;
 
                     //megai2: and again! :D
-                    int32 damagefromticks = leachAura->GetModifier()->m_amount * GetSpellAuraMaxTicks(procSpell);
-                    damagefromticks = SpellDamageBonusDone(pVictim, procSpell, damagefromticks, HEAL);
-                    damagefromticks = pVictim->SpellDamageBonusTaken(this, procSpell, damagefromticks, HEAL);
+                    int32 damagefromticks = SpellDamageBonusDone(pVictim, procSpell, (leechAura->GetModifier()->m_amount), DOT) * GetSpellAuraMaxTicks(procSpell);
                     basepoints[0] = damagefromticks * triggerAmount / 100;
 
                     //megai2: 75999 heal effect  
@@ -9076,7 +9072,9 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
         return NULL;
 
     // Magic case
-    if(spellInfo && (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC))
+    if(spellInfo && (spellInfo->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellInfo->DmgClass == SPELL_DAMAGE_CLASS_MAGIC) &&
+       (spellInfo->SchoolMask & SPELL_SCHOOL_MASK_MAGIC || spellInfo->Mechanic == MECHANIC_GRIP))
+
     {
         Unit::AuraList const& magnetAuras = victim->GetAurasByType(SPELL_AURA_SPELL_MAGNET);
         for(Unit::AuraList::const_iterator itr = magnetAuras.begin(); itr != magnetAuras.end(); ++itr)
