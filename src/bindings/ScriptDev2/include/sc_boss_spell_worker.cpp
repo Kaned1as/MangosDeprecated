@@ -468,7 +468,8 @@ bool BossSpellWorker::_doRemove(uint8 m_uiSpellIdx, Unit* pTarget, SpellEffectIn
                    else {
                            if (pTarget->IsInMap(boss)) pTarget->RemoveAurasDueToSpell(pSpell->m_uiSpellEntry[currentDifficulty]);
                            else  {
-                                 error_log("BSW: Attempt remove aura fom dead unit %u, unit not same map with boss",pTarget->GetGUIDLow());
+                                 //error_log("BSW: Attempt remove aura fom dead unit %u, unit not same map with boss",pTarget->GetGUIDLow());
+                                 // Идиот. Как ты гуид получишь, если у тебя нет таргета??? Вот долбоёб!
                                  return false;
                                  }
                         }
