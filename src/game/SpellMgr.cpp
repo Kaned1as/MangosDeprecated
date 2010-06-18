@@ -1669,7 +1669,7 @@ bool SpellMgr::IsSameEffectSpell(uint32 spellId_1, uint32 spellId_2) const
     if(spellInfo_1->SpellFamilyName == SPELLFAMILY_POTION || spellInfo_2->SpellFamilyName == SPELLFAMILY_POTION)
         return false;
 
-    for (uint i = 0; i < MAX_EFFECT_INDEX; ++i)
+    for (uint8 i = 0; i < MAX_EFFECT_INDEX; ++i)
     {
          if(spellInfo_1->Effect[i] && spellInfo_2->Effect[i] &&
             spellInfo_1->Effect[i] == spellInfo_2->Effect[i] &&
@@ -1680,7 +1680,7 @@ bool SpellMgr::IsSameEffectSpell(uint32 spellId_1, uint32 spellId_2) const
     }
 
     //more generic check
-    for (uint i = 0; i < MAX_EFFECT_INDEX; ++i)
+    for (uint8 i = 0; i < MAX_EFFECT_INDEX; ++i)
     {
         if(spellInfo_1->Effect[i] != spellInfo_2->Effect[i])
             return false;

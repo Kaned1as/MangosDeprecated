@@ -585,7 +585,7 @@ int32 ArenaTeam::WonAgainst(uint32 againstRating)
     return mod;
 }
 
-int32 ArenaTeam::LostAgainst(uint32 againstRating)
+int32 ArenaTeam::LostAgainst(uint32 againstRating, int32 winnerPlus)
 {
     // called when the team has lost
     //'chance' calculation - to loose to the opponent
@@ -593,6 +593,11 @@ int32 ArenaTeam::LostAgainst(uint32 againstRating)
     float K = (m_stats.rating < 1000) ? 48.0f : 32.0f;
     // calculate the rating modification (ELO system with k=32 or k=48 if rating<1000)
     int32 mod = (int32)ceil(K * (0.0f - chance));
+
+    // offlike ratings processing
+    if(abs(mod) > (abs(winnerPlus)/2))
+        mod = 0 - abs(winnerPlus)/2;
+
     // modify the team stats accordingly
     FinishGame(mod);
 

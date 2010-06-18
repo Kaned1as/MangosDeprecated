@@ -571,6 +571,10 @@
 					Name="blackrock_spire"
 					>
 					<File
+						RelativePath="..\scripts\eastern_kingdoms\blackrock_spire\blackrock_spire.h"
+						>
+					</File>
+					<File
 						RelativePath="..\scripts\eastern_kingdoms\blackrock_spire\boss_drakkisath.cpp"
 						>
 					</File>
@@ -620,10 +624,6 @@
 					</File>
 					<File
 						RelativePath="..\scripts\eastern_kingdoms\blackrock_spire\instance_blackrock_spire.cpp"
-						>
-					</File>
-					<File
-						RelativePath="..\scripts\eastern_kingdoms\blackrock_spire\blackrock_spire.h"
 						>
 					</File>
 				</Filter>
@@ -1326,6 +1326,10 @@
 						Name="culling_of_stratholme"
 						>
 						<File
+							RelativePath="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\boss_infinite_corruptor.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\boss_lord_epoch.cpp"
 							>
 						</File>
@@ -1346,11 +1350,19 @@
 							>
 						</File>
 						<File
+							RelativePath="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\culling_of_stratholmeai.cpp"
+							>
+						</File>
+						<File
 							RelativePath="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\def_culling_of_stratholme.h"
 							>
 						</File>
 						<File
 							RelativePath="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\instance_culling_of_stratholme.cpp"
+							>
+						</File>
+						<File
+							RelativePath="..\scripts\kalimdor\caverns_of_time\culling_of_stratholme\trash_culling_of_stratholme.cpp"
 							>
 						</File>
 					</Filter>
@@ -2305,10 +2317,6 @@
 								>
 							</File>
 							<File
-								RelativePath="..\scripts\northrend\icecrown_citadel\frozen_halls\pit_of_saron\boss_scourgelord_tirannus.cpp"
-								>
-							</File>
-							<File
 								RelativePath="..\scripts\northrend\icecrown_citadel\frozen_halls\pit_of_saron\boss_scourgelord_tyrannus.cpp"
 								>
 							</File>
@@ -2366,6 +2374,34 @@
 							</File>
 						</Filter>
 					</Filter>
+				</Filter>
+				<Filter
+					Name="ruby_sanctum"
+					>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_baltharus.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_halion.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_ragefire.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\boss_zarithian.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\def_ruby_sanctum.h"
+						>
+					</File>
+					<File
+						RelativePath="..\scripts\northrend\ruby_sanctum\instance_ruby_sanctum.cpp"
+						>
+					</File>
 				</Filter>
 			</Filter>
 			<Filter
