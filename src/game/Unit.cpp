@@ -6013,7 +6013,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                         return false;
 
                     //megai2: Hasbro was here? o_O
-                    int32 healingfromticks = SpellDamageBonusDone(pVictim, procSpell, (healingAura->GetModifier()->m_amount), DOT) * GetSpellAuraMaxTicks(procSpell);
+                    int32 healingfromticks = healingAura->GetModifier()->m_amount * GetSpellAuraMaxTicks(procSpell);
                     basepoints[0] = healingfromticks * triggerAmount / 100;
                     triggered_spell_id = 63544;
                     break;
@@ -6032,7 +6032,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                         return false;
 
                     //megai2: and again! :D
-                    int32 damagefromticks = SpellDamageBonusDone(pVictim, procSpell, (leechAura->GetModifier()->m_amount), DOT) * GetSpellAuraMaxTicks(procSpell);
+                    int32 damagefromticks = leechAura->GetModifier()->m_amount * GetSpellAuraMaxTicks(procSpell);
                     basepoints[0] = damagefromticks * triggerAmount / 100;
 
                     //megai2: 75999 heal effect  
