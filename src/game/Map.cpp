@@ -1841,7 +1841,8 @@ bool InstanceMap::Add(Player *player)
                         player->BindToInstance(mapSave, false);
                     else
                         // cannot jump to a different instance without resetting it
-                         player->TeleportToHomebind();
+                        if(!player->isGameMaster()) 
+                            player->TeleportToHomebind();
                         //ASSERT(playerBind->save == mapSave);
                 }
             }

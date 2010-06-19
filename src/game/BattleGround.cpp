@@ -681,6 +681,8 @@ void BattleGround::EndBattleGround(uint32 winner)
     ArenaTeam * loser_arena_team = NULL;
     uint32 loser_rating = 0;
     uint32 winner_rating = 0;
+    int32 winner_change = 0;
+    int32 loser_change = 0;
     WorldPacket data;
     int32 winmsg_id = 0;
 
@@ -718,8 +720,8 @@ void BattleGround::EndBattleGround(uint32 winner)
         {
             loser_rating = loser_arena_team->GetStats().rating;
             winner_rating = winner_arena_team->GetStats().rating;
-            int32 winner_change = winner_arena_team->WonAgainst(loser_rating);
-            int32 loser_change = loser_arena_team->LostAgainst(winner_rating, winner_change);
+            winner_change = winner_arena_team->WonAgainst(loser_rating);
+            loser_change = loser_arena_team->LostAgainst(winner_rating, winner_change);
             DEBUG_LOG("--- Winner rating: %u, Loser rating: %u, Winner change: %u, Losser change: %u ---", winner_rating, loser_rating, winner_change, loser_change);
             SetArenaTeamRatingChangeForTeam(winner, winner_change);
             SetArenaTeamRatingChangeForTeam(GetOtherTeam(winner), loser_change);
@@ -743,7 +745,7 @@ void BattleGround::EndBattleGround(uint32 winner)
                 if (team == winner)
                     winner_arena_team->OfflineMemberLost(itr->first, loser_rating);
                 else
-                    loser_arena_team->OfflineMemberLost(itr->first, winner_rating);
+                    loser_arena_team->OfflineMemberLost(itr->first, winner_rating, winner_change);
             }
             continue;
         }
@@ -787,7 +789,7 @@ void BattleGround::EndBattleGround(uint32 winner)
             }
             else
             {
-                loser_arena_team->MemberLost(plr,winner_rating);
+                loser_arena_team->MemberLost(plr,winner_rating, winner_change);
 
                 // Arena lost => reset the win_rated_arena having the "no_loose" condition
                 plr->GetAchievementMgr().ResetAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_WIN_RATED_ARENA, ACHIEVEMENT_CRITERIA_CONDITION_NO_LOOSE);

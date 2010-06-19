@@ -595,8 +595,9 @@ int32 ArenaTeam::LostAgainst(uint32 againstRating, int32 winnerPlus)
     int32 mod = (int32)ceil(K * (0.0f - chance));
 
     // offlike ratings processing
-    if(abs(mod) > (abs(winnerPlus)/2))
-        mod = 0 - abs(winnerPlus)/2;
+    if(winnerPlus)
+        if(abs(mod) > (abs(winnerPlus)/2))
+            mod = 0 - abs(winnerPlus)/2;
 
     // modify the team stats accordingly
     FinishGame(mod);
@@ -605,7 +606,7 @@ int32 ArenaTeam::LostAgainst(uint32 againstRating, int32 winnerPlus)
     return mod;
 }
 
-void ArenaTeam::MemberLost(Player * plr, uint32 againstRating)
+void ArenaTeam::MemberLost(Player * plr, uint32 againstRating, int32 winnerPlus)
 {
     // called for each participant of a match after losing
     for(MemberList::iterator itr = m_members.begin(); itr !=  m_members.end(); ++itr)
@@ -617,6 +618,12 @@ void ArenaTeam::MemberLost(Player * plr, uint32 againstRating)
             float K = (itr->personal_rating < 1000) ? 48.0f : 32.0f;
             // calculate the rating modification (ELO system with k=32 or k=48 if rating<1000)
             int32 mod = (int32)ceil(K * (0.0f - chance));
+
+            // offlike ratings processing
+            if(winnerPlus)
+                if(abs(mod) > (abs(winnerPlus)/2))
+                    mod = 0 - abs(winnerPlus)/2;
+
             itr->ModifyPersonalRating(plr, mod, GetSlot());
             // update personal played stats
             itr->games_week += 1;
@@ -629,7 +636,7 @@ void ArenaTeam::MemberLost(Player * plr, uint32 againstRating)
     }
 }
 
-void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstRating)
+void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstRating, int32 winnerPlus)
 {
     // called for offline player after ending rated arena match!
     for(MemberList::iterator itr = m_members.begin(); itr !=  m_members.end(); ++itr)
@@ -641,6 +648,12 @@ void ArenaTeam::OfflineMemberLost(uint64 guid, uint32 againstRating)
             float K = (itr->personal_rating < 1000) ? 48.0f : 32.0f;
             // calculate the rating modification (ELO system with k=32 or k=48 if rating<1000)
             int32 mod = (int32)ceil(K * (0.0f - chance));
+            
+            // offlike ratings processing
+            if(winnerPlus)
+                if(abs(mod) > (abs(winnerPlus)/2))
+                    mod = 0 - abs(winnerPlus)/2;
+
             if (int32(itr->personal_rating) + mod < 0)
                 itr->personal_rating = 0;
             else
