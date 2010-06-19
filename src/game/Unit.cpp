@@ -4329,7 +4329,7 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
             {
                 // use clean value for initial damage
                 int32 bp0 = dot->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_1);
-                bp0 *= 4;
+                bp0 *= 8;
 
                 // Remove spell auras from stack
                 RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
@@ -4338,6 +4338,13 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
                 return;
             }
         }
+    }
+    else if (spellEntry->SpellFamilyName == SPELLFAMILY_SHAMAN && spellEntry->SpellFamilyFlags & UI64LIT(0x40000000000))
+    {
+        if (Aura* shAura = GetAura(SPELL_AURA_DUMMY, SPELLFAMILY_SHAMAN, UI64LIT(0x40000000000), 0x00000000, casterGUID))
+            if (shAura->DropAuraCharge())
+                RemoveSingleSpellAurasFromStack(spellId);
+        return;
     }
 
     RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
@@ -4377,7 +4384,17 @@ void Unit::RemoveAurasDueToSpellBySteal(uint32 spellId, uint64 casterGUID, Unit 
             stealer->AddAura(new_aur);
 
             // Remove aura as dispel
-            RemoveAura(iter, AURA_REMOVE_BY_DISPEL);
+            if (aur->GetSpellProto()->SpellFamilyName == SPELLFAMILY_SHAMAN && aur->GetSpellProto()->SpellFamilyFlags & UI64LIT(0x40000000000))
+            {
+                if (aur->DropAuraCharge())
+                    RemoveSingleSpellAurasFromStack(spellId);
+
+                new_aur->SetStackAmount(1);
+                iter++;
+            }
+            else
+                RemoveAura(iter, AURA_REMOVE_BY_DISPEL);
+
         }
         else
             ++iter;
