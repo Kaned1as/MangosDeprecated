@@ -218,13 +218,6 @@ int Master::Run()
     ACE_Based::Thread world_thread(new WorldRunnable);
     world_thread.setPriority(ACE_Based::Highest);
 
-    // set realmbuilds depend on mangosd expected builds, and set server online
-    {
-        std::string builds = AcceptableClientBuildsListStr();
-        loginDatabase.escape_string(builds);
-        loginDatabase.PExecute("UPDATE realmlist SET realmflags = realmflags & ~(%u), population = 0, realmbuilds = '%s'  WHERE id = '%d'", REALM_FLAG_OFFLINE, builds.c_str(), realmID);
-    }
-
     ACE_Based::Thread* cliThread = NULL;
 
 #ifdef WIN32
@@ -322,6 +315,13 @@ int Master::Run()
         Log::WaitBeforeContinueIfNeed();
         World::StopNow(ERROR_EXIT_CODE);
         // go down and shutdown the server
+    }
+
+    // set realmbuilds depend on mangosd expected builds, and set server online
+    {
+        std::string builds = AcceptableClientBuildsListStr();
+        loginDatabase.escape_string(builds);
+        loginDatabase.PExecute("UPDATE realmlist SET realmflags = realmflags & ~(%u), population = 0, realmbuilds = '%s'  WHERE id = '%d'", REALM_FLAG_OFFLINE, builds.c_str(), realmID);
     }
 
     sWorldSocketMgr->Wait ();
