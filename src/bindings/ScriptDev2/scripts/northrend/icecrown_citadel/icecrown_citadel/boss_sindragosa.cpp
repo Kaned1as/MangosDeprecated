@@ -92,7 +92,7 @@ struct MANGOS_DLL_DECL boss_sindragosaAI : public ScriptedAI
         if(!pInstance) return;
         bsw->resetTimers();
         stage = 0;
-        memset(&marked, 0, sizeof(marked));
+        memset(marked, 0, sizeof(Unit*)*5);
 
         m_creature->SetRespawnDelay(7*DAY);
         pMap = m_creature->GetMap();
@@ -186,7 +186,7 @@ struct MANGOS_DLL_DECL boss_sindragosaAI : public ScriptedAI
 
     void IceMark()
     {
-        memset(&marked, 0, sizeof(marked));
+        memset(marked, 0, sizeof(Unit*)*5);
 
         for (uint8 i = 0; i < icecount; i++)
             if (marked[i] = bsw->SelectRandomPlayer(SPELL_FROST_BEACON, false, 200.0f))

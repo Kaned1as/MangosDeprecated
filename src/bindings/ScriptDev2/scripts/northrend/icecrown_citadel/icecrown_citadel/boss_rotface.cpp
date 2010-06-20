@@ -88,7 +88,7 @@ struct MANGOS_DLL_DECL boss_rotfaceAI : public ScriptedAI
         intro = false;
         pet = false;
         nexttick = false;
-        memset(&InfectionTarget, 0, sizeof(InfectionTarget) * MAX_INFECTION_TARGETS);
+        memset(InfectionTarget, 0, sizeof(Unit*) * MAX_INFECTION_TARGETS);
         bsw->resetTimers();
     }
 
