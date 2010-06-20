@@ -919,6 +919,37 @@ class ObjectMgr
             return GossipMenuItemsMapBounds(m_mGossipMenuItemsMap.lower_bound(uiMenuId),m_mGossipMenuItemsMap.upper_bound(uiMenuId));
         }
 
+		uint32 GetMemoryUsage()
+		{
+			uint32 total_mem = 0;
+			total_mem += sizeof(mQuestTemplates);
+			total_mem += sizeof(GossipTextMap);
+			total_mem += sizeof(QuestAreaTriggerMap);
+			total_mem += sizeof(TavernAreaTriggerSet);
+			total_mem += sizeof(GameObjectForQuestSet);
+			total_mem += sizeof(mGroupMap);
+			total_mem += sizeof(mGuildMap);
+			total_mem += sizeof(mArenaTeamMap);
+			total_mem += sizeof(mQuestAreaTriggerMap);
+			total_mem += sizeof(mTavernAreaTriggerSet);
+			total_mem += sizeof(mGameObjectForQuestSet);
+			total_mem += sizeof(mGossipText);
+			total_mem += sizeof(mAreaTriggers);
+			total_mem += sizeof(mAreaTriggerScripts);
+			total_mem += sizeof(mRepOnKill);
+			total_mem += sizeof(m_mGossipMenusMap);
+			total_mem += sizeof(m_mGossipMenuItemsMap);
+			total_mem += sizeof(mPointsOfInterest);
+			total_mem += sizeof(mQuestPOIMap);
+			total_mem += sizeof(mWeatherZoneMap);
+			total_mem += sizeof(m_ReservedNames);
+			total_mem += sizeof(mGraveYardMap);
+			total_mem += sizeof(m_GameTeleMap);
+			total_mem += sizeof(m_scriptNames);
+			total_mem += sizeof(m_ItemRequiredTarget);
+			total_mem += sizeof(m_LocalForIndex);
+			return total_mem;
+		}
     protected:
 
         // first free id for selected id type

@@ -118,8 +118,8 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 	total_mem += (sItemStorage.GetTotalSize() / 1024);
 	total_mem += (sPageTextStore.GetTotalSize() / 1024);
 	total_mem += (sInstanceTemplate.GetTotalSize() / 1024);
-	PSendSysMessage("Total memory use by SQL storages: %u", total_mem);
-
+	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem);
+	PSendSysMessage("sObjectMgr memory usage: %u mb", sObjectMgr.GetMemoryUsage() / 1024 );
     return true;
 }
 
