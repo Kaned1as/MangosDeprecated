@@ -28,37 +28,45 @@ The teleporter appears to be active and stable.
 
 bool GossipHello_ulduar_teleporter(Player *player, Creature *creature)
 {
+
     ScriptedInstance *pInstance = (ScriptedInstance *) creature->GetInstanceData();
+
     if(!pInstance) return true;
 
     player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Expedition Base Camp", GOSSIP_SENDER_MAIN, BASE_CAMP);
-    //if(pInstance->GetData(TYPE_LEVIATHAN_TP))
-    //    player->ADD_GOSSIP_ITEM(0, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
-
-    //leave all we have working
-    //if(pInstance->GetData(TYPE_FLAME_LEVIATHAN) == DONE)
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
-
-    if(pInstance->GetData(TYPE_XT002_TP))
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
-    
+    if(pInstance->GetData(TYPE_LEVIATHAN_TP) == IN_PROGRESS)
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Formation Grounds", GOSSIP_SENDER_MAIN, GROUNDS);
+    };
+    if(pInstance->GetData(TYPE_FLAME_LEVIATHAN) == DONE)
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Colossal Forge", GOSSIP_SENDER_MAIN, FORGE);
+    };
+    if(pInstance->GetData(TYPE_XT002_TP) == IN_PROGRESS)
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Scrapyard", GOSSIP_SENDER_MAIN, SCRAPYARD);
+    };
     if(pInstance->GetData(TYPE_XT002) == DONE)
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
-     
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Antechamber of Ulduar", GOSSIP_SENDER_MAIN, ANTECHAMBER);
+    };
     if(pInstance->GetData(TYPE_KOLOGARN) == DONE)
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
-
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Shattered Walkway", GOSSIP_SENDER_MAIN, WALKWAY);
+    };
     if(pInstance->GetData(TYPE_AURIAYA) == DONE)
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
-
-    if(pInstance->GetData(TYPE_MIMIRON_TP))
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Spark of Imagination", GOSSIP_SENDER_MAIN, SPARK);
-
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Conservatory of Life", GOSSIP_SENDER_MAIN, CONSERVATORY);
+    };
+    if(pInstance->GetData(TYPE_MIMIRON_TP) == IN_PROGRESS)
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Spark of Imagination", GOSSIP_SENDER_MAIN, SPARK);
+    };
     if(pInstance->GetData(TYPE_VEZAX) == DONE)
-        player->ADD_GOSSIP_ITEM(0, "Teleport to the Prison of Yogg-Saron", GOSSIP_SENDER_MAIN, PRISON);
-        
+    {
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, "Teleport to the Prison of Yogg-Saron", GOSSIP_SENDER_MAIN, PRISON);
+    };
     player->SEND_GOSSIP_MENU(DEFAULT_GOSSIP_MESSAGE, creature->GetGUID());
-
     return true;
 }
 

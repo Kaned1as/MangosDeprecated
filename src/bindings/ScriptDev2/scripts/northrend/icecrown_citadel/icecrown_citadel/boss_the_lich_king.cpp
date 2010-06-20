@@ -85,6 +85,8 @@ enum BossSpells
 //Defile
     SPELL_DEFILE                     = 72743,
 
+// Menethil
+    SPELL_REVALL                     = 26687,
 //
     NPC_ICE_SPHERE                   = 36633,
     NPC_DEFILER                      = 38757,
@@ -139,6 +141,8 @@ struct MANGOS_DLL_DECL boss_the_lich_king_iccAI : public ScriptedAI
         stage = 0;
         nextEvent = 0;
         nextPoint = 0;
+        pTirion = NULL;
+        pFrostmourne = NULL;
         movementstarted = false;
         battlestarted = false;
         finalphase = false;
@@ -597,6 +601,7 @@ struct MANGOS_DLL_DECL boss_tirion_iccAI : public ScriptedAI
     {
         if(!pInstance) return;
         movementstarted = false;
+        pMenethil = NULL;
         m_creature->RemoveAurasDueToSpell(SPELL_ICEBLOCK_TRIGGER);
     }
 
@@ -626,7 +631,7 @@ struct MANGOS_DLL_DECL boss_tirion_iccAI : public ScriptedAI
         if (pList.isEmpty()) return;
         for (Map::PlayerList::const_iterator i = pList.begin(); i != pList.end(); ++i)
              if (Player* pPlayer = i->getSource())
-                 if (pPlayer)
+                 if (pPlayer && pPlayer->isAlive() && pPlayer->IsInMap(m_creature))
                      pPlayer->SendMovieStart(FINAL_ARTHAS_MOVIE);
     }
 
@@ -638,9 +643,9 @@ struct MANGOS_DLL_DECL boss_tirion_iccAI : public ScriptedAI
             {
                if (Player* pPlayer = i->getSource())
                {
-                   if (pPlayer && !pPlayer->isAlive())
+                   if (pPlayer && pMenethil && !pPlayer->isAlive() && pPlayer->IsInMap(pMenethil))
                       {
-                          pMenethil->CastSpell(pPlayer, 26687, true);
+                          pMenethil->CastSpell(pPlayer, SPELL_REVALL, true);
                           pPlayer->ResurrectPlayer(100, false);
                        }
                 }
@@ -864,7 +869,6 @@ bool GossipSelect_boss_tirion_icc(Player* pPlayer, Creature* pCreature, uint32 u
         return true;
     } else return false;
 
-    return true;
 };
 
 CreatureAI* GetAI_boss_tirion_icc(Creature* pCreature)

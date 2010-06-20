@@ -1,6 +1,6 @@
 #ifndef __REVISION_H__
 #define __REVISION_H__
- #define REVISION_ID "*"
- #define REVISION_DATE "*"
- #define REVISION_TIME "*"
+ #define REVISION_ID "46c88902972bb11b6935aae02a92c57209b033a3"
+ #define REVISION_DATE "2010-06-19"
+ #define REVISION_TIME "23:06:10"
 #endif // __REVISION_H__
