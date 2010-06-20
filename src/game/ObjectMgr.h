@@ -929,17 +929,17 @@ class ObjectMgr
 				total_mem += sizeof(i->second);
 			// total_mem += sizeof(mGroupMap);
 			for (GroupMap::iterator itr = mGroupMap.begin(); itr != mGroupMap.end(); ++itr)
-				total_mem += sizeof(i->second);
+				total_mem += sizeof(itr->second);
 			// total_mem += sizeof(mGuildMap);
 			for (GuildMap::iterator itr = mGuildMap.begin(); itr != mGuildMap.end(); ++itr)
-				total_mem += sizeof(i->second);
+				total_mem += sizeof(itr->second);
 			//total_mem += sizeof(mArenaTeamMap);
 			for (ArenaTeamMap::iterator itr = mArenaTeamMap.begin(); itr != mArenaTeamMap.end(); ++itr)
-				total_mem += sizeof(i->second);
+				total_mem += sizeof(itr->second);
 			for (CacheVendorItemMap::iterator itr = m_mCacheVendorItemMap.begin(); itr != m_mCacheVendorItemMap.end(); ++itr)
-				total_mem += sizeof(i->second);
+				total_mem += sizeof(itr->second);
 			for (CacheTrainerSpellMap::iterator itr = m_mCacheTrainerSpellMap.begin(); itr != m_mCacheTrainerSpellMap.end(); ++itr)
-				total_mem += sizeof(i->second);
+				total_mem += sizeof(itr->second);
 
 			total_mem += sizeof(GossipTextMap);
 			total_mem += sizeof(QuestAreaTriggerMap);
