@@ -109,17 +109,13 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 	
 	//calculate total memory reserved by all SQL storages
 	uint32 total_mem = 0;
-	total_mem += (sCreatureStorage.GetTotalSize() / 1024);
-	total_mem += (sCreatureDataAddonStorage.GetTotalSize() / 1024);
-	total_mem += (sCreatureModelStorage.GetTotalSize() / 1024);
-	total_mem += (sCreatureInfoAddonStorage.GetTotalSize() / 1024);
-	total_mem += (sEquipmentStorage.GetTotalSize() / 1024);
-	total_mem += (sGOStorage.GetTotalSize() / 1024);
-	total_mem += (sItemStorage.GetTotalSize() / 1024);
-	total_mem += (sPageTextStore.GetTotalSize() / 1024);
-	total_mem += (sInstanceTemplate.GetTotalSize() / 1024);
-	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem);
-	PSendSysMessage("sObjectMgr memory usage: %u mb", sObjectMgr.GetMemoryUsage() / 1024 );
+	total_mem += sCreatureStorage.GetTotalSize() + sCreatureDataAddonStorage.GetTotalSize() +
+					sCreatureModelStorage.GetTotalSize() + sCreatureInfoAddonStorage.GetTotalSize() +
+					sEquipmentStorage.GetTotalSize() + sGOStorage.GetTotalSize() +
+					sItemStorage.GetTotalSize() + sPageTextStore.GetTotalSize() +
+					sInstanceTemplate.GetTotalSize();
+	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem / 1024);
+	PSendSysMessage("sObjectMgr memory usage: %u kb", sObjectMgr.GetMemoryUsage());
     return true;
 }
 

@@ -923,13 +923,29 @@ class ObjectMgr
 		{
 			uint32 total_mem = 0;
 			total_mem += sizeof(mQuestTemplates);
+			for( QuestMap::iterator i = mQuestTemplates.begin( ); i != mQuestTemplates.end( ); ++i )
+				total_mem += sizeof(i->second);
+			for(PetLevelInfoMap::iterator i = petInfo.begin( ); i != petInfo.end( ); ++i )
+				total_mem += sizeof(i->second);
+			// total_mem += sizeof(mGroupMap);
+			for (GroupMap::iterator itr = mGroupMap.begin(); itr != mGroupMap.end(); ++itr)
+				total_mem += sizeof(i->second);
+			// total_mem += sizeof(mGuildMap);
+			for (GuildMap::iterator itr = mGuildMap.begin(); itr != mGuildMap.end(); ++itr)
+				total_mem += sizeof(i->second);
+			//total_mem += sizeof(mArenaTeamMap);
+			for (ArenaTeamMap::iterator itr = mArenaTeamMap.begin(); itr != mArenaTeamMap.end(); ++itr)
+				total_mem += sizeof(i->second);
+			for (CacheVendorItemMap::iterator itr = m_mCacheVendorItemMap.begin(); itr != m_mCacheVendorItemMap.end(); ++itr)
+				total_mem += sizeof(i->second);
+			for (CacheTrainerSpellMap::iterator itr = m_mCacheTrainerSpellMap.begin(); itr != m_mCacheTrainerSpellMap.end(); ++itr)
+				total_mem += sizeof(i->second);
+
 			total_mem += sizeof(GossipTextMap);
 			total_mem += sizeof(QuestAreaTriggerMap);
 			total_mem += sizeof(TavernAreaTriggerSet);
-			total_mem += sizeof(GameObjectForQuestSet);
-			total_mem += sizeof(mGroupMap);
-			total_mem += sizeof(mGuildMap);
-			total_mem += sizeof(mArenaTeamMap);
+			total_mem += sizeof(GameObjectForQuestSet.);
+			
 			total_mem += sizeof(mQuestAreaTriggerMap);
 			total_mem += sizeof(mTavernAreaTriggerSet);
 			total_mem += sizeof(mGameObjectForQuestSet);
