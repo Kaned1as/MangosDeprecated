@@ -86,12 +86,7 @@ DestinationHolder<TRAVELLER>::StartTravel(TRAVELLER &traveller, bool sendMove)
     i_totalTravelTime = traveller.GetTotalTrevelTimeTo(i_destX,i_destY,i_destZ);
     i_timeElapsed = 0;
     if(sendMove)
-    {
-        if (i_totalTravelTime)
-            traveller.MoveTo(i_destX, i_destY, i_destZ, i_totalTravelTime);
-        else
-            traveller.Stop();
-    }
+        traveller.MoveTo(i_destX, i_destY, i_destZ, i_totalTravelTime);
     return i_totalTravelTime;
 }
 

@@ -61,6 +61,7 @@ class DynamicObject : public WorldObject
 
         GridReference<DynamicObject> &GetGridRef() { return m_gridRef; }
 
+        bool isActiveObject() const { return m_isActiveObject; }
     protected:
         uint32 m_spellId;
         SpellEffectIndex m_effIndex;
@@ -69,5 +70,6 @@ class DynamicObject : public WorldObject
         AffectedSet m_affected;
     private:
         GridReference<DynamicObject> m_gridRef;
+        bool m_isActiveObject;
 };
 #endif

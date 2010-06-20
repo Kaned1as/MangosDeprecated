@@ -478,7 +478,6 @@ struct MANGOS_DLL_DECL mob_rimefangAI : public ScriptedAI
     void Reset()
     {
         if(!pInstance) return;
-        pBrother = NULL;
         pInstance->SetData(TYPE_SINDRAGOSA, NOT_STARTED);
         bsw->resetTimers();
         m_creature->SetRespawnDelay(DAY);
@@ -541,7 +540,6 @@ struct MANGOS_DLL_DECL mob_spinestalkerAI : public ScriptedAI
     void Reset()
     {
         if(!pInstance) return;
-        pBrother = NULL;
         pInstance->SetData(TYPE_SINDRAGOSA, NOT_STARTED);
         bsw->resetTimers();
         m_creature->SetRespawnDelay(DAY);

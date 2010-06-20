@@ -39,9 +39,6 @@ void Camera::SetView(WorldObject *obj)
 {
     ASSERT(obj);
 
-    if (m_source == obj)
-        return;
-
     if (!m_owner.IsInMap(obj))
     {
         sLog.outError("Camera::SetView, viewpoint is not in map with camera's owner");
@@ -54,16 +51,8 @@ void Camera::SetView(WorldObject *obj)
         return;
     }
 
-    // detach and deregister from active objects if there are no more reasons to be active
     m_source->GetViewPoint().Detach(this);
-    if (!m_source->isActiveObject())
-        m_source->GetMap()->RemoveFromActive(m_source);
-
     m_source = obj;
-
-    if (!m_source->isActiveObject())
-        m_source->GetMap()->AddToActive(m_source);
-
     m_source->GetViewPoint().Attach(this);
 
     UpdateForCurrentViewPoint();
@@ -77,7 +66,11 @@ void Camera::Event_ViewPointVisibilityChanged()
 
 void Camera::ResetView()
 {
-    SetView(&m_owner);
+    m_source->GetViewPoint().Detach(this);
+    m_source = &m_owner;
+    m_source->GetViewPoint().Attach(this);
+
+    UpdateForCurrentViewPoint();
 }
 
 void Camera::Event_AddedToWorld()

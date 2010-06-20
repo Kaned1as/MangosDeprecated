@@ -332,7 +332,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     if (mover->GetTypeId()==TYPEID_PLAYER)
     {
         // not have spell in spellbook or spell passive and not casted by client
-        if (!((Player*)mover)->HasActiveSpell (spellId) || IsPassiveSpell(spellInfo))
+        if (!((Player*)mover)->HasActiveSpell (spellId) || IsPassiveSpell(spellId) )
         {
             sLog.outError("World: Player %u casts spell %u which he shouldn't have", mover->GetGUIDLow(), spellId);
             //cheater? kick? ban?
@@ -343,7 +343,7 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     else
     {
         // not have spell in spellbook or spell passive and not casted by client
-        if (!((Creature*)mover)->HasSpell(spellId) || IsPassiveSpell(spellInfo))
+        if (!((Creature*)mover)->HasSpell(spellId) || IsPassiveSpell(spellId) )
         {
             //cheater? kick? ban?
             recvPacket.rpos(recvPacket.wpos());                 // prevent spam at ignore packet
@@ -376,11 +376,13 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     }
 
     // auto-selection buff level base at target level (in spellInfo)
-    if (Unit* target = targets.getUnitTarget())
+    if (targets.getUnitTarget())
     {
         _player->m_lastSpellTargetGUID = targets.getUnitTarget()->GetGUID();
+        SpellEntry const *actualSpellInfo = sSpellMgr.SelectAuraRankForPlayerLevel(spellInfo,targets.getUnitTarget()->getLevel());
+
         // if rank not found then function return NULL but in explicit cast case original spell can be casted and later failed with appropriate error message
-        if (SpellEntry const *actualSpellInfo = sSpellMgr.SelectAuraRankForLevel(spellInfo, target->getLevel()))
+        if(actualSpellInfo)
             spellInfo = actualSpellInfo;
     }
     else
@@ -430,9 +432,6 @@ void WorldSession::HandleCancelAuraOpcode( WorldPacket& recvPacket)
         return;
 
     if (spellInfo->Attributes & SPELL_ATTR_CANT_CANCEL)
-        return;
-
-    if (IsPassiveSpell(spellInfo))
         return;
 
     if (!IsPositiveSpell(spellId))

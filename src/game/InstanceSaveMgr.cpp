@@ -30,6 +30,7 @@
 #include "InstanceSaveMgr.h"
 #include "Timer.h"
 #include "GridNotifiersImpl.h"
+#include "Config/ConfigEnv.h"
 #include "Transports.h"
 #include "ObjectMgr.h"
 #include "World.h"

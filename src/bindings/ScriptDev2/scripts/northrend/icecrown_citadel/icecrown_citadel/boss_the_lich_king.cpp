@@ -141,8 +141,6 @@ struct MANGOS_DLL_DECL boss_the_lich_king_iccAI : public ScriptedAI
         stage = 0;
         nextEvent = 0;
         nextPoint = 0;
-        pTirion = NULL;
-        pFrostmourne = NULL;
         movementstarted = false;
         battlestarted = false;
         finalphase = false;
@@ -601,7 +599,6 @@ struct MANGOS_DLL_DECL boss_tirion_iccAI : public ScriptedAI
     {
         if(!pInstance) return;
         movementstarted = false;
-        pMenethil = NULL;
         m_creature->RemoveAurasDueToSpell(SPELL_ICEBLOCK_TRIGGER);
     }
 

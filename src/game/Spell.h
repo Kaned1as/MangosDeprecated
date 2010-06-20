@@ -23,14 +23,11 @@
 #include "SharedDefines.h"
 #include "DBCEnums.h"
 #include "ObjectGuid.h"
-#include "LootMgr.h"
-#include "Unit.h"
-#include "Player.h"
 
 class WorldSession;
-class WorldPacket;
+class Unit;
 class DynamicObj;
-class Item;
+class Player;
 class GameObject;
 class Group;
 class Aura;

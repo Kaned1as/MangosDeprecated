@@ -75,8 +75,6 @@ struct MANGOS_DLL_DECL boss_valanar_iccAI : public ScriptedAI
     void Reset() 
     {
         if(!m_pInstance) return;
-        pBrother1 = NULL;
-        pBrother2 = NULL;
         m_pInstance->SetData(DATA_BLOOD_COUNCIL_HEALTH, m_creature->GetMaxHealth()*3);
         stage = 0;
         intro = false;
@@ -210,8 +208,6 @@ struct MANGOS_DLL_DECL boss_taldaram_iccAI : public ScriptedAI
 
     void Reset() {
         if(!m_pInstance) return;
-        pBrother1 = NULL;
-        pBrother2 = NULL;
         m_pInstance->SetData(DATA_BLOOD_COUNCIL_HEALTH, m_creature->GetMaxHealth()*3);
         stage = 0;
         bsw->resetTimers();
@@ -328,8 +324,6 @@ struct MANGOS_DLL_DECL boss_keleseth_iccAI : public ScriptedAI
 
     void Reset() {
         if(!m_pInstance) return;
-        pBrother1 = NULL;
-        pBrother2 = NULL;
         m_pInstance->SetData(DATA_BLOOD_COUNCIL_HEALTH, m_creature->GetMaxHealth()*3);
         stage = 0;
         bsw->resetTimers();

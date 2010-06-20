@@ -37,17 +37,12 @@ void TargetedMovementGeneratorMedium<T,D>::_setTargetLocation(T &owner)
     if (owner.hasUnitState(UNIT_STAT_NOT_MOVE))
         return;
 
-    float x, y, z;
-
     // prevent redundant micro-movement for pets, other followers.
     if (i_offset && i_target->IsWithinDistInMap(&owner,2*i_offset))
-    {
-        if (i_destinationHolder.HasDestination())
-            return;
+        return;
 
-        owner.GetPosition(x, y, z);
-    }
-    else if (!i_offset)
+    float x, y, z;
+    if (!i_offset)
     {
         // to nearest contact position
         i_target->GetContactPoint( &owner, x, y, z );
