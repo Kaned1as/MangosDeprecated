@@ -17118,6 +17118,8 @@ void Player::_SaveMail()
 
 void Player::_SaveQuestStatus()
 {
+
+    sLog.outError("Player %s", GetName());
     // we don't need transactions here.
     for( QuestStatusMap::iterator i = mQuestStatus.begin( ); i != mQuestStatus.end( ); ++i )
     {
