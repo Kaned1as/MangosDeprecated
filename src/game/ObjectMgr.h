@@ -944,7 +944,7 @@ class ObjectMgr
 			total_mem += sizeof(GossipTextMap);
 			total_mem += sizeof(QuestAreaTriggerMap);
 			total_mem += sizeof(TavernAreaTriggerSet);
-			total_mem += sizeof(GameObjectForQuestSet.);
+			total_mem += sizeof(GameObjectForQuestSet);
 			
 			total_mem += sizeof(mQuestAreaTriggerMap);
 			total_mem += sizeof(mTavernAreaTriggerSet);
