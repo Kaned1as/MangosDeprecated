@@ -330,7 +330,7 @@ uint8 BossSpellWorker::_auraCount(uint8 m_uiSpellIdx, Unit* pTarget, SpellEffect
 
     SpellTable* pSpell = &m_BossSpell[m_uiSpellIdx];
 
-    if (pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], index)->GetStackAmount() > 0)
+    if (pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], index) && pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], index)->GetStackAmount() > 0)
         return pTarget->GetAura(pSpell->m_uiSpellEntry[currentDifficulty], index)->GetStackAmount();
         else return 0;
 
