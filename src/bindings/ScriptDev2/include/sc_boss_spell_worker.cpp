@@ -326,7 +326,8 @@ bool BossSpellWorker::_hasAura(uint8 m_uiSpellIdx, Unit* pTarget)
 
 uint8 BossSpellWorker::_auraCount(uint8 m_uiSpellIdx, Unit* pTarget, SpellEffectIndex index)
 {
-    if (!_hasAura(m_uiSpellIdx,pTarget)) return 0;
+    if (!_hasAura(m_uiSpellIdx,pTarget)) 
+        return 0;
 
     SpellTable* pSpell = &m_BossSpell[m_uiSpellIdx];
 
