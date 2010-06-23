@@ -1368,8 +1368,6 @@ void World::DetectDBCLang()
 /// Update the World !
 void World::Update(uint32 diff)
 {
-    m_updateTime = uint32(diff);
-
     ///- Update the different timers
     for(int i = 0; i < WUPDATE_COUNT; ++i)
     {
