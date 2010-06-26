@@ -195,7 +195,12 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r |c0000FF00Вниманию всех сотрудников технической поддержки! Обнаружен читер, ник: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, причина: " << Reason << ". Требуется проверка/наблюдение. Возможен факт ложного срабатывания. Удачной охоты.|r";
+
+            if (isRaid && Reason == "Fly hack")
+                anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r |c0000FF00Вниманию всех сотрудников технической поддержки! Возможно обнаружен читер, ник: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, причина: " << Reason << ". Требуется проверка/наблюдение. ВНИМАНИЕ! СРАБАТЫВАНИЕ В РЕЙДЕ с причиной FlyHack - игрок перенесен <домой> и кикнут, большая вероятность ошибки!! |r";
+            else
+                anticheatmessage << "|cffffcc00[Сообщение античита]:|cff00ff00|r |c0000FF00Вниманию всех сотрудников технической поддержки! Обнаружен читер, ник: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, причина: " << Reason << ". Требуется проверка/наблюдение. Возможен факт ложного срабатывания. Удачной охоты.|r";
+
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
         }
 
