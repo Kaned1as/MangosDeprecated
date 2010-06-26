@@ -6741,6 +6741,18 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
                     target = this;
                     break;
                 }
+                // Ranger: Item - Icecrown 25 Heroic Dagger Proc
+                case 71892:
+                {
+                    switch (getPowerType())
+                    {
+                        case POWER_MANA:   triggered_spell_id = 71888; break;
+                        case POWER_RAGE:   triggered_spell_id = 71886; break;
+                        case POWER_ENERGY: triggered_spell_id = 71887; break;
+                        default:
+                            return false;
+                    }
+                }
             }
             break;
         }
