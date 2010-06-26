@@ -6461,6 +6461,38 @@ void Spell::EffectScriptEffect(SpellEffectIndex eff_idx)
                     m_caster->CastSpell(m_caster, spells[random], true);
                     return;
                 }
+                // Ranger: Stoneclaw Totem & Glyph - patch by laise: Stoneclaw Totem absorb 
+                case 55278:
+                case 55328:
+                case 55329:
+                case 55330:
+                case 55332:
+                case 55333:
+                case 55335:
+                case 58589:
+                case 58590:
+                case 58591:
+                {
+                    if(!unitTarget)
+                        return;
+
+                    for(int slot = 0;  slot < MAX_TOTEM_SLOT; ++slot)
+                    {
+                        if(Totem* totem = unitTarget->GetTotem(TotemSlot(slot)))
+                            totem->CastCustomSpell(totem, 55277, &damage, NULL, NULL, true);
+                        else
+                            continue;
+                    }
+                    
+                    // Glyph of Stoneclaw Totem
+                    if (Aura *aur = unitTarget->GetAura(63298, EFFECT_INDEX_0))
+                    {
+                        int32 totalAbsorb = aur->GetModifier()->m_amount * damage;
+                        if (totalAbsorb)
+                            unitTarget->CastCustomSpell(unitTarget, 55277, &totalAbsorb, NULL, NULL, true);
+                    }
+                    return;
+                }
             }
             break;
         }

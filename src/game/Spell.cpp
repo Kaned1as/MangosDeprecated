@@ -2033,6 +2033,12 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
         }
         case TARGET_DUELVSPLAYER:
         {
+            if (m_spellInfo->SpellFamilyName == SPELLFAMILY_SHAMAN && m_spellInfo->SpellIconID == 276) // Ranger: Stoneclaw Totem & Glyph - patch by laise: Stoneclaw Totem absorb has wrong target
+            {
+                targetUnitMap.push_back(m_caster);
+                break;
+            }
+
             Unit *target = m_targets.getUnitTarget();
             if(target)
             {
@@ -2779,6 +2785,22 @@ void Spell::cast(bool skipCheck)
                 AddTriggeredSpell(65116);                   // Stoneskin - armor 10% for 8 sec
             else if(m_spellInfo->Id == 71904)               // Chaos Bane strength buff
                 AddTriggeredSpell(73422);
+
+            // Ranger: Stoneclaw Totem & Glyph - patch by laise
+            switch(m_spellInfo->Id)
+            {
+                case 5728: AddTriggeredSpell(55328); break;// Stoneclaw Totem, rank 1
+                case 6397: AddTriggeredSpell(55329); break;// Stoneclaw Totem, rank 2
+                case 6398: AddTriggeredSpell(55330); break;// Stoneclaw Totem, rank 3
+                case 6399: AddTriggeredSpell(55332); break;// Stoneclaw Totem, rank 4
+                case 10425: AddTriggeredSpell(55333); break;// Stoneclaw Totem, rank 5
+                case 10426: AddTriggeredSpell(55335); break;// Stoneclaw Totem, rank 6
+                case 25513: AddTriggeredSpell(55278); break;// Stoneclaw Totem, rank 7
+                case 58583: AddTriggeredSpell(58589); break;// Stoneclaw Totem, rank 8
+                case 58584: AddTriggeredSpell(58590); break;// Stoneclaw Totem, rank 9
+                case 58585: AddTriggeredSpell(58591); break;// Stoneclaw Totem, rank 10
+                default:break;
+            }
             break;
         }
         case SPELLFAMILY_MAGE:
