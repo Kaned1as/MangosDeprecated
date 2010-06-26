@@ -1750,6 +1750,9 @@ void Unit::DealMeleeDamage(CalcDamageInfo *damageInfo, bool durabilityLoss)
                           break;
                       }  
                    }
+
+                   // Ranger - Thorns spell power coeff: 3,3% from www.wowwiki.com/Spell_power_coefficient
+                   damage += uint32(pVictim->SpellBaseDamageBonusDone(GetSpellSchoolMask(i_spellProto)) * 0.033f);
                }
 
                //Calculate absorb resist ??? no data in opcode for this possibly unable to absorb or resist?
