@@ -2950,7 +2950,7 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
                         // prevent double apply bonuses
                         if (target->GetTypeId() != TYPEID_PLAYER || !((Player*)target)->GetSession()->PlayerLoading())
                         {
-                            m_modifier.m_amount = caster->SpellHealingBonusDone(target, GetSpellProto(), m_modifier.m_amount / m_stackAmount, SPELL_DIRECT_DAMAGE);
+                            m_modifier.m_amount = caster->SpellHealingBonusDone(target, GetSpellProto(), m_modifier.m_amount / m_stackAmount, SPELL_DIRECT_DAMAGE) * m_stackAmount;
                             m_modifier.m_amount = target->SpellHealingBonusTaken(caster, GetSpellProto(), m_modifier.m_amount, SPELL_DIRECT_DAMAGE);
                         }
                     }
