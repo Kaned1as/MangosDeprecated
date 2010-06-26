@@ -2563,6 +2563,9 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                         // Glyph of Healing Stream Totem
                         if (Aura *dummy = owner->GetDummyAura(55456))
                             damage += dummy->GetModifier()->m_amount * damage / 100;
+
+                        // Ranger: Healing Stream Totem spell power coeff 4.45% - www.wowwiki.com/Spell_power_coefficient
+                        damage += int32(owner->SpellBaseHealingBonusDone(GetSpellSchoolMask(m_spellInfo)) * 0.0445f);
                     }
                     m_caster->CastCustomSpell(unitTarget, 52042, &damage, NULL, NULL, true, 0, 0, m_originalCasterGUID);
                 }
