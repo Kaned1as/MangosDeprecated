@@ -1,4 +1,4 @@
-ï»¿/*
+/*
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -176,7 +176,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         return true;
     }*/
 
-    //Ranger: autoban system - helper system
+    // Ranger: autoban system - helper system
     if (GetPlayer())
     {
         bool isRaid = false;
@@ -195,7 +195,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð°Ð½Ñ‚Ð¸Ñ‡Ð¸Ñ‚Ð°]:|cff00ff00|r |c0000FF00Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸ÑŽ Ð²ÑÐµÑ… ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¾Ð² Ñ‚ÐµÑ…Ð½Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¸! ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ñ‡Ð¸Ñ‚ÐµÑ€, Ð½Ð¸Ðº: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°: " << Reason << ". Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°/Ð½Ð°Ð±Ð»ÑŽÐ´ÐµÐ½Ð¸Ðµ. Ð’Ð¾Ð·Ð¼Ð¾Ð¶ÐµÐ½ Ñ„Ð°ÐºÑ‚ Ð»Ð¾Ð¶Ð½Ð¾Ð³Ð¾ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ. Ð£Ð´Ð°Ñ‡Ð½Ð¾Ð¹ Ð¾Ñ…Ð¾Ñ‚Ñ‹.|r";
+            anticheatmessage << "|cffffcc00[Ñîîáùåíèå àíòè÷èòà]:|cff00ff00|r |c0000FF00Âíèìàíèþ âñåõ ñîòðóäíèêîâ òåõíè÷åñêîé ïîääåðæêè! Îáíàðóæåí ÷èòåð, íèê: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c0000FF00, ïðè÷èíà: " << Reason << ". Òðåáóåòñÿ ïðîâåðêà/íàáëþäåíèå. Âîçìîæåí ôàêò ëîæíîãî ñðàáàòûâàíèÿ. Óäà÷íîé îõîòû.|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
         }
 
@@ -203,7 +203,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð°Ð½Ñ‚Ð¸Ñ‡Ð¸Ñ‚Ð°]:|cff00ff00|r |c00F074FEÐ’Ð½Ð¸Ð¼Ð°Ð½Ð¸ÑŽ Ð²ÑÐµÑ… ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¾Ð² Ñ‚ÐµÑ…Ð½Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¸! ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ñ‡Ð¸Ñ‚ÐµÑ€, Ð½Ð¸Ðº: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c00F074FE, Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°: " << Reason << ". Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°/Ð½Ð°Ð±Ð»ÑŽÐ´ÐµÐ½Ð¸Ðµ. Ð’ÐÐ˜ÐœÐÐÐ˜Ð•! Ð’Ñ‹ÑÐ¾ÐºÐ°Ñ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð»Ð¾Ð¶Ð½Ð¾Ð³Ð¾ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ!|r";
+            anticheatmessage << "|cffffcc00[Ñîîáùåíèå àíòè÷èòà]:|cff00ff00|r |c00F074FEÂíèìàíèþ âñåõ ñîòðóäíèêîâ òåõíè÷åñêîé ïîääåðæêè! Îáíàðóæåí ÷èòåð, íèê: |r" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << "|c00F074FE, ïðè÷èíà: " << Reason << ". Òðåáóåòñÿ ïðîâåðêà/íàáëþäåíèå. ÂÍÈÌÀÍÈÅ! Âûñîêàÿ âåðîÿòíîñòü ëîæíîãî ñðàáàòûâàíèÿ!|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
             return true;
         }
@@ -212,7 +212,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
         {
             GetPlayer()->Anti__SetLastTeleTime(::time(NULL));
             std::stringstream anticheatmessage;
-            anticheatmessage << "|cffffcc00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ Ð°Ð½Ñ‚Ð¸Ñ‡Ð¸Ñ‚Ð°]:|cff00ff00|r Ð’Ð½Ð¸Ð¼Ð°Ð½Ð¸ÑŽ Ð²ÑÐµÑ… ÑÐ¾Ñ‚Ñ€ÑƒÐ´Ð½Ð¸ÐºÐ¾Ð² Ñ‚ÐµÑ…Ð½Ð¸Ñ‡ÐµÑÐºÐ¾Ð¹ Ð¿Ð¾Ð´Ð´ÐµÑ€Ð¶ÐºÐ¸! ÐžÐ±Ð½Ð°Ñ€ÑƒÐ¶ÐµÐ½ Ñ‡Ð¸Ñ‚ÐµÑ€, Ð½Ð¸Ðº: " << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ", Ð¿Ñ€Ð¸Ñ‡Ð¸Ð½Ð°: " << Reason << ". Ð¢Ñ€ÐµÐ±ÑƒÐµÑ‚ÑÑ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ°/Ð½Ð°Ð±Ð»ÑŽÐ´ÐµÐ½Ð¸Ðµ. |cffff0000Ð’ÐÐ˜ÐœÐÐÐ˜Ð•! ÐžÑ‡ÐµÐ½ÑŒ Ð²Ñ‹ÑÐ¾ÐºÐ°Ñ Ð²ÐµÑ€Ð¾ÑÑ‚Ð½Ð¾ÑÑ‚ÑŒ Ð»Ð¾Ð¶Ð½Ð¾Ð³Ð¾ ÑÑ€Ð°Ð±Ð°Ñ‚Ñ‹Ð²Ð°Ð½Ð¸Ñ!|r";
+            anticheatmessage << "|cffffcc00[Ñîîáùåíèå àíòè÷èòà]:|cff00ff00|r Âíèìàíèþ âñåõ ñîòðóäíèêîâ òåõíè÷åñêîé ïîääåðæêè! Îáíàðóæåí ÷èòåð, íèê: " << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ", ïðè÷èíà: " << Reason << ". Òðåáóåòñÿ ïðîâåðêà/íàáëþäåíèå. |cffff0000ÂÍÈÌÀÍÈÅ! Î÷åíü âûñîêàÿ âåðîÿòíîñòü ëîæíîãî ñðàáàòûâàíèÿ!|r";
             ChatHandler(GetPlayer()).SendGMSysMessage(anticheatmessage.str().c_str(), SEC_GAMEMASTER);
             return true;
         }
