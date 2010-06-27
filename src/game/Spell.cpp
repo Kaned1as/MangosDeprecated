@@ -2657,6 +2657,9 @@ void Spell::prepare(SpellCastTargets const* targets, Aura* triggeredByAura)
 
         // will show cast bar
         SendSpellStart();
+
+        if(m_caster->GetTypeId() == TYPEID_PLAYER)
+            ((Player*)m_caster)->AddGlobalCooldown(m_spellInfo,this);
     }
     // execute triggered without cast time explicitly in call point
     else if(m_timer == 0)
@@ -2696,6 +2699,9 @@ void Spell::cancel()
             SendChannelUpdate(0);
             SendInterrupted(0);
             SendCastResult(SPELL_FAILED_INTERRUPTED);
+
+            if(m_caster->GetTypeId() == TYPEID_PLAYER)
+                ((Player*)m_caster)->RemoveGlobalCooldown(m_spellInfo);
         } break;
 
         default:
