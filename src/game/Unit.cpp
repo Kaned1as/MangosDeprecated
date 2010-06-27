@@ -4185,7 +4185,8 @@ bool Unit::RemoveNoStackAurasDueToAura(Aura *Aur)
             continue;
         }
 
-        if(GetSpellDuration(spellProto) > 300000 && GetSpellDuration(i_spellProto) > 300000 && sSpellMgr.IsSameEffectSpell(spellId, i_spellId))
+        if(((GetSpellDuration(spellProto) > 120000 && GetSpellDuration(i_spellProto) > 120000) || (Aur->IsAreaAura() && (*i).second->IsAreaAura()))
+            && sSpellMgr.IsSameEffectSpell(spellId, i_spellId))
         {
             // Its a parent aura (create this aura in ApplyModifier)
             if ((*i).second->IsInUse())
