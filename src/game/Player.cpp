@@ -22324,7 +22324,12 @@ void Player::AddGlobalCooldown(SpellEntry const *spellInfo, Spell const *spell)
     else if (spell->IsRangedSpell() && !spell->IsAutoRepeat())
         cdTime *= m_modAttackSpeedPct[RANGED_ATTACK];
 
-    m_globalCooldowns[spellInfo->StartRecoveryCategory] = ((cdTime<1000 || cdTime>2000) ? 1000 : cdTime);
+    if (cdTime > 1500.0f)
+        cdTime = 1500.0f;
+
+    ApplySpellMod(spellInfo->Id, SPELLMOD_CASTING_TIME_OLD, cdTime, spell);
+    if (cdTime > 0)
+        m_globalCooldowns[spellInfo->StartRecoveryCategory] = uint32(cdTime);
 }
 
 bool Player::HasGlobalCooldown(SpellEntry const *spellInfo) const

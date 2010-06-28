@@ -322,9 +322,6 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
 
     SpellEntry const *spellInfo = sSpellStore.LookupEntry(spellId );
 
-    if(_player->HasGlobalCooldown(spellInfo))
-        return;
-
     if(!spellInfo)
     {
         sLog.outError("WORLD: unknown spell id %u", spellId);
@@ -394,6 +391,12 @@ void WorldSession::HandleCastSpellOpcode(WorldPacket& recvPacket)
     Spell *spell = new Spell(mover, spellInfo, false);
     spell->m_cast_count = cast_count;                       // set count of casts
 
+    if(_player->HasGlobalCooldown(spellInfo))
+    {
+        spell->SendCastResult(SPELL_FAILED_SPELL_IN_PROGRESS);
+        delete spell;
+        return;
+    }
     //statistics counting
     uint32 diff_time = getMSTime();
     spell->prepare(&targets); //original line
