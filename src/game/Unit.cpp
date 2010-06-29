@@ -9422,6 +9422,13 @@ uint32 Unit::SpellDamageBonusDone(Unit *pVictim, SpellEntry const *spellProto, u
         }
         case SPELLFAMILY_WARLOCK:
 
+            // Drain Soul
+            if (spellProto->SpellFamilyFlags & UI64LIT(0x0000000000004000))  
+            {
+                if (pVictim->GetHealth() * 100 / pVictim->GetMaxHealth() <= 25)       
+                    DoneTotalMod *= 4;
+            }
+
             //Ranger: Fire and Brimstone: Chaos Bolt and Incinerate damage bonus
             if (spellProto->SpellFamilyFlags & UI64LIT(0x0002004000000000) && pVictim->GetAura(SPELL_AURA_PERIODIC_DAMAGE, SPELLFAMILY_WARLOCK, UI64LIT(0x00000000000004), 0, GetGUID()))
             {
