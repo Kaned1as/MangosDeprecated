@@ -135,6 +135,7 @@ struct MANGOS_DLL_DECL boss_volazjAI : public ScriptedAI
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
+        m_pLastShiverTarget = NULL;
         Reset();
     }
 
