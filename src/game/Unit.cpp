@@ -5662,9 +5662,13 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
 
             // Arcane Potency
             if (dummySpell->SpellIconID == 2120)
-            {
+            {		
                 if(!procSpell)
                     return false;
+
+		//megai2: only on pom and clearcast
+		if ((procSpell->Id != 12536) && (procSpell->Id != 12043))
+		    return false;
 
                 target = this;
                 switch (dummySpell->Id)
