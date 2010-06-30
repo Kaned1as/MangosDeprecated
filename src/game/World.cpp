@@ -95,6 +95,7 @@ World::World()
     m_NextDailyQuestReset = 0;
     m_NextWeeklyQuestReset = 0;
     m_scheduledScripts = 0;
+    HammerTime = 0;
 
     m_defaultDbcLocale = LOCALE_enUS;
     m_availableDbcLocaleMask = 0;
@@ -1389,6 +1390,14 @@ void World::Update(uint32 diff)
     /// Handle weekly quests reset time
     if (m_gameTime > m_NextWeeklyQuestReset)
         ResetWeeklyQuests();
+
+    time_t curTime = time(NULL);
+    tm localTm = *localtime(&curTime);
+    if(!HammerTime && localTm.tm_min == 0 && localTm.tm_hour == 18)
+        HammerTime = m_gameTime + 600000;
+
+    if(m_gameTime > HammerTime)
+        HammerTime = 0;
 
     /// <ul><li> Handle auctions when the timer has passed
     if (m_timers[WUPDATE_AUCTIONS].Passed())

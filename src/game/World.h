@@ -474,6 +474,7 @@ class World
 
         //player Queue
         typedef std::list<WorldSession*> Queue;
+        uint32 HammerTime;
         void AddQueuedPlayer(WorldSession*);
         bool RemoveQueuedPlayer(WorldSession* session);
         int32 GetQueuePos(WorldSession*);
