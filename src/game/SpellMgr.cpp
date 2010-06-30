@@ -758,6 +758,7 @@ bool IsPositiveEffect(uint32 spellId, SpellEffectIndex effIndex)
                     // some spells negative
                     switch(spellproto->Id)
                     {
+                        case 118: case 12824: case 12825: case 61305: case 28272: case 61721: case 61780: case 28271: //Mage polymorphs
                         case 36897:                         // Transporter Malfunction (race mutation to horde)
                         case 36899:                         // Transporter Malfunction (race mutation to alliance)
                             return false;
