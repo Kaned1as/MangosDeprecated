@@ -823,6 +823,18 @@ void Spell::AddUnitTarget(Unit* pVictim, SpellEffectIndex effIndex)
     // Calculate hit result
     target.missCondition = m_caster->SpellHitResult(pVictim, m_spellInfo, m_canReflect);
 
+    //megai2: hackfix for Judgements ** (isJudgement) && !(missCondIsPossible)
+    if (((m_spellInfo->SpellFamilyFlags & UI64LIT(0x00000820180400)) && (m_spellInfo->AttributesEx3 & 0x200) && (m_spellInfo->SpellIconID != 237))
+       && !(((target.missCondition >= SPELL_MISS_EVADE) && (target.missCondition <= SPELL_MISS_REFLECT)) && (target.missCondition != SPELL_MISS_DEFLECT)))           
+    {	
+	//megai2: recalc result
+	SpellMissInfo jMissInfo = m_caster->MeleeSpellHitResult(pVictim, m_spellInfo);
+    	if (jMissInfo > SPELL_MISS_MISS)
+	    target.missCondition = SPELL_MISS_NONE;
+	else
+	    target.missCondition = jMissInfo;
+    }
+
     // Spell have speed - need calculate incoming time
     if (m_spellInfo->speed > 0.0f)
     {
