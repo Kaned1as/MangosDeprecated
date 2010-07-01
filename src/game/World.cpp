@@ -1394,7 +1394,7 @@ void World::Update(uint32 diff)
     time_t curTime = time(NULL);
     tm localTm = *localtime(&curTime);
     if(!HammerTime && localTm.tm_min == 0 && localTm.tm_hour == 18)
-        HammerTime = m_gameTime + 600000;
+        HammerTime = m_gameTime + 10 * MINUTE;
 
     if(m_gameTime > HammerTime)
         HammerTime = 0;
