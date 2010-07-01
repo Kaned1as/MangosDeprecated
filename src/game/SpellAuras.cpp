@@ -5114,7 +5114,7 @@ void Aura::HandlePeriodicHeal(bool apply, bool /*Real*/)
             m_modifier.m_amount += ap > holy ? ap : holy;
         }
 
-        //m_modifier.m_amount = caster->SpellHealingBonusDone(target, GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
+        m_modifier.m_amount = caster->SpellHealingBonusDone(target, GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
     }
 }
 
@@ -5316,6 +5316,18 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 break;
         }
 
+        if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
+        {
+            // SpellDamageBonusDone for magic spells
+            if(spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
+                m_modifier.m_amount = caster->SpellDamageBonusDone(target, GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
+            // MeleeDamagebonusDone for weapon based spells
+            else
+            {
+                WeaponAttackType attackType = GetWeaponAttackType(GetSpellProto());
+                m_modifier.m_amount = caster->MeleeDamageBonusDone(target, m_modifier.m_amount, attackType, GetSpellProto(), DOT, GetStackAmount());
+            }
+        }
     }
     // remove time effects
     else
@@ -5348,7 +5360,7 @@ void Aura::HandlePeriodicLeech(bool apply, bool /*Real*/)
         if (!caster)
             return;
 
-        //m_modifier.m_amount = caster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
+        m_modifier.m_amount = caster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
     }
 }
 
@@ -5374,7 +5386,7 @@ void Aura::HandlePeriodicHealthFunnel(bool apply, bool /*Real*/)
         if (!caster)
             return;
 
-        //m_modifier.m_amount = caster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
+        m_modifier.m_amount = caster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), m_modifier.m_amount, DOT, GetStackAmount());
     }
 }
 
@@ -7469,18 +7481,7 @@ void Aura::PeriodicTick()
             uint32 pdamage;
 
             if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
-	    {
-                // SpellDamageBonusDone for magic spells
-                if(spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
-                    amount = pCaster->SpellDamageBonusDone(target, GetSpellProto(), amount, DOT, GetStackAmount());
-                // MeleeDamagebonusDone for weapon based spells
-                else
-                {
-                    WeaponAttackType attackType = GetWeaponAttackType(GetSpellProto());
-                    amount = pCaster->MeleeDamageBonusDone(target, amount, attackType, GetSpellProto(), DOT, GetStackAmount());
-                }               
                 pdamage = amount;
-            }
             else
                 pdamage = uint32(target->GetMaxHealth()*amount/100);
 
@@ -7597,8 +7598,6 @@ void Aura::PeriodicTick()
 
             uint32 pdamage = m_modifier.m_amount > 0 ? m_modifier.m_amount : 0;
 
-            pdamage = pCaster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), pdamage, DOT, GetStackAmount());
-
             //Calculate armor mitigation if it is a physical spell
             if (GetSpellSchoolMask(spellProto) & SPELL_SCHOOL_MASK_NORMAL)
             {
@@ -7687,7 +7686,6 @@ void Aura::PeriodicTick()
                 pdamage = uint32(target->GetMaxHealth() * amount / 100);
             else
             {
-                amount = pCaster->SpellHealingBonusDone(target, GetSpellProto(), amount, DOT, GetStackAmount());
                 pdamage = amount;
 
                 // Wild Growth (1/7 - 6 + 2*ramainTicks) %
