@@ -1577,6 +1577,8 @@ void Aura::HandleAddModifier(bool apply, bool Real)
             case 54741:                                     // Firestarter
             case 57761:                                     // Fireball!
             case 64823:                                     // Elune's Wrath (Balance druid t8 set
+	    case 57529:                                     // Arcane Potency r1
+            case 57531:	                                    // Arcane Potency r2
                 SetAuraCharges(1);
                 break;
         }
