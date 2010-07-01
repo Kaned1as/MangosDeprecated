@@ -9212,7 +9212,39 @@ int32 Unit::SpellBonusWithCoeffs(SpellEntry const *spellProto, int32 total, int3
         if(Player* modOwner = GetSpellModOwner())
         {
             coeff *= 100.0f;
+	    float oldCoeff = coeff;
             modOwner->ApplySpellMod(spellProto->Id,SPELLMOD_SPELL_BONUS_DAMAGE, coeff);
+	    //megai2: hackfix for warlock talents that modify spell power bonus for shadow dots
+            if(spellProto->SpellFamilyName == SPELLFAMILY_WARLOCK 
+                && spellProto->SchoolMask == SPELL_SCHOOL_MASK_SHADOW
+                && damagetype == DOT ) //only if it's a DOT!!!	
+            {
+                int32 DotTicks = 1;	
+                int32 DotDuration = 1;
+                DotDuration = GetSpellDuration(spellProto);
+                if (DotDuration > 0)
+                {
+                    if (DotDuration > 30000)
+                        DotDuration = 30000;		
+								
+                    uint8 x=0;
+
+                    for (uint8 j = 0; j < 3; ++j)
+                    {
+                        if (spellProto->Effect[j] == SPELL_EFFECT_APPLY_AURA && (
+                            spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_DAMAGE ||
+                            spellProto->EffectApplyAuraName[j] == SPELL_AURA_PERIODIC_LEECH))
+                        {
+                            x = j;
+                            break;
+                        }
+                    }
+
+                    if (spellProto->EffectAmplitude[x] != 0)
+                        DotTicks = DotDuration / spellProto->EffectAmplitude[x];
+                }		                
+	        coeff = oldCoeff + (coeff - oldCoeff) * DotTicks;	    
+            }
             coeff /= 100.0f;
         }
 
