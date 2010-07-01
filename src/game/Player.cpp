@@ -1204,8 +1204,6 @@ void Player::Update( uint32 p_time )
 
     if(sWorld.HammerTime)
         SetFFAPvP(true);
-    else if (!sWorld.IsFFAPvPRealm())
-        SetFFAPvP(false);
 
     // undelivered mail
     if(m_nextMailDelivereTime && m_nextMailDelivereTime <= time(NULL))
