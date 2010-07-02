@@ -922,48 +922,76 @@ class ObjectMgr
 		uint32 GetMemoryUsage()
 		{
 			uint32 total_mem = 0;
-			total_mem += sizeof(mQuestTemplates);
-			for( QuestMap::iterator i = mQuestTemplates.begin( ); i != mQuestTemplates.end( ); ++i )
-				total_mem += sizeof(i->second);
-			for(PetLevelInfoMap::iterator i = petInfo.begin( ); i != petInfo.end( ); ++i )
-				total_mem += sizeof(i->second);
+			total_mem += mQuestTemplates.max_size() * sizeof(mQuestTemplates.begin());
+			//for( QuestMap::iterator i = mQuestTemplates.begin( ); i != mQuestTemplates.end( ); ++i )
+			//	total_mem += sizeof(i->second);
+			total_mem += petInfo.max_size() * sizeof(petInfo.begin());
+			//for(PetLevelInfoMap::iterator i = petInfo.begin( ); i != petInfo.end( ); ++i )
+			//	total_mem += sizeof(i->second);
 			// total_mem += sizeof(mGroupMap);
-			for (GroupMap::iterator itr = mGroupMap.begin(); itr != mGroupMap.end(); ++itr)
-				total_mem += sizeof(itr->second);
+			total_mem += mGroupMap.max_size() * sizeof(mGroupMap.begin());
+			//for (GroupMap::iterator itr = mGroupMap.begin(); itr != mGroupMap.end(); ++itr)
+			//	total_mem += sizeof(itr->second);
 			// total_mem += sizeof(mGuildMap);
-			for (GuildMap::iterator itr = mGuildMap.begin(); itr != mGuildMap.end(); ++itr)
-				total_mem += sizeof(itr->second);
+			total_mem += mGuildMap.max_size() * sizeof(mGuildMap.begin());
+			//for (GuildMap::iterator itr = mGuildMap.begin(); itr != mGuildMap.end(); ++itr)
+			//	total_mem += sizeof(itr->second);
 			//total_mem += sizeof(mArenaTeamMap);
-			for (ArenaTeamMap::iterator itr = mArenaTeamMap.begin(); itr != mArenaTeamMap.end(); ++itr)
-				total_mem += sizeof(itr->second);
-			for (CacheVendorItemMap::iterator itr = m_mCacheVendorItemMap.begin(); itr != m_mCacheVendorItemMap.end(); ++itr)
-				total_mem += sizeof(itr->second);
-			for (CacheTrainerSpellMap::iterator itr = m_mCacheTrainerSpellMap.begin(); itr != m_mCacheTrainerSpellMap.end(); ++itr)
-				total_mem += sizeof(itr->second);
+			total_mem += mArenaTeamMap.max_size() * sizeof(mArenaTeamMap.begin());
+			//for (ArenaTeamMap::iterator itr = mArenaTeamMap.begin(); itr != mArenaTeamMap.end(); ++itr)
+			//	total_mem += sizeof(itr->second);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//for (CacheVendorItemMap::iterator itr = m_mCacheVendorItemMap.begin(); itr != m_mCacheVendorItemMap.end(); ++itr)
+			//	total_mem += sizeof(itr->second);
+			total_mem += m_mCacheTrainerSpellMap.max_size() * sizeof(m_mCacheTrainerSpellMap.begin());
+			//for (CacheTrainerSpellMap::iterator itr = m_mCacheTrainerSpellMap.begin(); itr != m_mCacheTrainerSpellMap.end(); ++itr)
+			//	total_mem += sizeof(itr->second);
 
-			total_mem += sizeof(GossipTextMap);
-			total_mem += sizeof(QuestAreaTriggerMap);
-			total_mem += sizeof(TavernAreaTriggerSet);
-			total_mem += sizeof(GameObjectForQuestSet);
-			
-			total_mem += sizeof(mQuestAreaTriggerMap);
-			total_mem += sizeof(mTavernAreaTriggerSet);
-			total_mem += sizeof(mGameObjectForQuestSet);
-			total_mem += sizeof(mGossipText);
-			total_mem += sizeof(mAreaTriggers);
-			total_mem += sizeof(mAreaTriggerScripts);
-			total_mem += sizeof(mRepOnKill);
-			total_mem += sizeof(m_mGossipMenusMap);
-			total_mem += sizeof(m_mGossipMenuItemsMap);
-			total_mem += sizeof(mPointsOfInterest);
-			total_mem += sizeof(mQuestPOIMap);
-			total_mem += sizeof(mWeatherZoneMap);
-			total_mem += sizeof(m_ReservedNames);
-			total_mem += sizeof(mGraveYardMap);
-			total_mem += sizeof(m_GameTeleMap);
-			total_mem += sizeof(m_scriptNames);
-			total_mem += sizeof(m_ItemRequiredTarget);
-			total_mem += sizeof(m_LocalForIndex);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(GossipTextMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(QuestAreaTriggerMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(TavernAreaTriggerSet);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(GameObjectForQuestSet);
+
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mQuestAreaTriggerMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mTavernAreaTriggerSet);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mGameObjectForQuestSet);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mGossipText);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mAreaTriggers);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mAreaTriggerScripts);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mRepOnKill);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_mGossipMenusMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_mGossipMenuItemsMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mPointsOfInterest);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mQuestPOIMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mWeatherZoneMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_ReservedNames);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(mGraveYardMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_GameTeleMap);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_scriptNames);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_ItemRequiredTarget);
+			total_mem += m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin());
+			//total_mem += sizeof(m_LocalForIndex);
 			return total_mem;
 		}
     protected:
