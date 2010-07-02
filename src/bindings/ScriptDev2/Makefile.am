@@ -18,8 +18,8 @@
 ## Sub-directories to parse
 SUBDIRS = sql
 
-BUILT_SOURCES = revision.h
-CLEANFILES = revision.h
+##7z#BUILT_SOURCES = revision.h
+##7z#CLEANFILES = revision.h
 ## CPP flags for includes, defines, etc.
 AM_CPPFLAGS = $(MANGOS_INCLUDES) -I$(srcdir) -I$(srcdir)/../../../dep/include -I$(srcdir)/../../shared/ -I$(srcdir)/../../framework/ -I$(srcdir)/../../game/ -I$(srcdir)/include/ -I$(srcdir)/base/ -DSYSCONFDIR=\"$(sysconfdir)/\"
 
@@ -583,12 +583,12 @@ system/ScriptLoader.cpp \
 system/ScriptLoader.h \
 system/system.cpp \
 system/system.h \
-revision.h
+##7z#revision.h
 
 
 ## magic to include revision data in SD2 version string
-revision.h: FORCE
-	$(top_builddir)/src/tools/genrevision/genrevision $(srcdir)
+##7z#revision.h: FORCE
+##7z#	$(top_builddir)/src/tools/genrevision/genrevision $(srcdir)
 
 FORCE:
 

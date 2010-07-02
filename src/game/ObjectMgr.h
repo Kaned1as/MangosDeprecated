@@ -922,36 +922,36 @@ class ObjectMgr
 		uint32 GetMemoryUsage()
 		{
 			uint32 total_mem = 0;
-			sLog.outBasic("mQuestTemplates: %u", mQuestTemplates.max_size() * sizeof(mQuestTemplates.begin()));
-			sLog.outBasic("petInfo: %u", petInfo.max_size() * sizeof(petInfo.begin()));
-			sLog.outBasic("mGroupMap: %u", mGroupMap.max_size() * sizeof(mGroupMap.begin()));
-			sLog.outBasic("mGuildMap: %u", mGuildMap.max_size() * sizeof(mGuildMap.begin()));
-			sLog.outBasic("mArenaTeamMap: %u", mArenaTeamMap.max_size() * sizeof(mArenaTeamMap.begin()));
-			sLog.outBasic("m_mCacheVendorItemMap: %u", m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin()));
-			sLog.outBasic("m_mCacheTrainerSpellMap: %u", m_mCacheTrainerSpellMap.max_size() * sizeof(m_mCacheTrainerSpellMap.begin()));
+			sLog.outString("mQuestTemplates: %u", mQuestTemplates.max_size() * sizeof(mQuestTemplates.begin()));
+			sLog.outString("petInfo: %u", petInfo.max_size() * sizeof(petInfo.begin()));
+			sLog.outString("mGroupMap: %u", mGroupMap.max_size() * sizeof(mGroupMap.begin()));
+			sLog.outString("mGuildMap: %u", mGuildMap.max_size() * sizeof(mGuildMap.begin()));
+			sLog.outString("mArenaTeamMap: %u", mArenaTeamMap.max_size() * sizeof(mArenaTeamMap.begin()));
+			sLog.outString("m_mCacheVendorItemMap: %u", m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin()));
+			sLog.outString("m_mCacheTrainerSpellMap: %u", m_mCacheTrainerSpellMap.max_size() * sizeof(m_mCacheTrainerSpellMap.begin()));
 
-			sLog.outBasic("mGossipText: %u", mGossipText.max_size() * sizeof(mGossipText.begin()));
-			sLog.outBasic("mQuestAreaTriggerMap: %u", mQuestAreaTriggerMap.max_size() * sizeof(mQuestAreaTriggerMap.begin()));
-			sLog.outBasic("mTavernAreaTriggerSet: %u", mTavernAreaTriggerSet.max_size() * sizeof(mTavernAreaTriggerSet.begin()));
-			sLog.outBasic("mGameObjectForQuestSet: %u", mGameObjectForQuestSet.max_size() * sizeof(mGameObjectForQuestSet.begin()));
+			sLog.outString("mGossipText: %u", mGossipText.max_size() * sizeof(mGossipText.begin()));
+			sLog.outString("mQuestAreaTriggerMap: %u", mQuestAreaTriggerMap.max_size() * sizeof(mQuestAreaTriggerMap.begin()));
+			sLog.outString("mTavernAreaTriggerSet: %u", mTavernAreaTriggerSet.max_size() * sizeof(mTavernAreaTriggerSet.begin()));
+			sLog.outString("mGameObjectForQuestSet: %u", mGameObjectForQuestSet.max_size() * sizeof(mGameObjectForQuestSet.begin()));
 
-			sLog.outBasic("mQuestAreaTriggerMap: %u", mQuestAreaTriggerMap.max_size() * sizeof(mQuestAreaTriggerMap.begin()));
-			sLog.outBasic("mTavernAreaTriggerSet: %u", mTavernAreaTriggerSet.max_size() * sizeof(mTavernAreaTriggerSet.begin()));
-			sLog.outBasic("mGossipText: %u", mGossipText.max_size() * sizeof(mGossipText.begin()));
-			sLog.outBasic("mAreaTriggers: %u", mAreaTriggers.max_size() * sizeof(mAreaTriggers.begin()));
-			sLog.outBasic("mAreaTriggerScripts: %u", mAreaTriggerScripts.max_size() * sizeof(mAreaTriggerScripts.begin()));
-			sLog.outBasic("mRepOnKill: %u", mRepOnKill.max_size() * sizeof(mRepOnKill.begin()));
-			sLog.outBasic("m_mGossipMenusMap: %u", m_mGossipMenusMap.max_size() * sizeof(m_mGossipMenusMap.begin()));
-			sLog.outBasic("m_mGossipMenuItemsMap: %u", m_mGossipMenuItemsMap.max_size() * sizeof(m_mGossipMenuItemsMap.begin()));
-			sLog.outBasic("mPointsOfInterest: %u", mPointsOfInterest.max_size() * sizeof(mPointsOfInterest.begin()));
-			sLog.outBasic("mQuestPOIMap: %u", mQuestPOIMap.max_size() * sizeof(mQuestPOIMap.begin()));
-			sLog.outBasic("mWeatherZoneMap: %u", mWeatherZoneMap.max_size() * sizeof(mWeatherZoneMap.begin()));
-			sLog.outBasic("m_ReservedNames: %u", m_ReservedNames.max_size() * sizeof(m_ReservedNames.begin()));
-			sLog.outBasic("mGraveYardMap: %u", mGraveYardMap.max_size() * sizeof(mGraveYardMap.begin()));
-			sLog.outBasic("m_GameTeleMap: %u", m_GameTeleMap.max_size() * sizeof(m_GameTeleMap.begin()));
-			sLog.outBasic("m_scriptNames: %u", m_scriptNames.max_size() * sizeof(m_scriptNames.begin()));
-			sLog.outBasic("m_ItemRequiredTarget: %u", m_ItemRequiredTarget.max_size() * sizeof(m_ItemRequiredTarget.begin()));
-			sLog.outBasic("m_LocalForIndex: %u", m_LocalForIndex.max_size() * sizeof(m_LocalForIndex.begin()));
+			sLog.outString("mQuestAreaTriggerMap: %u", mQuestAreaTriggerMap.max_size() * sizeof(mQuestAreaTriggerMap.begin()));
+			sLog.outString("mTavernAreaTriggerSet: %u", mTavernAreaTriggerSet.max_size() * sizeof(mTavernAreaTriggerSet.begin()));
+			sLog.outString("mGossipText: %u", mGossipText.max_size() * sizeof(mGossipText.begin()));
+			sLog.outString("mAreaTriggers: %u", mAreaTriggers.max_size() * sizeof(mAreaTriggers.begin()));
+			sLog.outString("mAreaTriggerScripts: %u", mAreaTriggerScripts.max_size() * sizeof(mAreaTriggerScripts.begin()));
+			sLog.outString("mRepOnKill: %u", mRepOnKill.max_size() * sizeof(mRepOnKill.begin()));
+			sLog.outString("m_mGossipMenusMap: %u", m_mGossipMenusMap.max_size() * sizeof(m_mGossipMenusMap.begin()));
+			sLog.outString("m_mGossipMenuItemsMap: %u", m_mGossipMenuItemsMap.max_size() * sizeof(m_mGossipMenuItemsMap.begin()));
+			sLog.outString("mPointsOfInterest: %u", mPointsOfInterest.max_size() * sizeof(mPointsOfInterest.begin()));
+			sLog.outString("mQuestPOIMap: %u", mQuestPOIMap.max_size() * sizeof(mQuestPOIMap.begin()));
+			sLog.outString("mWeatherZoneMap: %u", mWeatherZoneMap.max_size() * sizeof(mWeatherZoneMap.begin()));
+			sLog.outString("m_ReservedNames: %u", m_ReservedNames.max_size() * sizeof(m_ReservedNames.begin()));
+			sLog.outString("mGraveYardMap: %u", mGraveYardMap.max_size() * sizeof(mGraveYardMap.begin()));
+			sLog.outString("m_GameTeleMap: %u", m_GameTeleMap.max_size() * sizeof(m_GameTeleMap.begin()));
+			sLog.outString("m_scriptNames: %u", m_scriptNames.max_size() * sizeof(m_scriptNames.begin()));
+			sLog.outString("m_ItemRequiredTarget: %u", m_ItemRequiredTarget.max_size() * sizeof(m_ItemRequiredTarget.begin()));
+			sLog.outString("m_LocalForIndex: %u", m_LocalForIndex.max_size() * sizeof(m_LocalForIndex.begin()));
 			return 0;
 		}
     protected:
