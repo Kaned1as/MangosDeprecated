@@ -445,10 +445,6 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
             m_maxduration = 1;       
     }
 
-    //megai2: hackfix for Empowered Corruption
-    if (m_spellProto->Id == 32383 || m_spellProto->Id == 32382 || m_spellProto->Id == 32381)
-        damage *= 6;
-
     m_duration = m_maxduration;
 
     DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Aura: construct Spellid : %u, Aura : %u Duration : %d Target : %d Damage : %d", m_spellProto->Id, m_spellProto->EffectApplyAuraName[eff], m_maxduration, m_spellProto->EffectImplicitTargetA[eff],damage);
