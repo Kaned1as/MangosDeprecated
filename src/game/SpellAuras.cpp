@@ -763,6 +763,8 @@ void AreaAura::Update(uint32 diff)
                         // add owner
                         if( owner != caster && caster->IsWithinDistInMap(owner, m_radius) )
                             targets.push_back(owner);
+			else if (owner == caster)
+			    targets.push_back(owner);
                         // add caster's pet
                         Unit* pet = caster->GetPet();
                         if( pet && caster->IsWithinDistInMap(pet, m_radius))
@@ -797,6 +799,8 @@ void AreaAura::Update(uint32 diff)
                         // add owner
                         if( owner != caster && caster->IsWithinDistInMap(owner, m_radius) )
                             targets.push_back(owner);
+			else if (owner == caster)
+			    targets.push_back(owner);
                         // add caster's pet
                         Unit* pet = caster->GetPet();
                         if( pet && caster->IsWithinDistInMap(pet, m_radius))
@@ -823,6 +827,8 @@ void AreaAura::Update(uint32 diff)
                 {
                     if(owner != caster && caster->IsWithinDistInMap(owner, m_radius))
                         targets.push_back(owner);
+		    else if (owner == caster)
+			targets.push_back(owner);
                     break;
                 }
             }
