@@ -4345,9 +4345,7 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
         {
             if(Unit* caster = dot->GetCaster())
             {
-                Unit* caster = dot->GetCaster();
-
-                // use clean value for initial damage
+	        // use clean value for initial damage
                 int32 bp0 = dot->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_1);
                 bp0 *= 8;
 
