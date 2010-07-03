@@ -5608,12 +5608,31 @@ void Aura::HandleModTotalPercentStat(bool apply, bool /*Real*/)
     uint32 curHPValue = target->GetHealth();
     uint32 maxHPValue = target->GetMaxHealth();
 
-    for (int32 i = STAT_STRENGTH; i < MAX_STATS; i++)
-    {
-        if(m_modifier.m_miscvalue == i || m_modifier.m_miscvalue == -1)
-        {
-            target->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, float(m_modifier.m_amount), apply);
-            if(target->GetTypeId() == TYPEID_PLAYER || ((Creature*)target)->isPet())
+	
+    // Heart of the Wild - stamina
+	if (apply && target->GetTypeId() == TYPEID_PLAYER && target->getClass() == CLASS_DRUID && target->m_form && m_modifier.m_miscvalue == STAT_STAMINA)
+	{
+		switch (target->m_form)
+		{
+			case FORM_BEAR:
+			case FORM_DIREBEAR:
+			{
+				Player* player = (Player*)target;
+				SpellEntry const* spellInfo = player->GetKnownTalentRankById(808);
+				if (spellInfo)
+					m_modifier.m_amount += spellInfo->CalculateSimpleValue(EFFECT_INDEX_1);
+
+                break;
+			}
+		}
+	}
+
+	for (int32 i = STAT_STRENGTH; i < MAX_STATS; i++)
+	{
+		if(m_modifier.m_miscvalue == i || m_modifier.m_miscvalue == -1)
+		{
+			target->HandleStatModifier(UnitMods(UNIT_MOD_STAT_START + i), TOTAL_PCT, float(m_modifier.m_amount), apply);
+			if(target->GetTypeId() == TYPEID_PLAYER || ((Creature*)target)->isPet())
                 target->ApplyStatPercentBuffMod(Stats(i), float(m_modifier.m_amount), apply );
         }
     }
@@ -6314,7 +6333,6 @@ void Aura::HandleShapeshiftBoosts(bool apply)
 {
     uint32 spellId1 = 0;
     uint32 spellId2 = 0;
-    uint32 HotWSpellId = 0;
     uint32 MasterShaperSpellId = 0;
 
     uint32 form = GetModifier()->m_miscvalue;
@@ -6325,7 +6343,6 @@ void Aura::HandleShapeshiftBoosts(bool apply)
     {
         case FORM_CAT:
             spellId1 = 3025;
-            HotWSpellId = 24900;
             MasterShaperSpellId = 48420;
             break;
         case FORM_TREE:
@@ -6342,13 +6359,11 @@ void Aura::HandleShapeshiftBoosts(bool apply)
         case FORM_BEAR:
             spellId1 = 1178;
             spellId2 = 21178;
-            HotWSpellId = 24899;
             MasterShaperSpellId = 48418;
             break;
         case FORM_DIREBEAR:
             spellId1 = 9635;
             spellId2 = 21178;
-            HotWSpellId = 24899;
             MasterShaperSpellId = 48418;
             break;
         case FORM_BATTLESTANCE:
@@ -6483,24 +6498,6 @@ void Aura::HandleShapeshiftBoosts(bool apply)
                 m_target->RemoveAurasDueToSpell(66530);
                 if (form == FORM_TRAVEL || form == FORM_NONE) // "while in Travel Form or while not shapeshifted"
                     m_target->CastSpell(m_target, 66530, true);
-            }
-
-            // Heart of the Wild
-            if (HotWSpellId)
-            {
-                Unit::AuraList const& mModTotalStatPct = target->GetAurasByType(SPELL_AURA_MOD_TOTAL_STAT_PERCENTAGE);
-                for(Unit::AuraList::const_iterator i = mModTotalStatPct.begin(); i != mModTotalStatPct.end(); ++i)
-                {
-                    if ((*i)->GetSpellProto()->SpellIconID == 240 && (*i)->GetModifier()->m_miscvalue == 3)
-                    {
-                        int32 HotWMod = (*i)->GetModifier()->m_amount;
-                        if(GetModifier()->m_miscvalue == FORM_CAT)
-                            HotWMod /= 2;
-
-                        target->CastCustomSpell(target, HotWSpellId, &HotWMod, NULL, NULL, true, NULL, this);
-                        break;
-                    }
-                }
             }
         }
     }
