@@ -4288,14 +4288,10 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
     {
         if (Aura* dotAura = GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_WARLOCK,UI64LIT(0x010000000000),0x00000000,casterGUID))
         {
-            Unit* caster = dotAura->GetCaster();
 	
-            // use clean value for initial damage
-            int32 damage = dotAura->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_0);
+            // megai2: dmg = spd * 1.8 + basedmg = spd * 1.8 + bp0 * 9 = 9 * ( spd *  0.2 + bp0) = 9 * m_amount
+            int32 damage = dotAura->GetModifier()->m_amount;
             damage *= 9;
-
-            if (caster)	   
-  	        damage = caster->SpellDamageBonusDone(dispeler, sSpellStore.LookupEntry(31117), damage, SPELL_DIRECT_DAMAGE);
 
             // Remove spell auras from stack
             RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
@@ -4345,12 +4341,13 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
         {
             if(Unit* caster = dot->GetCaster())
             {
-	        // use clean value for initial damage
+                //megai2: like in unstable afl but more complicated
+		//megai2: (x + 0.4 * spd) * y + z = (x * 8 + 1.2 * spd) 
+                //megai2: (x + 0.4 * spd) * 3 + x * 5 = (x * 8 + 1.2 * spd)	
+                //mgeai2: m_amount * 3 + bp0 * 5 = bp0 * 8 + 1.2 * spd	  
+                //megai2: for test (170 + 0.4 * 3000) * 3 + 170 * 5 = 4.9k 
                 int32 bp0 = dot->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_1);
-                bp0 *= 8;
-
-                if (caster)	   
-                    bp0 = caster->SpellDamageBonusDone(this, sSpellStore.LookupEntry(64085), bp0, SPELL_DIRECT_DAMAGE);
+                bp0 = dot->GetModifier()->m_amount * 3 + bp0 * 5;
 
                 // Remove spell auras from stack
                 RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
