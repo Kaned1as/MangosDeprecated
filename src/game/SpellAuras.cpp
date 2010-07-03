@@ -445,6 +445,10 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
             m_maxduration = 1;       
     }
 
+    //megai2: hackfix for Empowered Corruption
+    if (m_spellProto->Id == 32383 || m_spellProto->Id == 32382 || m_spellProto->Id == 32381)
+        damage *= 6;
+
     m_duration = m_maxduration;
 
     DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Aura: construct Spellid : %u, Aura : %u Duration : %d Target : %d Damage : %d", m_spellProto->Id, m_spellProto->EffectApplyAuraName[eff], m_maxduration, m_spellProto->EffectImplicitTargetA[eff],damage);
@@ -999,7 +1003,8 @@ bool Aura::IsNeedVisibleSlot(Unit const* caster) const
         case SPELL_EFFECT_APPLY_AREA_AURA_FRIEND:
         case SPELL_EFFECT_APPLY_AREA_AURA_PARTY:
         case SPELL_EFFECT_APPLY_AREA_AURA_RAID:
-            return m_modifier.m_auraname != SPELL_AURA_NONE;
+            // passive auras (except totem auras) do not get placed in caster slot
+            return (m_target != caster || totemAura || !m_isPassive) && m_modifier.m_auraname != SPELL_AURA_NONE;
         default:
             break;
     }
