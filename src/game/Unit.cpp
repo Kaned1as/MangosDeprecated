@@ -4288,14 +4288,19 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
     {
         if (Aura* dotAura = GetAura(SPELL_AURA_PERIODIC_DAMAGE,SPELLFAMILY_WARLOCK,UI64LIT(0x010000000000),0x00000000,casterGUID))
         {
+            Unit* caster = dotAura->GetCaster();
+	
             // use clean value for initial damage
-            int32 damage = dotAura->GetModifier()->m_amount;
+            int32 damage = dotAura->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_0);
             damage *= 9;
+
+            if (caster)	   
+  	        damage = caster->SpellDamageBonusDone(dispeler, sSpellStore.LookupEntry(31117), damage, SPELL_DIRECT_DAMAGE);
 
             // Remove spell auras from stack
             RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
 
-            // backfire damage and silence
+            // backfire damage and silence 
             dispeler->CastCustomSpell(dispeler, 31117, &damage, NULL, NULL, true, NULL, NULL,casterGUID);
             return;
         }
@@ -4340,9 +4345,14 @@ void Unit::RemoveSingleAuraDueToSpellByDispel(uint32 spellId, uint64 casterGUID,
         {
             if(Unit* caster = dot->GetCaster())
             {
+                Unit* caster = dot->GetCaster();
+
                 // use clean value for initial damage
-                int32 bp0 = dot->GetModifier()->m_amount;
+                int32 bp0 = dot->GetSpellProto()->CalculateSimpleValue(EFFECT_INDEX_1);
                 bp0 *= 8;
+
+                if (caster)	   
+                    bp0 = caster->SpellDamageBonusDone(this, sSpellStore.LookupEntry(64085), bp0, SPELL_DIRECT_DAMAGE);
 
                 // Remove spell auras from stack
                 RemoveSingleSpellAurasByCasterSpell(spellId, casterGUID, AURA_REMOVE_BY_DISPEL);
