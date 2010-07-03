@@ -40,6 +40,15 @@
 #include <map>
 #include <limits>
 
+#include "Group.h"
+#include "Guild.h"
+#include "ArenaTeam.h"
+#include "Item.h"
+/*class Group;
+class Guild;
+class ArenaTeam;
+class Item;*/
+
 extern SQLStorage sCreatureStorage;
 extern SQLStorage sCreatureDataAddonStorage;
 extern SQLStorage sCreatureInfoAddonStorage;
@@ -50,10 +59,7 @@ extern SQLStorage sPageTextStore;
 extern SQLStorage sItemStorage;
 extern SQLStorage sInstanceTemplate;
 
-class Group;
-class Guild;
-class ArenaTeam;
-class Item;
+
 
 struct GameTele
 {
@@ -919,41 +925,7 @@ class ObjectMgr
             return GossipMenuItemsMapBounds(m_mGossipMenuItemsMap.lower_bound(uiMenuId),m_mGossipMenuItemsMap.upper_bound(uiMenuId));
         }
 
-		uint32 GetMemoryUsage()
-		{
-			uint32 total_mem = 0;
-			sLog.outString("mQuestTemplates: %u", mQuestTemplates.max_size() * sizeof(mQuestTemplates.begin()));
-			sLog.outString("petInfo: %u", petInfo.max_size() * sizeof(petInfo.begin()));
-			sLog.outString("mGroupMap: %u", mGroupMap.max_size() * sizeof(mGroupMap.begin()));
-			sLog.outString("mGuildMap: %u", mGuildMap.max_size() * sizeof(mGuildMap.begin()));
-			sLog.outString("mArenaTeamMap: %u", mArenaTeamMap.max_size() * sizeof(mArenaTeamMap.begin()));
-			sLog.outString("m_mCacheVendorItemMap: %u", m_mCacheVendorItemMap.max_size() * sizeof(m_mCacheVendorItemMap.begin()));
-			sLog.outString("m_mCacheTrainerSpellMap: %u", m_mCacheTrainerSpellMap.max_size() * sizeof(m_mCacheTrainerSpellMap.begin()));
-
-			sLog.outString("mGossipText: %u", mGossipText.max_size() * sizeof(mGossipText.begin()));
-			sLog.outString("mQuestAreaTriggerMap: %u", mQuestAreaTriggerMap.max_size() * sizeof(mQuestAreaTriggerMap.begin()));
-			sLog.outString("mTavernAreaTriggerSet: %u", mTavernAreaTriggerSet.max_size() * sizeof(mTavernAreaTriggerSet.begin()));
-			sLog.outString("mGameObjectForQuestSet: %u", mGameObjectForQuestSet.max_size() * sizeof(mGameObjectForQuestSet.begin()));
-
-			sLog.outString("mQuestAreaTriggerMap: %u", mQuestAreaTriggerMap.max_size() * sizeof(mQuestAreaTriggerMap.begin()));
-			sLog.outString("mTavernAreaTriggerSet: %u", mTavernAreaTriggerSet.max_size() * sizeof(mTavernAreaTriggerSet.begin()));
-			sLog.outString("mGossipText: %u", mGossipText.max_size() * sizeof(mGossipText.begin()));
-			sLog.outString("mAreaTriggers: %u", mAreaTriggers.max_size() * sizeof(mAreaTriggers.begin()));
-			sLog.outString("mAreaTriggerScripts: %u", mAreaTriggerScripts.max_size() * sizeof(mAreaTriggerScripts.begin()));
-			sLog.outString("mRepOnKill: %u", mRepOnKill.max_size() * sizeof(mRepOnKill.begin()));
-			sLog.outString("m_mGossipMenusMap: %u", m_mGossipMenusMap.max_size() * sizeof(m_mGossipMenusMap.begin()));
-			sLog.outString("m_mGossipMenuItemsMap: %u", m_mGossipMenuItemsMap.max_size() * sizeof(m_mGossipMenuItemsMap.begin()));
-			sLog.outString("mPointsOfInterest: %u", mPointsOfInterest.max_size() * sizeof(mPointsOfInterest.begin()));
-			sLog.outString("mQuestPOIMap: %u", mQuestPOIMap.max_size() * sizeof(mQuestPOIMap.begin()));
-			sLog.outString("mWeatherZoneMap: %u", mWeatherZoneMap.max_size() * sizeof(mWeatherZoneMap.begin()));
-			sLog.outString("m_ReservedNames: %u", m_ReservedNames.max_size() * sizeof(m_ReservedNames.begin()));
-			sLog.outString("mGraveYardMap: %u", mGraveYardMap.max_size() * sizeof(mGraveYardMap.begin()));
-			sLog.outString("m_GameTeleMap: %u", m_GameTeleMap.max_size() * sizeof(m_GameTeleMap.begin()));
-			sLog.outString("m_scriptNames: %u", m_scriptNames.max_size() * sizeof(m_scriptNames.begin()));
-			sLog.outString("m_ItemRequiredTarget: %u", m_ItemRequiredTarget.max_size() * sizeof(m_ItemRequiredTarget.begin()));
-			sLog.outString("m_LocalForIndex: %u", m_LocalForIndex.max_size() * sizeof(m_LocalForIndex.begin()));
-			return 0;
-		}
+		uint32 GetMemoryUsage();
     protected:
 
         // first free id for selected id type

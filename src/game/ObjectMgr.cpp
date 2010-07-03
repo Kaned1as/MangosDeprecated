@@ -8579,6 +8579,69 @@ void ObjectMgr::RemoveArenaTeam( uint32 Id )
     mArenaTeamMap.erase(Id);
 }
 
+uint32 ObjectMgr::GetMemoryUsage()
+{
+	uint32 total_mem = 0;
+	uint32 temp = 0;
+	sLog.outString("mQuestTemplates: %u", temp = mQuestTemplates.size() * sizeof(*mQuestTemplates.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("petInfo: %u", temp = petInfo.size() * sizeof(*petInfo.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mGroupMap: %u", temp = mGroupMap.size() * sizeof(*mGroupMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mGuildMap: %u", temp = mGuildMap.size() * sizeof(*mGuildMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mArenaTeamMap: %u", temp = mArenaTeamMap.size() * sizeof(*mArenaTeamMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_mCacheVendorItemMap: %u", temp = m_mCacheVendorItemMap.size() * sizeof(m_mCacheVendorItemMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_mCacheTrainerSpellMap: %u", temp = m_mCacheTrainerSpellMap.size() * sizeof(m_mCacheTrainerSpellMap.begin()->second) / 1024);
+	total_mem += temp;
+
+	sLog.outString("mGossipText: %u", temp = mGossipText.size() * sizeof(mGossipText.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mQuestAreaTriggerMap: %u", temp = mQuestAreaTriggerMap.size() * sizeof(mQuestAreaTriggerMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mTavernAreaTriggerSet: %u", temp = mTavernAreaTriggerSet.size() * sizeof(*mTavernAreaTriggerSet.begin()) / 1024);
+	total_mem += temp;
+	sLog.outString("mGameObjectForQuestSet: %u", temp = mGameObjectForQuestSet.size() * sizeof(*mGameObjectForQuestSet.begin()) / 1024);
+	total_mem += temp;
+
+	sLog.outString("mQuestAreaTriggerMap: %u", temp = mQuestAreaTriggerMap.size() * sizeof(mQuestAreaTriggerMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mAreaTriggers: %u", temp = mAreaTriggers.size() * sizeof(mAreaTriggers.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mAreaTriggerScripts: %u", temp = mAreaTriggerScripts.size() * sizeof(mAreaTriggerScripts.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mRepOnKill: %u", temp = mRepOnKill.size() * sizeof(mRepOnKill.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_mGossipMenusMap: %u", temp = m_mGossipMenusMap.size() * sizeof(m_mGossipMenusMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_mGossipMenuItemsMap: %u", temp = m_mGossipMenuItemsMap.size() * sizeof(m_mGossipMenuItemsMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mPointsOfInterest: %u", temp = mPointsOfInterest.size() * sizeof(mPointsOfInterest.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mQuestPOIMap: %u", temp = mQuestPOIMap.size() * sizeof(mQuestPOIMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("mWeatherZoneMap: %u", temp = mWeatherZoneMap.size() * sizeof(mWeatherZoneMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_ReservedNames: %u", temp = m_ReservedNames.size() * sizeof(*m_ReservedNames.begin()) / 1024);
+	total_mem += temp;
+	sLog.outString("mGraveYardMap: %u", temp = mGraveYardMap.size() * sizeof(mGraveYardMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_GameTeleMap: %u", temp = m_GameTeleMap.size() * sizeof(m_GameTeleMap.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_scriptNames: %u", temp = m_scriptNames.size() * sizeof(*m_scriptNames.begin()) / 1024);
+	total_mem += temp;
+	sLog.outString("m_ItemRequiredTarget: %u", temp = m_ItemRequiredTarget.size() * sizeof(m_ItemRequiredTarget.begin()->second) / 1024);
+	total_mem += temp;
+	sLog.outString("m_LocalForIndex: %u", temp = m_LocalForIndex.size() * sizeof(*m_LocalForIndex.begin()) / 1024);
+	total_mem += temp;
+	sLog.outString("Total Memory Used: %u", total_mem);
+	
+	return total_mem;
+}
+
 // Functions for scripting access
 uint32 GetAreaTriggerScriptId(uint32 trigger_id)
 {
@@ -8617,3 +8680,5 @@ Quest const* GetQuestTemplateStore(uint32 entry)
 {
     return sObjectMgr.GetQuestTemplate(entry);
 }
+
+
