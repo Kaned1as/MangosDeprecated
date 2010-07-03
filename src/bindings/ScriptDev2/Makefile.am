@@ -582,7 +582,7 @@ scripts/world/spell_scripts.cpp \
 system/ScriptLoader.cpp \
 system/ScriptLoader.h \
 system/system.cpp \
-system/system.h \
+system/system.h
 ##7z#revision.h
 
 
