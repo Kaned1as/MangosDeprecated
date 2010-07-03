@@ -9220,7 +9220,6 @@ int32 Unit::SpellBonusWithCoeffs(SpellEntry const *spellProto, int32 total, int3
         if(Player* modOwner = GetSpellModOwner())
         {
             coeff *= 100.0f;
-	    float oldCoeff = coeff;
             modOwner->ApplySpellMod(spellProto->Id,SPELLMOD_SPELL_BONUS_DAMAGE, coeff);
             coeff /= 100.0f;
         }
