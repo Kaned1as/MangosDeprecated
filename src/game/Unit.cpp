@@ -3708,7 +3708,10 @@ int32 Unit::GetMaxPositiveAuraModifier(AuraType auratype) const
     AuraList const& mTotalAuraList = GetAurasByType(auratype);
     for(AuraList::const_iterator i = mTotalAuraList.begin();i != mTotalAuraList.end(); ++i)
         if ((*i)->GetModifier()->m_amount > modifier)
-            modifier = (*i)->GetModifier()->m_amount;
+            if (getClass() == CLASS_DRUID && (*i)->GetSpellProto()->SpellIconID == 959)
+                modifier = m_form == FORM_CAT ? (*i)->GetModifier()->m_amount : 0;
+            else
+                modifier = (*i)->GetModifier()->m_amount;
 
     return modifier;
 }

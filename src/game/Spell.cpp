@@ -2768,11 +2768,6 @@ void Spell::cast(bool skipCheck)
         return;
     }
 
-    // Ranger: Dash hackfix - w00t!! thx KAPATEJIb idea! ;)
-    if(m_spellInfo->SpellIconID == 959 && m_spellInfo->SpellFamilyName == SPELLFAMILY_DRUID)
-        if(const SpellEntry* spellInfo = sSpellStore.LookupEntry(m_spellInfo->Id))
-            const_cast<SpellEntry*>(spellInfo)->Stances |= FORM_CAT;
-
     // triggered cast called from Spell::prepare where it was already checked
     if(!skipCheck)
     {
