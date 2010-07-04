@@ -2836,6 +2836,11 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell)
 
     if (spell->DmgClass == SPELL_DAMAGE_CLASS_RANGED)
         attType = RANGED_ATTACK;
+		
+	//megai2: shitty blizzard hackfixes
+	if ((attType == RANGED_ATTACK) && ((spell->SpellFamilyFlags & UI64LIT(0x00000820180400)) && (spell->AttributesEx3 & 0x200) && (spell->SpellIconID != 237)))
+		attType = BASE_ATTACK;
+		
 
     // bonus from skills is 0.04% per skill Diff
     int32 attackerWeaponSkill = int32(GetWeaponSkillValue(attType,pVictim));
