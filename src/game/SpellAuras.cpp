@@ -1006,7 +1006,7 @@ bool Aura::IsNeedVisibleSlot(Unit const* caster) const
     }
 
     // passive auras (except totem auras) do not get placed in the slots
-    return true;
+    return !IsPermanent();
 }
 
 void Aura::_AddAura()
