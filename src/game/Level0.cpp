@@ -32,6 +32,10 @@
 #include "ObjectMgr.h"
 #include "VMapFactory.h"
 
+#ifndef sMapMgr
+	#define sMapMgr MapManager::Instance()
+#endif
+
 bool ChatHandler::HandleHelpCommand(const char* args)
 {
     char* cmd = strtok((char*)args, " ");
