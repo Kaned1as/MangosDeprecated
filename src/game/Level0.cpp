@@ -34,6 +34,7 @@
 
 #ifndef sMapMgr
 	#define sMapMgr MapManager::Instance()
+	class MapManager;
 #endif
 
 bool ChatHandler::HandleHelpCommand(const char* args)
