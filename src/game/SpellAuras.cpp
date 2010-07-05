@@ -7492,7 +7492,7 @@ void Aura::PeriodicTick()
 
             uint32 pdamage;
             	
-	    if (savedModAmt != -1)
+	  /*  if (savedModAmt != -1)
             {	 
                 if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
   	        {  
@@ -7513,7 +7513,7 @@ void Aura::PeriodicTick()
                 }
                 else
                     pdamage = uint32(target->GetMaxHealth()*amount/100);
-           }	
+           }	*/
 
 
             // SpellDamageBonus for magic spells
@@ -7628,9 +7628,9 @@ void Aura::PeriodicTick()
 
             uint32 pdamage = m_modifier.m_amount > 0 ? m_modifier.m_amount : 0;
 
-            //megai2: recalc	    		
+         /*   //megai2: recalc	    		
             pdamage = pCaster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), savedModAmt > 0 ? savedModAmt : 0, DOT, GetStackAmount());	  
-	    m_modifier.m_amount = pdamage;
+	    m_modifier.m_amount = pdamage;*/
 
             //Calculate armor mitigation if it is a physical spell
             if (GetSpellSchoolMask(spellProto) & SPELL_SCHOOL_MASK_NORMAL)
@@ -7721,9 +7721,9 @@ void Aura::PeriodicTick()
             else
             {
 		//megai2: recalc
-                amount = pCaster->SpellHealingBonusDone(target, GetSpellProto(), savedModAmt > 0 ? savedModAmt : 0, DOT, GetStackAmount());		
+             /*   amount = pCaster->SpellHealingBonusDone(target, GetSpellProto(), savedModAmt > 0 ? savedModAmt : 0, DOT, GetStackAmount());		
 		m_modifier.m_amount = amount;
-
+*/
                 pdamage = amount;
 
                 // Wild Growth (1/7 - 6 + 2*ramainTicks) %
