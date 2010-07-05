@@ -450,7 +450,7 @@ m_isRemovedOnShapeLost(true), m_in_use(0), m_deleted(false)
     DEBUG_FILTER_LOG(LOG_FILTER_SPELL_CAST, "Aura: construct Spellid : %u, Aura : %u Duration : %d Target : %d Damage : %d", m_spellProto->Id, m_spellProto->EffectApplyAuraName[eff], m_maxduration, m_spellProto->EffectImplicitTargetA[eff],damage);
 
     //megai2: save original value
-    savedModAmt = 0;
+    savedModAmt = damage;
     SetModifier(AuraType(m_spellProto->EffectApplyAuraName[eff]), damage, m_spellProto->EffectAmplitude[eff], m_spellProto->EffectMiscValue[eff]);
 
     //megai2: moved back haste appling to channel spells
@@ -5327,6 +5327,10 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 break;
         }
 
+	//megai2: for pass dyn calc
+	if (m_modifier.m_amount != savedModAmt)
+		savedModAmt = -1;
+
         if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
         {
             // SpellDamageBonusDone for magic spells
@@ -7486,8 +7490,39 @@ void Aura::PeriodicTick()
             // ignore non positive values (can be result apply spellmods to aura damage
             uint32 amount = m_modifier.m_amount > 0 ? m_modifier.m_amount : 0;
 
-            uint32 pdamage;
+	    //megai2: FUCK initialize variables ALWAYS!
+            uint32 pdamage = 0;
+
+            if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
+                pdamage = amount;
+            else
+                pdamage = uint32(target->GetMaxHealth()*amount/100);
+             
             	
+	    if (savedModAmt != -1)
+            {	 
+                if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
+  	        {  
+		    //megai2: use saved real amount
+		    amount = savedModAmt > 0 ? savedModAmt : 0;
+                    // SpellDamageBonusDone for magic spells
+                    if(spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
+                        amount = pCaster->SpellDamageBonusDone(target, GetSpellProto(), amount, DOT, GetStackAmount());
+                    // MeleeDamagebonusDone for weapon based spells
+                    else
+                    {
+                        WeaponAttackType attackType = GetWeaponAttackType(GetSpellProto());
+                        amount = pCaster->MeleeDamageBonusDone(target, amount, attackType, GetSpellProto(), DOT, GetStackAmount());
+                    }               
+	   	    //megai2: set to m_amount to avoid bugged calc
+		    m_modifier.m_amount = amount;
+                   pdamage = amount;
+                }
+                else
+                    pdamage = uint32(target->GetMaxHealth()*amount/100);
+           }	
+
+
             // SpellDamageBonus for magic spells
             if(spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
                 pdamage = target->SpellDamageBonusTaken(pCaster, spellProto, pdamage, DOT, GetStackAmount());
@@ -7600,6 +7635,10 @@ void Aura::PeriodicTick()
 
             uint32 pdamage = m_modifier.m_amount > 0 ? m_modifier.m_amount : 0;
 
+            //megai2: recalc	    		
+            pdamage = pCaster->SpellDamageBonusDone(GetTarget(), GetSpellProto(), savedModAmt > 0 ? savedModAmt : 0, DOT, GetStackAmount());	  
+	    m_modifier.m_amount = pdamage;
+
             //Calculate armor mitigation if it is a physical spell
             if (GetSpellSchoolMask(spellProto) & SPELL_SCHOOL_MASK_NORMAL)
             {
@@ -7688,6 +7727,10 @@ void Aura::PeriodicTick()
                 pdamage = uint32(target->GetMaxHealth() * amount / 100);
             else
             {
+		//megai2: recalc
+                amount = pCaster->SpellHealingBonusDone(target, GetSpellProto(), savedModAmt > 0 ? savedModAmt : 0, DOT, GetStackAmount());		
+		m_modifier.m_amount = amount;
+
                 pdamage = amount;
 
                 // Wild Growth (1/7 - 6 + 2*ramainTicks) %
