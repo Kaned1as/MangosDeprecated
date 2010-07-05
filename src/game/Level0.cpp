@@ -33,8 +33,7 @@
 #include "VMapFactory.h"
 
 #ifndef sMapMgr
-	#define sMapMgr MapManager::Instance()
-	class MapManager;
+	#include "MapManager.h"
 #endif
 
 bool ChatHandler::HandleHelpCommand(const char* args)
