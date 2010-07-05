@@ -52,6 +52,8 @@ namespace VMAP
 
             virtual ~IVMapManager(void) {}
 
+	    virtual size_t getMemUsage() = 0;
+
             virtual int loadMap(const char* pBasePath, unsigned int pMapId, int x, int y) = 0;
 
             virtual bool existsMap(const char* pBasePath, unsigned int pMapId, int x, int y) = 0;

@@ -5327,6 +5327,10 @@ void Aura::HandlePeriodicDamage(bool apply, bool Real)
                 break;
         }
 
+	//megai2: for pass dyn calc
+	if (m_modifier.m_amount != savedModAmt)
+		savedModAmt = -1;
+
         if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
         {
             // SpellDamageBonusDone for magic spells
@@ -7487,26 +7491,29 @@ void Aura::PeriodicTick()
             uint32 amount = m_modifier.m_amount > 0 ? m_modifier.m_amount : 0;
 
             uint32 pdamage;
-
-            if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
-	    {
-		//megai2: use saved real amount
-		amount = savedModAmt > 0 ? savedModAmt : 0;
-                // SpellDamageBonusDone for magic spells
-                if(spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
-                    amount = pCaster->SpellDamageBonusDone(target, GetSpellProto(), amount, DOT, GetStackAmount());
-                // MeleeDamagebonusDone for weapon based spells
+            	
+	    if (savedModAmt != -1)
+            {	 
+                if(m_modifier.m_auraname == SPELL_AURA_PERIODIC_DAMAGE)
+  	        {  
+		    //megai2: use saved real amount
+		    amount = savedModAmt > 0 ? savedModAmt : 0;
+                    // SpellDamageBonusDone for magic spells
+                    if(spellProto->DmgClass == SPELL_DAMAGE_CLASS_NONE || spellProto->DmgClass == SPELL_DAMAGE_CLASS_MAGIC)
+                        amount = pCaster->SpellDamageBonusDone(target, GetSpellProto(), amount, DOT, GetStackAmount());
+                    // MeleeDamagebonusDone for weapon based spells
+                    else
+                    {
+                        WeaponAttackType attackType = GetWeaponAttackType(GetSpellProto());
+                        amount = pCaster->MeleeDamageBonusDone(target, amount, attackType, GetSpellProto(), DOT, GetStackAmount());
+                    }               
+	   	    //megai2: set to m_amount to avoid bugged calc
+		    m_modifier.m_amount = amount;
+                   pdamage = amount;
+                }
                 else
-                {
-                    WeaponAttackType attackType = GetWeaponAttackType(GetSpellProto());
-                    amount = pCaster->MeleeDamageBonusDone(target, amount, attackType, GetSpellProto(), DOT, GetStackAmount());
-                }               
-		//megai2: set to m_amount to avoid bugged calc
-		m_modifier.m_amount = amount;
-                pdamage = amount;
-            }
-            else
-                pdamage = uint32(target->GetMaxHealth()*amount/100);
+                    pdamage = uint32(target->GetMaxHealth()*amount/100);
+           }	
 
 
             // SpellDamageBonus for magic spells

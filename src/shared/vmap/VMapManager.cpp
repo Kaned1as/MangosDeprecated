@@ -46,6 +46,17 @@ namespace VMAP
         }
     }
 
+    size_t VMapManager::getMemUsage()
+    {
+	size_t ret = 0;
+        Array<unsigned int > keyArray = iInstanceMapTrees.getKeys();
+        for(int i=0;i<keyArray.size(); ++i)
+        {
+            ret += iInstanceMapTrees.get(keyArray[i])->modelsMemUsage;
+        }
+        return ret;
+    }
+
     //=========================================================
 
     Vector3 VMapManager::convertPositionToInternalRep(float x, float y, float z) const
@@ -520,6 +531,7 @@ namespace VMAP
             iBasePath.append("/");
         }
         iTree = new AABSPTree<ModelContainer *>();
+	modelsMemUsage = 0;
     }
 
     //=========================================================
@@ -683,6 +695,7 @@ namespace VMAP
                             result = mc->readFile(fname.c_str());
                             if(result)
                             {
+				modelsMemUsage += mc->getMemUsage();
                                 addModelContainer(name, mc);
                                 newModelLoaded = true;
                             }

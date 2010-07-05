@@ -21060,8 +21060,9 @@ uint32 Player::CalculateTalentsPoints() const
     uint32 talentPointsForLevel = getLevel() < 56 ? 0 : getLevel() - 55;
     talentPointsForLevel += m_questRewardTalentCount;
 
-    if(talentPointsForLevel > base_talent)
-        talentPointsForLevel = base_talent;
+    //megai2: tmpfix for death knights who are not finished some quests	
+    if ((talentPointsForLevel > base_talent) || ((talentPointsForLevel < base_talent) && (getLevel() >= 70)))
+        talentPointsForLevel = base_talent;	
 
     return uint32(talentPointsForLevel * sWorld.getConfig(CONFIG_FLOAT_RATE_TALENT));
 }

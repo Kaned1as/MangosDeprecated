@@ -30,6 +30,7 @@
 #include "revision_nr.h"
 #include "Util.h"
 #include "ObjectMgr.h"
+#include "VMapFactory.h"
 
 bool ChatHandler::HandleHelpCommand(const char* args)
 {
@@ -114,8 +115,9 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 					sEquipmentStorage.GetTotalSize() + sGOStorage.GetTotalSize() +
 					sItemStorage.GetTotalSize() + sPageTextStore.GetTotalSize() +
 					sInstanceTemplate.GetTotalSize();
-	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem / 1024);
+	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem / 1024 / 1024);
 	PSendSysMessage("sObjectMgr memory usage: %u kb", sObjectMgr.GetMemoryUsage());
+	PSendSysMessage("VMAP memory usage: %u mb", VMAP::VMapFactory::createOrGetVMapManager()->getMemUsage() / 1024 / 1024);
     return true;
 }
 
