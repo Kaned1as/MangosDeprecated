@@ -130,6 +130,17 @@ class MANGOS_DLL_DECL MapManager : public MaNGOS::Singleton<MapManager, MaNGOS::
         /* statistics */
         uint32 GetNumInstances();
         uint32 GetNumPlayersInInstances();
+		
+		uint32 GetTotalGridsSize()
+        {
+            uint32 ret = 0;
+			for(MapMapType::const_iterator itr = i_maps.begin(); itr != i_maps.end(); ++itr)
+			{
+				ret += itr->second->GetTotalGridsSize();
+			}
+
+			return ret;
+        }
 
     private:
 

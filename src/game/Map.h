@@ -266,6 +266,16 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>, public MaNGOS::Obj
 
         // DynObjects currently
         uint32 GenerateLocalLowGuid(HighGuid guidhigh);
+
+		uint32 GetTotalGridsSize()
+		{
+			uint32 ret = 0;
+			for (uint32 x=0; x<MAX_NUMBER_OF_GRIDS; x++)
+				for (uint32 y=0; y<MAX_NUMBER_OF_GRIDS; y++)
+					ret += sizeof(GridMaps[MAX_NUMBER_OF_GRIDS][MAX_NUMBER_OF_GRIDS]);
+			return ret;
+		}
+
     private:
         void LoadMapAndVMap(int gx, int gy);
         void LoadVMap(int gx, int gy);

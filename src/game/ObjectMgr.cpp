@@ -8583,12 +8583,12 @@ uint32 ObjectMgr::GetMemoryUsage()
 {
 	uint32 total_mem = 0;
 	uint32 temp = 0;
-	sLog.outString("mQuestTemplates: %u", temp = mQuestTemplates.size() * sizeof(*mQuestTemplates.begin()->second) / 1024);
-	total_mem += temp;
-	sLog.outString("petInfo: %u", temp = petInfo.size() * sizeof(*petInfo.begin()->second) / 1024);
-	total_mem += temp;
-	sLog.outString("mGroupMap: %u", temp = mGroupMap.size() * sizeof(*mGroupMap.begin()->second) / 1024);
-	total_mem += temp;
+	total_mem	+= (temp = mQuestTemplates.size() * sizeof(*mQuestTemplates.begin()->second) / 1024);
+	sLog.outString("mQuestTemplates: %u", temp);
+	total_mem	+= (temp = petInfo.size()		* sizeof(*petInfo.begin()->second) / 1024);
+	sLog.outString("petInfo: %u", temp);
+	total_mem	+= (temp = mGroupMap.size()		* sizeof(*mGroupMap.begin()->second) / 1024);
+	sLog.outString("mGroupMap: %u", temp);
 	sLog.outString("mGuildMap: %u", temp = mGuildMap.size() * sizeof(*mGuildMap.begin()->second) / 1024);
 	total_mem += temp;
 	sLog.outString("mArenaTeamMap: %u", temp = mArenaTeamMap.size() * sizeof(*mArenaTeamMap.begin()->second) / 1024);
