@@ -3699,7 +3699,10 @@ float Unit::GetTotalAuraMultiplier(AuraType auratype) const
 
     AuraList const& mTotalAuraList = GetAurasByType(auratype);
     for(AuraList::const_iterator i = mTotalAuraList.begin();i != mTotalAuraList.end(); ++i)
-        multiplier *= (100.0f + (*i)->GetModifier()->m_amount)/100.0f;
+        if (getClass() == CLASS_DRUID && (*i)->GetSpellProto()->SpellIconID == 959)
+            multiplier *= (100.0f + m_form == FORM_CAT ? (*i)->GetModifier()->m_amount : 0)/100.0f;
+        else
+            multiplier *= (100.0f + (*i)->GetModifier()->m_amount)/100.0f;
 
     return multiplier;
 }
@@ -3712,7 +3715,7 @@ int32 Unit::GetMaxPositiveAuraModifier(AuraType auratype) const
     for(AuraList::const_iterator i = mTotalAuraList.begin();i != mTotalAuraList.end(); ++i)
         if ((*i)->GetModifier()->m_amount > modifier)
             if (getClass() == CLASS_DRUID && (*i)->GetSpellProto()->SpellIconID == 959)
-                modifier = m_form == FORM_CAT ? (*i)->GetModifier()->m_amount : 0;
+                modifier = m_form == FORM_CAT ? (*i)->GetModifier()->m_amount : modifier;
             else
                 modifier = (*i)->GetModifier()->m_amount;
 

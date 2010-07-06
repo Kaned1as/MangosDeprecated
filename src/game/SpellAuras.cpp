@@ -3448,6 +3448,9 @@ void Aura::HandleAuraModShapeshift(bool apply, bool Real)
     // add/remove the shapeshift aura's boosts
     HandleShapeshiftBoosts(apply);
 
+    if (target->getClass() == CLASS_DRUID)
+        target->UpdateSpeed(MOVE_RUN, true);
+
     if(target->GetTypeId() == TYPEID_PLAYER)
         ((Player*)target)->InitDataForForm();
 }
