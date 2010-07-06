@@ -352,7 +352,7 @@ void Spell::DoSummonSpecialPets(SpellEffectIndex eff_idx)
             }
         }
 
-        if(pet_entry == 31216)
+        if(pet_entry == 31216) // Pet from Mirror Image (http://www.wowhead.com/spell=55342)
         {
             switch (m_spellInfo->EffectImplicitTargetA[eff_idx]) //setting follow angles for mirrors
             {
