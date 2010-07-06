@@ -2381,7 +2381,7 @@ void Unit::CalculateAbsorbAndResist(Unit *pCaster, SpellSchoolMask schoolMask, D
     // process damage shields & rage from absorb
     if(*absorb)
     {
-        RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE);
+        RemoveAurasWithInterruptFlags(AURA_INTERRUPT_FLAG_DIRECT_DAMAGE | AURA_INTERRUPT_FLAG_DAMAGE);
 
         if((damagetype == DIRECT_DAMAGE) && (schoolMask & SPELL_SCHOOL_MASK_NORMAL) && (pCaster->GetTypeId() == TYPEID_PLAYER) && (pCaster->getPowerType() == POWER_RAGE))
             ((Player*)pCaster)->RewardRage(*absorb, 0, true);
