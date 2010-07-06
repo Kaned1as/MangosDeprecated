@@ -119,10 +119,10 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
 					sEquipmentStorage.GetTotalSize() + sGOStorage.GetTotalSize() +
 					sItemStorage.GetTotalSize() + sPageTextStore.GetTotalSize() +
 					sInstanceTemplate.GetTotalSize();
-	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem / 1024 / 1024);
-	PSendSysMessage("sObjectMgr memory usage: %u kb", sObjectMgr.GetMemoryUsage());
+	PSendSysMessage("Total memory use by SQL storages: %u kb", total_mem / 1024 / 1024);
+	PSendSysMessage("sObjectMgr memory usage: %u mb", sObjectMgr.GetMemoryUsage() / 1024 / 1024);
 	PSendSysMessage("VMAP memory usage: %u mb", VMAP::VMapFactory::createOrGetVMapManager()->getMemUsage() / 1024 / 1024);
-	PSendSysMessage("Grid's map size: %u kb", sMapMgr.GetTotalGridsSize() / 1024);
+	PSendSysMessage("Grid's map size: %u mb", sMapMgr.GetTotalGridsSize() / 1024 / 1024);
     return true;
 }
 

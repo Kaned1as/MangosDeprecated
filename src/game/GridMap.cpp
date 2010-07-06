@@ -57,6 +57,7 @@ GridMap::GridMap()
     m_liquidLevel = INVALID_HEIGHT;
     m_liquid_type = NULL;
     m_liquid_map  = NULL;
+    currMemUsg = 0;
 }
 
 GridMap::~GridMap()
@@ -136,6 +137,7 @@ void GridMap::unloadData()
     m_liquid_type = NULL;
     m_liquid_map  = NULL;
     m_gridGetHeight = &GridMap::getHeightFromFlat;
+    currMemUsg = 0;
 }
 
 bool GridMap::loadAreaData(FILE *in, uint32 offset, uint32 /*size*/)
@@ -151,6 +153,7 @@ bool GridMap::loadAreaData(FILE *in, uint32 offset, uint32 /*size*/)
     {
         m_area_map = new uint16 [16*16];
         fread(m_area_map, sizeof(uint16), 16*16, in);
+	currMemUsg += 16*16 * 2;
     }
 
     return true;
@@ -175,6 +178,7 @@ bool GridMap::loadHeightData(FILE *in, uint32 offset, uint32 /*size*/)
             fread(m_uint16_V8, sizeof(uint16), 128*128, in);
             m_gridIntHeightMultiplier = (header.gridMaxHeight - header.gridHeight) / 65535;
             m_gridGetHeight = &GridMap::getHeightFromUint16;
+			currMemUsg += (129*129 + 128*128) * sizeof(uint16);
         }
         else if ((header.flags & MAP_HEIGHT_AS_INT8))
         {
@@ -184,6 +188,7 @@ bool GridMap::loadHeightData(FILE *in, uint32 offset, uint32 /*size*/)
             fread(m_uint8_V8, sizeof(uint8), 128*128, in);
             m_gridIntHeightMultiplier = (header.gridMaxHeight - header.gridHeight) / 255;
             m_gridGetHeight = &GridMap::getHeightFromUint8;
+            currMemUsg += (129*129 + 128*128) * sizeof(uint16);	
         }
         else
         {
@@ -192,6 +197,7 @@ bool GridMap::loadHeightData(FILE *in, uint32 offset, uint32 /*size*/)
             fread(m_V9, sizeof(float), 129*129, in);
             fread(m_V8, sizeof(float), 128*128, in);
             m_gridGetHeight = &GridMap::getHeightFromFloat;
+            currMemUsg += (129*129 + 128*128) * sizeof(float);
         }
     }
     else
@@ -219,12 +225,14 @@ bool GridMap::loadGridMapLiquidData(FILE *in, uint32 offset, uint32 /*size*/)
     {
         m_liquid_type = new uint8 [16*16];
         fread(m_liquid_type, sizeof(uint8), 16*16, in);
+		currMemUsg += 16*16 * sizeof(uint8);
     }
 
     if (!(header.flags & MAP_LIQUID_NO_HEIGHT))
     {
         m_liquid_map = new float [m_liquid_width*m_liquid_height];
         fread(m_liquid_map, sizeof(float), m_liquid_width*m_liquid_height, in);
+        currMemUsg += m_liquid_width*m_liquid_height * sizeof(float);
     }
 
     return true;

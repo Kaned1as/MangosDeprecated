@@ -161,6 +161,8 @@ class GridMap
         float getHeightFromUint16(float x, float y) const;
         float getHeightFromUint8(float x, float y) const;
         float getHeightFromFlat(float x, float y) const;
+	
+		uint32 currMemUsg;
 
     public:
 
@@ -178,6 +180,8 @@ class GridMap
         float getLiquidLevel(float x, float y);
         uint8 getTerrainType(float x, float y);
         GridMapLiquidStatus getLiquidStatus(float x, float y, float z, uint8 ReqLiquidType, GridMapLiquidData *data = 0);
+
+		uint32 GetMemUsage() { return /*sizeof(this) + */currMemUsg; }
 };
 
 #endif
