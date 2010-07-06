@@ -272,7 +272,8 @@ class MANGOS_DLL_SPEC Map : public GridRefManager<NGridType>, public MaNGOS::Obj
 			uint32 ret = 0;
 			for (uint32 x=0; x<MAX_NUMBER_OF_GRIDS; x++)
 				for (uint32 y=0; y<MAX_NUMBER_OF_GRIDS; y++)
-					ret += GridMaps[x][y]->GetMemUsage();
+					if (GridMaps[x][y])
+						ret += GridMaps[x][y]->GetMemUsage();
 			return ret;
 		}
 
