@@ -2210,10 +2210,6 @@ void Spell::EffectDummy(SpellEffectIndex eff_idx)
                         return;
                 }
 
-		if ((m_caster->GetMapId() != unitTarget->GetMapId()) || (m_caster->GetInstanceId() != unitTarget->GetInstanceId()) 	
-                    || (!m_caster->IsInRange(unitTarget, 0, 30 + 10 * uint8(m_caster->IsFriendlyTo(unitTarget)), true)))	
-			return;
-
                 // prevent interrupted message for main spell
                 finish(true);
 
