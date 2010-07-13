@@ -446,8 +446,15 @@ void Player::CalculateMinMaxDamage(WeaponAttackType attType, bool normalized, fl
         weapon_mindamage = lvl*0.85f*att_speed;
         weapon_maxdamage = lvl*1.25f*att_speed;
     }
-    else if(!IsUseEquipedWeapon(attType==BASE_ATTACK))      //check if player not in form but still can't use weapon (broken/etc)
+    else if (!CanUseAttackType(attType))      //check if player not in form but still can't use (disarm case, broken, etc)
     {
+        //cannot use ranged/off attack, set values to 0
+        if (attType != BASE_ATTACK)
+        {
+            min_damage = 0;
+            max_damage = 0;
+            return;
+        }
         weapon_mindamage = BASE_MINDAMAGE;
         weapon_maxdamage = BASE_MAXDAMAGE;
     }
@@ -886,15 +893,23 @@ bool Pet::UpdateStats(Stats stat)
         if(owner)
             if (owner->getClass() == CLASS_WARLOCK)
                 value += float(owner->GetStat(stat)) * 0.75f;
-            else                
-                value += float(owner->GetStat(stat)) * 0.45f;
+            else 
+            {
+                //megai2: Wild Hunt
+                float stamPct = 0.45f;
+                if (owner->HasAura(62762))
+                    stamPct += 0.4f;
+                else if (owner->HasAura(62758))
+                    stamPct += 0.2f;               
+                value += float(owner->GetStat(stat)) * stamPct;
+            }
     }
                                                             //warlock's and mage's pets gain 30% of owner's intellect
     else if ( stat == STAT_INTELLECT && getPetType() == SUMMON_PET )
     {
         if(owner && (owner->getClass() == CLASS_WARLOCK || owner->getClass() == CLASS_MAGE) )
             value += float(owner->GetStat(stat)) * 0.3f;
-    }
+    }  
 
     SetStat(stat, int32(value));
 
@@ -971,7 +986,25 @@ void Pet::UpdateMaxHealth()
     float value   = GetModifierValue(unitMod, BASE_VALUE) + GetCreateHealth();
     value  *= GetModifierValue(unitMod, BASE_PCT);
     value  += GetModifierValue(unitMod, TOTAL_VALUE) + stamina * 10.0f;
-    value  *= GetModifierValue(unitMod, TOTAL_PCT);
+    float totalPct = GetModifierValue(unitMod, TOTAL_PCT);    
+    
+    Unit *owner = GetOwner();
+    if (owner)
+    {        
+        //megai2: Endurance Training	
+        if (owner->HasAura(19587))
+            totalPct += 0.1f;
+        else if (owner->HasAura(19586))
+            totalPct += 0.08f;
+        else if (owner->HasAura(19585))
+            totalPct += 0.06f;
+        else if (owner->HasAura(19584))
+            totalPct += 0.04f;
+        else if (owner->HasAura(19583))
+            totalPct += 0.02f;
+    }
+   
+    value *= totalPct;
 
     SetMaxHealth((uint32)value);
 }
@@ -1009,7 +1042,12 @@ void Pet::UpdateAttackPowerAndDamage(bool ranged)
     {
         if(getPetType() == HUNTER_PET)                      //hunter pets benefit from owner's attack power
         {
-            bonusAP = owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.22f;
+            float bonusAPpct = 0.22f;
+            if (owner->HasAura(62762))
+                bonusAPpct += 0.3f;
+            else if (owner->HasAura(62758))
+                bonusAPpct += 0.15f;               
+            bonusAP = owner->GetTotalAttackPowerValue(RANGED_ATTACK) * bonusAPpct;
             SetBonusDamage( int32(owner->GetTotalAttackPowerValue(RANGED_ATTACK) * 0.1287f));
         }
         //demons benefit from warlocks shadow or fire damage
@@ -1039,6 +1077,15 @@ void Pet::UpdateAttackPowerAndDamage(bool ranged)
     float base_attPower  = GetModifierValue(unitMod, BASE_VALUE) * GetModifierValue(unitMod, BASE_PCT);
     float attPowerMod = GetModifierValue(unitMod, TOTAL_VALUE);
     float attPowerMultiplier = GetModifierValue(unitMod, TOTAL_PCT) - 1.0f;
+   
+     //megai2: Animal Handler	
+    if (owner)
+    {   
+        if (owner->HasAura(34454))
+            attPowerMultiplier += 0.1f;
+        else if (owner->HasAura(34453))
+            attPowerMultiplier += 0.05f;
+    }
 
     //UNIT_FIELD_(RANGED)_ATTACK_POWER field
     SetInt32Value(UNIT_FIELD_ATTACK_POWER, (int32)base_attPower);
@@ -1064,6 +1111,16 @@ void Pet::UpdateDamagePhysical(WeaponAttackType attType)
     float base_pct    = GetModifierValue(unitMod, BASE_PCT);
     float total_value = GetModifierValue(unitMod, TOTAL_VALUE);
     float total_pct   = GetModifierValue(unitMod, TOTAL_PCT);
+
+    //megai2: Animal Handler	
+    Unit* owner = GetOwner();
+    if (owner)
+    {   
+        if (owner->HasAura(34454))
+            total_pct += 0.1f;
+        else if (owner->HasAura(34453))
+            total_pct += 0.05f;
+    }
 
     float weapon_mindamage = GetWeaponDamageRange(BASE_ATTACK, MINDAMAGE);
     float weapon_maxdamage = GetWeaponDamageRange(BASE_ATTACK, MAXDAMAGE);

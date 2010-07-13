@@ -405,7 +405,6 @@ class MANGOS_DLL_SPEC Aura
         bool m_isSingleTargetAura:1;                        // true if it's a single target spell and registered at caster - can change at spell steal for example
 
         uint32 m_in_use;                                    // > 0 while in Aura::ApplyModifier call/Aura::Update/etc
-
 	int32 savedModAmt;
     private:
         void ApplyHasteToPeriodic();

@@ -150,8 +150,8 @@ void Totem::SetTypeBySummonSpell(SpellEntry const * spellProto)
         if (GetSpellCastTime(totemSpell))
             m_type = TOTEM_ACTIVE;
     }
-    if(spellProto->SpellIconID == 2056)
-        m_type = TOTEM_STATUE;                              //Jewelery statue
+    if (spellProto->SpellIconID == 2056)
+        m_type = TOTEM_STATUE;                              //Jewelery statue or anti-magic zone
 }
 
 bool Totem::IsImmunedToSpellEffect(SpellEntry const* spellInfo, SpellEffectIndex index) const

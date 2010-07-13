@@ -77,8 +77,8 @@ class PrioritizeHealthUnitWraper
 {
 public:
     explicit PrioritizeHealthUnitWraper(Unit* unit) : i_unit(unit)
-    {
-        i_percent = unit->GetHealth() * 100 / unit->GetMaxHealth();
+    {       
+        i_percent = unit->GetHealth() * 100 / (unit->GetMaxHealth() + 1);
     }
 
     bool operator <(const PrioritizeHealthUnitWraper& right) const
@@ -823,18 +823,6 @@ void Spell::AddUnitTarget(Unit* pVictim, SpellEffectIndex effIndex)
     // Calculate hit result
     target.missCondition = m_caster->SpellHitResult(pVictim, m_spellInfo, m_canReflect);
 
-    //megai2: hackfix for Judgements ** (isJudgement) && !(missCondIsPossible)
-    if (((m_spellInfo->SpellFamilyFlags & UI64LIT(0x00000820180400)) && (m_spellInfo->AttributesEx3 & 0x200) && (m_spellInfo->SpellIconID != 237))
-       && !(((target.missCondition >= SPELL_MISS_EVADE) && (target.missCondition <= SPELL_MISS_REFLECT)) && (target.missCondition != SPELL_MISS_DEFLECT)))           
-    {	
-	//megai2: recalc result
-	SpellMissInfo jMissInfo = m_caster->MeleeSpellHitResult(pVictim, m_spellInfo);
-    	if (jMissInfo > SPELL_MISS_MISS)
-	    target.missCondition = SPELL_MISS_NONE;
-	else
-	    target.missCondition = jMissInfo;
-    }
-
     // Spell have speed - need calculate incoming time
     if (m_spellInfo->speed > 0.0f)
     {
@@ -1006,6 +994,10 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
             DoSpellHitOnUnit(m_caster, mask);
     }
 
+    //megai2: remove all invulnerabilites on Shattering Throw
+    if (m_spellInfo->Id == 64382)        
+        m_caster->CastSpell(unit, sSpellStore.LookupEntry(64380), true, m_CastItem);
+
     // All calculated do it!
     // Do healing and triggers
     if (m_healing)
@@ -1136,11 +1128,12 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
         unit->IsImmunedToSpell(m_spellInfo)) && 
         !(m_spellInfo->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY))                      // Ranger: KAPATEJIb changes
     {
-            realCaster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
+        realCaster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_IMMUNE);
 
         ResetEffectDamageAndHeal();
         return;
     }
+    
 
     if (unit->GetTypeId() == TYPEID_PLAYER)
     {
@@ -1175,8 +1168,14 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
             }
 
             // not break stealth by cast targeting
-            if (!(m_spellInfo->AttributesEx & SPELL_ATTR_EX_NOT_BREAK_STEALTH))
-                unit->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
+            // Amaru: Sap always breaks stealth
+            if (!(m_spellInfo->AttributesEx & SPELL_ATTR_EX_NOT_BREAK_STEALTH) 
+                || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags & SPELLFAMILYFLAG_ROGUE_SAP))
+            {
+                //Amaru: Mass Dispell never breaks stealth
+                if (m_spellInfo->Id != 32375 && m_spellInfo->Id != 32592 && m_spellInfo->Id != 72734)
+                    unit->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
+            }
 
             // can cause back attack (if detected), stealth removed at Spell::cast if spell break it
             if (!(m_spellInfo->AttributesEx & SPELL_ATTR_EX_NO_INITIAL_AGGRO) && !IsPositiveSpell(m_spellInfo->Id) &&
@@ -1866,8 +1865,24 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
         case TARGET_ALL_PARTY_AROUND_CASTER:
         case TARGET_ALL_PARTY_AROUND_CASTER_2:
         case TARGET_ALL_PARTY:
-            FillRaidOrPartyTargets(targetUnitMap, m_caster, m_caster, radius, false, true, true);
+        {
+            switch(m_spellInfo->Id)
+            {
+                case 70893:                                 // Culling the Herd
+                case 53434:                                 // Call of the Wild
+                {
+                    if (Unit *owner = m_caster->GetOwner())
+                        targetUnitMap.push_back(owner);
+                    break;
+                }
+                default:
+                {
+                    FillRaidOrPartyTargets(targetUnitMap, m_caster, m_caster, radius, false, true, true);
+                    break;
+                }
+            }
             break;
+        }
         case TARGET_ALL_RAID_AROUND_CASTER:
         {
             if(m_spellInfo->Id == 57669)                    // Replenishment (special target selection)
@@ -2319,7 +2334,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                 }
 
                 float _target_x, _target_y, _target_z;
-                pTarget->GetClosePoint(_target_x, _target_y, _target_z, pTarget->GetObjectSize(), dist, angle);
+                pTarget->GetClosePoint(_target_x, _target_y, _target_z, pTarget->GetObjectBoundingRadius(), dist, angle);
                 if(pTarget->IsWithinLOS(_target_x, _target_y, _target_z))
                 {
                     targetUnitMap.push_back(m_caster);
@@ -2401,7 +2416,7 @@ void Spell::SetTargetMap(SpellEffectIndex effIndex, uint32 targetMode, UnitList&
                 float dist = minRange+ rand_norm_f()*(maxRange-minRange);
 
                 float _target_x, _target_y, _target_z;
-                m_caster->GetClosePoint(_target_x, _target_y, _target_z, m_caster->GetObjectSize(), dist);
+                m_caster->GetClosePoint(_target_x, _target_y, _target_z, m_caster->GetObjectBoundingRadius(), dist);
                 m_targets.setDestination(_target_x, _target_y, _target_z);
             }
 
@@ -2866,6 +2881,13 @@ void Spell::cast(bool skipCheck)
                 AddTriggeredSpell(52874);                   // Fan of Knives (offhand)
             }
             break;
+        case SPELLFAMILY_HUNTER:
+        {
+            // Lock and Load
+            if (m_spellInfo->Id == 56453)
+                AddPrecastSpell(67544);                     // Lock and Load Marker
+            break;
+        }
         case SPELLFAMILY_PALADIN:
         {
             // Hand of Reckoning
@@ -2919,9 +2941,6 @@ void Spell::cast(bool skipCheck)
         // Ranger: KAPATEJIb changes
         case SPELLFAMILY_WARRIOR:
         {
-            // Shattering Throw
-            if (m_spellInfo->Id == 64382)
-                AddPrecastSpell(64380);                     // Shattering Throw
             break;
         }
         default:
@@ -2961,7 +2980,7 @@ void Spell::cast(bool skipCheck)
     InitializeDamageMultipliers();
 
     // Okay, everything is prepared. Now we need to distinguish between immediate and evented delayed spells
-    if (m_spellInfo->speed > 0.0f || m_spellInfo->Id == 14157)                // hack for Ruthlessness
+    if (m_spellInfo->speed > 0.0f || m_spellInfo->Id == 14157 || m_spellInfo->Id == 64380)                // hack for Ruthlessness & Shattering Throw
     {
 
         // Remove used for cast item if need (it can be already NULL after TakeReagents call
@@ -3198,6 +3217,11 @@ void Spell::update(uint32 difftime)
                     // check if player has turned if flag is set
                     if( m_spellInfo->ChannelInterruptFlags & CHANNEL_FLAG_TURNING && m_castOrientation != m_caster->GetOrientation() )
                         cancel();
+
+                    //Amaru: если во время ченнелинга противник зашел в инвиз или стелс, каст не осуществится
+                    Unit* target = m_targets.getUnitTarget();
+                    if (target && target != m_caster && target->IsHostileTo(m_caster) && !target->isVisibleForOrDetect(m_caster, m_caster, false))
+                        cancel();						
                 }
 
                 // check if there are alive targets left
@@ -3487,13 +3511,15 @@ void Spell::SendSpellStart()
     if (m_spellInfo->runeCostID)
         castFlags |= CAST_FLAG_UNKNOWN10;
 
+    Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
+
     WorldPacket data(SMSG_SPELL_START, (8+8+4+4+2));
     if (m_CastItem)
         data << m_CastItem->GetPackGUID();
     else
-        data << m_caster->GetPackGUID();
+        data << caster->GetPackGUID();
 
-    data << m_caster->GetPackGUID();
+    data << caster->GetPackGUID();
     data << uint8(m_cast_count);                            // pending spell cast?
     data << uint32(m_spellInfo->Id);                        // spellId
     data << uint32(castFlags);                              // cast flags
@@ -3549,14 +3575,16 @@ void Spell::SendSpellGo()
         castFlags |= CAST_FLAG_UNKNOWN7;                    // rune cooldowns list
     }
 
+    Unit* caster = m_originalCaster ? m_originalCaster : m_caster;
+
     WorldPacket data(SMSG_SPELL_GO, 50);                    // guess size
 
     if(m_CastItem)
         data << m_CastItem->GetPackGUID();
     else
-        data << m_caster->GetPackGUID();
+        data << caster->GetPackGUID();
 
-    data << m_caster->GetPackGUID();
+    data << caster->GetPackGUID();
     data << uint8(m_cast_count);                            // pending spell cast?
     data << uint32(m_spellInfo->Id);                        // spellId
     data << uint32(castFlags);                              // cast flags
@@ -4088,7 +4116,7 @@ SpellCastResult Spell::CheckOrTakeRunePower(bool take)
                 continue;
 
             if (take)
-                plr->SetRuneCooldown(i, RUNE_COOLDOWN);         // 5*2=10 sec
+                plr->SetRuneCooldown(i, RUNE_COOLDOWN, m_spellInfo->Id);         // 5*2=10 sec
 
             --runeCost[rune];
         }
@@ -4112,7 +4140,7 @@ SpellCastResult Spell::CheckOrTakeRunePower(bool take)
                     continue;
 
                 if (take)
-                    plr->SetRuneCooldown(i, RUNE_COOLDOWN); // 5*2=10 sec
+                    plr->SetRuneCooldown(i, RUNE_COOLDOWN, m_spellInfo->Id); // 5*2=10 sec
 
                 --runeCost[rune];
 
@@ -4391,21 +4419,11 @@ SpellCastResult Spell::CheckCast(bool strict)
 
             // auto selection spell rank implemented in WorldSession::HandleCastSpellOpcode
             // this case can be triggered if rank not found (too low-level target for first rank)
-            if (m_caster->GetTypeId() == TYPEID_PLAYER && !IsPassiveSpell(m_spellInfo->Id) && !m_CastItem)
+            if (m_caster->GetTypeId() == TYPEID_PLAYER && !m_CastItem && !m_IsTriggeredSpell)
             {
-                for(int i = 0; i < MAX_EFFECT_INDEX; ++i)
-                {
-                    // check only spell that apply positive auras
-                    if (m_spellInfo->Effect[i] == SPELL_EFFECT_APPLY_AURA &&
-                        IsPositiveEffect(m_spellInfo->Id, SpellEffectIndex(i)) &&
-                        // at not self target
-                        !IsCasterSourceTarget(m_spellInfo->EffectImplicitTargetA[i]) &&
-                        // and target low level
-                        target->getLevel() + 10 < m_spellInfo->spellLevel)
-                    {
-                        return SPELL_FAILED_LOWLEVEL;
-                    }
-                }
+                // spell expected to be auto-downranking in cast handle, so must be same
+                if (m_spellInfo != sSpellMgr.SelectAuraRankForLevel(m_spellInfo, target->getLevel()))
+                    return SPELL_FAILED_LOWLEVEL;
             }
         }
         else if (m_caster == target)
@@ -4586,7 +4604,7 @@ SpellCastResult Spell::CheckCast(bool strict)
 
     // not let players cast spells at mount (and let do it to creatures)
     if (m_caster->IsMounted() && m_caster->GetTypeId()==TYPEID_PLAYER && !m_IsTriggeredSpell &&
-        !IsPassiveSpell(m_spellInfo->Id) && !(m_spellInfo->Attributes & SPELL_ATTR_CASTABLE_WHILE_MOUNTED))
+        !IsPassiveSpell(m_spellInfo) && !(m_spellInfo->Attributes & SPELL_ATTR_CASTABLE_WHILE_MOUNTED))
     {
         if (m_caster->isInFlight())
             return SPELL_FAILED_NOT_ON_TAXI;
@@ -4595,7 +4613,7 @@ SpellCastResult Spell::CheckCast(bool strict)
     }
 
     // always (except passive spells) check items (focus object can be required for any type casts)
-    if (!IsPassiveSpell(m_spellInfo->Id))
+    if (!IsPassiveSpell(m_spellInfo))
     {
         SpellCastResult castResult = CheckItems();
         if(castResult != SPELL_CAST_OK)
@@ -5357,6 +5375,14 @@ SpellCastResult Spell::CheckCast(bool strict)
             my_trade->SetSpell(m_spellInfo->Id, m_CastItem);
             return SPELL_FAILED_DONT_REPORT;
         }
+    }
+
+    //Amaru: если во время каста противник зашел в инвиз или стелс, каст не осуществится
+    Unit* target = m_targets.getUnitTarget();
+    if (target && m_caster->GetTypeId() == TYPEID_PLAYER && target != m_caster && m_caster->IsHostileTo(target) && !target->isVisibleForOrDetect(m_caster, m_caster, false))
+    {
+        SendInterrupted(2);
+        return SPELL_FAILED_NO_VALID_TARGETS;
     }
 
     // all ok

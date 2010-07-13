@@ -1266,7 +1266,7 @@ void WorldSession::HandleWhoisOpcode(WorldPacket& recv_data)
 
     uint32 accid = plr->GetSession()->GetAccountId();
 
-    QueryResult *result = loginDatabase.PQuery("SELECT username,email,last_ip FROM account WHERE id=%u", accid);
+    QueryResult *result = LoginDatabase.PQuery("SELECT username,email,last_ip FROM account WHERE id=%u", accid);
     if(!result)
     {
         SendNotification(LANG_ACCOUNT_FOR_PLAYER_NOT_FOUND, charname.c_str());
@@ -1370,10 +1370,10 @@ void WorldSession::HandleFarSightOpcode( WorldPacket & recv_data )
             //WorldPacket data(SMSG_CLEAR_FAR_SIGHT_IMMEDIATE, 0)
             //SendPacket(&data);
             //_player->SetUInt64Value(PLAYER_FARSIGHT, 0);
-            DEBUG_LOG("Removed FarSight from player %u", _player->GetGUIDLow());
+            DEBUG_LOG("Removed FarSight from %s", _player->GetObjectGuid().GetString().c_str());
             break;
         case 1:
-            DEBUG_LOG("Added FarSight (GUID:%u TypeId:%u) to player %u", GUID_LOPART(_player->GetFarSight()), GuidHigh2TypeId(GUID_HIPART(_player->GetFarSight())), _player->GetGUIDLow());
+            DEBUG_LOG("Added FarSight %s to %s", _player->GetFarSightGuid().GetString().c_str(), _player->GetObjectGuid().GetString().c_str());
             break;
     }
 }

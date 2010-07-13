@@ -84,7 +84,7 @@ namespace VMAP
             // Store all the map tile idents that are loaded for that map
             // some maps are not splitted into tiles and we have to make sure, not removing the map before all tiles are removed
             G3D::Table<unsigned int, bool> iLoadedMapTiles;
-            std::string iBasePath;           
+            std::string iBasePath;
 
         private:
             float getIntersectionTime(const G3D::Ray& pRay, float pMaxDist, bool pStopAtFirstHit);
@@ -114,7 +114,7 @@ namespace VMAP
             void addDirFile(const std::string& pDirName, const FilesInDir& pFilesInDir) { iLoadedDirFiles.set(pDirName, pFilesInDir); }
             size_t size() { return(iTree->size()); }
 
-            size_t modelsMemUsage;	
+            size_t modelsMemUsage;
     };
 
     //===========================================================
@@ -153,7 +153,7 @@ namespace VMAP
             VMapManager();
             ~VMapManager(void);
 
-	    size_t getMemUsage();
+            size_t getMemUsage();
 
             int loadMap(const char* pBasePath, unsigned int pMapId, int x, int y);
 

@@ -111,18 +111,17 @@ bool ChatHandler::HandleServerInfoCommand(const char* /*args*/)
     PSendSysMessage(LANG_UPTIME, str.c_str());
     PSendSysMessage("Statistics counting: max spell handle time %u ms", sStatMgr.spell_work.first);
     PSendSysMessage("Statistics counting: max spell handle time spell id %u", sStatMgr.spell_work.second);
-	
-	//calculate total memory reserved by all SQL storages
-	uint32 total_mem = 0;
-	total_mem += sCreatureStorage.GetTotalSize() + sCreatureDataAddonStorage.GetTotalSize() +
-					sCreatureModelStorage.GetTotalSize() + sCreatureInfoAddonStorage.GetTotalSize() +
-					sEquipmentStorage.GetTotalSize() + sGOStorage.GetTotalSize() +
-					sItemStorage.GetTotalSize() + sPageTextStore.GetTotalSize() +
-					sInstanceTemplate.GetTotalSize();
-	PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem / 1024 / 1024);
-	PSendSysMessage("sObjectMgr memory usage: %u mb", sObjectMgr.GetMemoryUsage() / 1024 / 1024);
-	PSendSysMessage("VMAP memory usage: %u mb", VMAP::VMapFactory::createOrGetVMapManager()->getMemUsage() / 1024 / 1024);
-	PSendSysMessage("Grid's map size: %u mb", sMapMgr.GetTotalGridsSize() / 1024 / 1024);
+    //calculate total memory reserved by all SQL storages
+    uint32 total_mem = 0;
+    total_mem += sCreatureStorage.GetTotalSize() + sCreatureDataAddonStorage.GetTotalSize() +
+        sCreatureModelStorage.GetTotalSize() + sCreatureInfoAddonStorage.GetTotalSize() +
+	sEquipmentStorage.GetTotalSize() + sGOStorage.GetTotalSize() +
+	sItemStorage.GetTotalSize() + sPageTextStore.GetTotalSize() +
+	sInstanceTemplate.GetTotalSize();
+    PSendSysMessage("Total memory use by SQL storages: %u mb", total_mem / 1024 / 1024);
+    PSendSysMessage("sObjectMgr memory usage: %u mb", sObjectMgr.GetMemoryUsage() / 1024);
+    PSendSysMessage("VMAP memory usage: %u mb", VMAP::VMapFactory::createOrGetVMapManager()->getMemUsage() / 1024 / 1024);
+    PSendSysMessage("Grid's map size: %u mb", sMapMgr.GetTotalGridsSize() / 1024 / 1024);
     return true;
 }
 
@@ -268,14 +267,14 @@ bool ChatHandler::HandleAccountLockCommand(const char* args)
     std::string argstr = (char*)args;
     if (argstr == "on")
     {
-        loginDatabase.PExecute( "UPDATE account SET locked = '1' WHERE id = '%d'",GetAccountId());
+        LoginDatabase.PExecute( "UPDATE account SET locked = '1' WHERE id = '%d'",GetAccountId());
         PSendSysMessage(LANG_COMMAND_ACCLOCKLOCKED);
         return true;
     }
 
     if (argstr == "off")
     {
-        loginDatabase.PExecute( "UPDATE account SET locked = '0' WHERE id = '%d'",GetAccountId());
+        LoginDatabase.PExecute( "UPDATE account SET locked = '0' WHERE id = '%d'",GetAccountId());
         PSendSysMessage(LANG_COMMAND_ACCLOCKUNLOCKED);
         return true;
     }

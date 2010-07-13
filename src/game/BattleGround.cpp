@@ -706,7 +706,7 @@ void BattleGround::EndBattleGround(uint32 winner)
     {
         SetWinner(3);
     }
-
+    
     SetStatus(STATUS_WAIT_LEAVE);
     //we must set it this way, because end time is sent in packet!
     m_EndTime = TIME_TO_AUTOREMOVE;
@@ -759,7 +759,11 @@ void BattleGround::EndBattleGround(uint32 winner)
         // should remove spirit of redemption
         if (plr->HasAuraType(SPELL_AURA_SPIRIT_OF_REDEMPTION))
             plr->RemoveSpellsCausingAura(SPELL_AURA_MOD_SHAPESHIFT);
-
+	
+	// megai2: remove -10% heal buff
+	if (plr->HasAura(74411))
+	    plr->RemoveAurasDueToSpell(74411); 
+	
         if (!plr->isAlive())
         {
             plr->ResurrectPlayer(1.0f);
@@ -1231,6 +1235,9 @@ void BattleGround::AddPlayer(Player *plr)
     // setup BG group membership
     PlayerAddedToBGCheckIfBGIsRunning(plr);
     AddOrSetPlayerToCorrectBgGroup(plr, guid, team);
+
+    //megai2: cast -10% heal debuff
+    plr->CastSpell(plr, 74411, true);
 
     // Log
     DETAIL_LOG("BATTLEGROUND: Player %s joined the battle.", plr->GetName());

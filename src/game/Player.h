@@ -365,6 +365,7 @@ struct RuneInfo
     uint8  BaseRune;
     uint8  CurrentRune;
     uint16 Cooldown;                                        // msec
+    int32 ConsumedBySpell;
 };
 
 struct Runes
@@ -1189,7 +1190,7 @@ class MANGOS_DLL_SPEC Player : public Unit
 
         void RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent = false);
         void RemoveMiniPet();
-        Pet* GetMiniPet();
+        Pet* GetMiniPet() const;
         void SetMiniPet(Pet* pet) { m_miniPet = pet->GetGUID(); }
 
         template<typename Func>
@@ -1328,6 +1329,15 @@ class MANGOS_DLL_SPEC Player : public Unit
             Item* mainItem = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
             return mainItem && mainItem->GetProto()->InventoryType == INVTYPE_2HWEAPON && !CanTitanGrip();
         }
+
+	bool IsTwoHandUsedInDualWield() const
+        {	
+            Item* offItem = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_OFFHAND);
+            Item* mainItem = GetItemByPos(INVENTORY_SLOT_BAG_0, EQUIPMENT_SLOT_MAINHAND);
+            return mainItem && mainItem->GetProto()->InventoryType == INVTYPE_2HWEAPON || offItem && offItem->GetProto()->InventoryType == INVTYPE_2HWEAPON;
+        }
+
+
         void SendNewItem( Item *item, uint32 count, bool received, bool created, bool broadcast = false );
         bool BuyItemFromVendorSlot(uint64 vendorguid, uint32 vendorslot, uint32 item, uint8 count, uint8 bag, uint8 slot);
 
@@ -2227,8 +2237,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void EnterVehicle(Vehicle *vehicle);
         void ExitVehicle(Vehicle *vehicle);
 
-        uint64 GetFarSight() const { return GetUInt64Value(PLAYER_FARSIGHT); }
-        void SetFarSightGUID(uint64 guid);
+        ObjectGuid const& GetFarSightGuid() const { return GetGuidValue(PLAYER_FARSIGHT); }
 
         // Transports
         Transport * GetTransport() const { return m_transport; }
@@ -2314,6 +2323,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         void SendRaidInfo();
         void SendSavedInstances();
         static void ConvertInstancesToGroup(Player *player, Group *group = NULL, uint64 player_guid = 0);
+        InstanceSave* GetBoundInstanceSaveForSelfOrGroup(uint32 mapid);
 
         /*********************************************************/
         /***                   GROUP SYSTEM                    ***/
@@ -2355,7 +2365,17 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool IsBaseRuneSlotsOnCooldown(RuneType runeType) const;
         void SetBaseRune(uint8 index, RuneType baseRune) { m_runes->runes[index].BaseRune = baseRune; }
         void SetCurrentRune(uint8 index, RuneType currentRune) { m_runes->runes[index].CurrentRune = currentRune; }
-        void SetRuneCooldown(uint8 index, uint16 cooldown) { m_runes->runes[index].Cooldown = cooldown; m_runes->SetRuneState(index, (cooldown == 0) ? true : false); }
+        void SetRuneCooldown(uint8 index, uint16 cooldown, uint32 bySpell)
+        { 
+            m_runes->runes[index].Cooldown = cooldown; 
+            if (bySpell != -1)
+                m_runes->runes[index].ConsumedBySpell = bySpell;
+            m_runes->SetRuneState(index, (cooldown == 0) ? true : false); 
+        }
+        int32 RuneUsedBySpell(uint8 index)
+        {
+            return m_runes->runes[index].ConsumedBySpell;
+        }
         void ConvertRune(uint8 index, RuneType newType);
         void ResyncRunes(uint8 count);
         void AddRunePower(uint8 index);
@@ -2367,7 +2387,6 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool HasTitle(CharTitlesEntry const* title) { return HasTitle(title->bit_index); }
         void SetTitle(CharTitlesEntry const* title, bool lost = false);
 
-        bool isActiveObject() const { return true; }
         bool canSeeSpellClickOn(Creature const* creature) const;
 
         uint64 m_lastSpellTargetGUID; // ÎÎÏ - õóéíÿ.
@@ -2622,14 +2641,24 @@ class MANGOS_DLL_SPEC Player : public Unit
         int32 CalculateReputationGain(uint32 creatureOrQuestLevel, int32 rep, int32 faction, bool for_quest);
         void AdjustQuestReqItemCount( Quest const* pQuest, QuestStatusData& questStatusData );
 
-        bool IsCanDelayTeleport() const { return m_bCanDelayTeleport; }
         void SetCanDelayTeleport(bool setting) { m_bCanDelayTeleport = setting; }
-        bool IsHasDelayedTeleport() const { return m_bHasDelayedTeleport; }
-        void SetDelayedTeleportFlag(bool setting) { m_bHasDelayedTeleport = setting; }
+        bool IsHasDelayedTeleport() const
+        {
+            // we should not execute delayed teleports for now dead players but has been alive at teleport
+            // because we don't want player's ghost teleported from graveyard
+            return m_bHasDelayedTeleport && (isAlive() || !m_bHasBeenAliveAtDelayedTeleport);
+        }
+
+        bool SetDelayedTeleportFlagIfCan()
+        {
+            m_bHasDelayedTeleport = m_bCanDelayTeleport;
+            m_bHasBeenAliveAtDelayedTeleport = isAlive();
+            return m_bHasDelayedTeleport;
+        }
 
         void ScheduleDelayedOperation(uint32 operation)
         {
-            if(operation < DELAYED_END)
+            if (operation < DELAYED_END)
                 m_DelayedOperations |= operation;
         }
 
@@ -2663,6 +2692,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         uint32 m_DelayedOperations;
         bool m_bCanDelayTeleport;
         bool m_bHasDelayedTeleport;
+        bool m_bHasBeenAliveAtDelayedTeleport;
 
         uint32 m_DetectInvTimer;
 
@@ -2743,7 +2773,7 @@ template<typename Func>
 bool Player::CheckAllControlledUnits(Func const& func, bool withTotems, bool withGuardians, bool withCharms, bool withMiniPet) const
 {
     if (withMiniPet)
-        if(Unit* mini = GetMiniPet())
+        if(Unit const* mini = GetMiniPet())
             if (func(mini))
                 return true;
 

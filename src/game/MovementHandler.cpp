@@ -247,7 +247,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
 
         if ((alarm_count > 1 || sum_count > 2) && Map != 571)
         {
-            QueryResult *loginres = loginDatabase.PQuery("SELECT count(id) FROM account_banned WHERE id = '%u' AND bannedby = 'Anticheat'", Acc);
+            QueryResult *loginres = LoginDatabase.PQuery("SELECT count(id) FROM account_banned WHERE id = '%u' AND bannedby = 'Anticheat'", Acc);
             if (loginres)
             {
                 count_ban = (*loginres)[0].GetUInt32();
@@ -306,7 +306,7 @@ bool WorldSession::Anti__ReportCheat(const char* Reason,float Speed,const char* 
     }
     if(sWorld.GetMvAnticheatBan() & 2)
     {
-        QueryResult *result = loginDatabase.PQuery("SELECT last_ip FROM account WHERE id=%u", Acc);
+        QueryResult *result = LoginDatabase.PQuery("SELECT last_ip FROM account WHERE id=%u", Acc);
         if(result)
         {
 
@@ -455,7 +455,7 @@ void WorldSession::HandleMoveWorldportAckOpcode()
         {
             if (mapDiff->resetTime)
             {
-                if (time_t timeReset = sInstanceSaveMgr.GetResetTimeFor(mEntry->MapID,diff))
+                if (time_t timeReset = sInstanceSaveMgr.GetScheduler().GetResetTimeFor(mEntry->MapID,diff))
                 {
                     uint32 timeleft = uint32(timeReset - time(NULL));
                     GetPlayer()->SendInstanceResetWarning(mEntry->MapID, diff, timeleft);
@@ -929,10 +929,10 @@ void WorldSession::HandleMoveNotActiveMover(WorldPacket &recv_data)
 
     if(_player->GetMover()->GetObjectGuid() == old_mover_guid)
     {
-        sLog.outError("HandleMoveNotActiveMover: incorrect mover guid: mover is %s and should be %s instead of %s (%u != %u)",
+        sLog.outError("HandleMoveNotActiveMover: incorrect mover guid: mover is %s and should be %s instead of %s",
             _player->GetMover()->GetObjectGuid().GetString().c_str(),
             _player->GetObjectGuid().GetString().c_str(),
-			old_mover_guid.GetString().c_str(), _player->GetMover()->GetObjectGuid().GetRawValue(), old_mover_guid.GetRawValue());
+            old_mover_guid.GetString().c_str());
         recv_data.rpos(recv_data.wpos());                   // prevent warnings spam
         return;
     }

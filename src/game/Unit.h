@@ -580,7 +580,8 @@ enum UnitFlags2
     UNIT_FLAG2_UNK1                 = 0x00000002,           // Hides unit model (show only player equip)
     UNIT_FLAG2_COMPREHEND_LANG      = 0x00000008,
     UNIT_FLAG2_FORCE_MOVE           = 0x00000040,
-    UNIT_FLAG2_DISARM               = 0x00000400,           // disarm or something
+    UNIT_FLAG2_DISARM_SHIELD        = 0x00000080,           //disarm shield
+    UNIT_FLAG2_DISARM_RANGED        = 0x00000400,           //disarm ranged
     UNIT_FLAG2_REGENERATE_POWER     = 0x00000800,
 };
 
@@ -1159,6 +1160,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         Unit* SelectRandomUnfriendlyTarget(Unit* except = NULL, float radius = ATTACK_DISTANCE) const;
         Unit* SelectRandomFriendlyTarget(Unit* except = NULL, float radius = ATTACK_DISTANCE) const;
         bool hasNegativeAuraWithInterruptFlag(uint32 flag);
+        bool hasPositiveAuraWithInterruptFlag(uint32 flag);
         void SendMeleeAttackStop(Unit* victim);
         void SendMeleeAttackStart(Unit* pVictim);
 
@@ -1297,6 +1299,17 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         float GetUnitParryChance()    const;
         float GetUnitBlockChance()    const;
         float GetUnitCriticalChance(WeaponAttackType attackType, const Unit *pVictim) const;
+        bool CanUseAttackType(uint8 attacktype) const
+        {
+            bool haveweapon = true;
+            switch(attacktype)
+            {
+                case BASE_ATTACK: haveweapon = !HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISARMED); break;
+                case OFF_ATTACK: haveweapon = !HasFlag(UNIT_FIELD_FLAGS_2,UNIT_FLAG2_DISARM_SHIELD); break;
+                case RANGED_ATTACK: haveweapon = !HasFlag(UNIT_FIELD_FLAGS_2,UNIT_FLAG2_DISARM_RANGED); break;
+            }
+            return !IsInFeralForm() && haveweapon;
+       }
 
         virtual uint32 GetShieldBlockValue() const =0;
         uint32 GetUnitMeleeSkill(Unit const* target = NULL) const { return (target ? getLevelForTarget(target) : getLevel()) * 5; }
@@ -1708,6 +1721,9 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void setTransForm(uint32 spellid) { m_transform = spellid;}
         uint32 getTransForm() const { return m_transform;}
 
+        // at any changes to scale and/or displayId
+        void UpdateModelData();
+
         DynamicObject* GetDynObject(uint32 spellId, SpellEffectIndex effIndex);
         DynamicObject* GetDynObject(uint32 spellId);
         void AddDynObject(DynamicObject* dynObj);
@@ -1957,14 +1973,14 @@ void Unit::CallForAllControlledUnits(Func const& func, bool withTotems, bool wit
 template<typename Func>
 bool Unit::CheckAllControlledUnits(Func const& func, bool withTotems, bool withGuardians, bool withCharms) const
 {
-    if (Pet* pet = GetPet())
+    if (Pet const* pet = GetPet())
         if (func(pet))
             return true;
 
     if (withGuardians)
     {
         for(GuardianPetList::const_iterator itr = m_guardianPets.begin(); itr != m_guardianPets.end(); ++itr)
-            if (Unit* guardian = Unit::GetUnit(*this,*itr))
+            if (Unit const* guardian = Unit::GetUnit(*this,*itr))
                 if (func(guardian))
                     return true;
 
@@ -1973,13 +1989,13 @@ bool Unit::CheckAllControlledUnits(Func const& func, bool withTotems, bool withG
     if (withTotems)
     {
         for (int i = 0; i < MAX_TOTEM_SLOT; ++i)
-            if (Unit *totem = _GetTotem(TotemSlot(i)))
+            if (Unit const* totem = _GetTotem(TotemSlot(i)))
                 if (func(totem))
                     return true;
     }
 
     if (withCharms)
-        if(Unit* charm = GetCharm())
+        if(Unit const* charm = GetCharm())
             if (func(charm))
                 return true;
 

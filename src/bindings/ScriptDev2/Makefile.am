@@ -583,7 +583,6 @@ system/ScriptLoader.cpp \
 system/ScriptLoader.h \
 system/system.cpp \
 system/system.h
-##7z#revision.h
 
 
 ## magic to include revision data in SD2 version string

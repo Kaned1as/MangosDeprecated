@@ -695,7 +695,7 @@ namespace VMAP
                             result = mc->readFile(fname.c_str());
                             if(result)
                             {
-				modelsMemUsage += mc->getMemUsage();
+                                modelsMemUsage += mc->getMemUsage();
                                 addModelContainer(name, mc);
                                 newModelLoaded = true;
                             }

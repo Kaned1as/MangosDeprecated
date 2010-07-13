@@ -99,7 +99,7 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
             {
                 case COMMAND_STAY:                          //flat=1792  //STAY
                     pet->StopMoving();
-                    pet->GetMotionMaster()->Clear();
+                    pet->GetMotionMaster()->Clear(false);
                     pet->GetMotionMaster()->MoveIdle();
                     charmInfo->SetCommandState( COMMAND_STAY );
                     break;
@@ -204,7 +204,7 @@ void WorldSession::HandlePetAction( WorldPacket & recv_data )
             }
 
             // do not cast not learned spells
-            if(!pet->HasSpell(spellid) || IsPassiveSpell(spellid))
+            if(!pet->HasSpell(spellid) || IsPassiveSpell(spellInfo))
                 return;
 
             pet->clearUnitState(UNIT_STAT_MOVING);
@@ -639,7 +639,7 @@ void WorldSession::HandlePetCastSpellOpcode( WorldPacket& recvPacket )
     }
 
     // do not cast not learned spells
-    if (!pet->HasSpell(spellid) || IsPassiveSpell(spellid))
+    if (!pet->HasSpell(spellid) || IsPassiveSpell(spellInfo))
         return;
 
     SpellCastTargets targets;

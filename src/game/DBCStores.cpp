@@ -451,7 +451,7 @@ void LoadDBCStores(const std::string& dataPath)
     LoadDBC(availableDbcLocales,bar,bad_dbc_files,sSpellStore,               dbcPath,"Spell.dbc");
     for(uint32 i = 1; i < sSpellStore.GetNumRows(); ++i)
     {
-        SpellEntry const * spell = sSpellStore.LookupEntry(i);
+        SpellEntry * spell = (SpellEntry*)(uint32*)sSpellStore.LookupEntry(i);
         if(spell && spell->Category)
             sSpellCategoryStore[spell->Category].insert(i);
 
@@ -460,6 +460,21 @@ void LoadDBCStores(const std::string& dataPath)
         #if MANGOS_ENDIAN == MANGOS_BIGENDIAN
         std::swap(*((uint32*)(&spell->SpellFamilyFlags)),*(((uint32*)(&spell->SpellFamilyFlags))+1));
         #endif
+        if(!spell)
+            continue;
+
+        //megai2: set interrupt to 0 for spirit of redemption
+        if ((spell->Id == 27795) || (spell->Id == 27827) || (spell->Id == 27792))
+            spell->AuraInterruptFlags = 0;
+
+        //megai2: set 8 sec update to dk death rune auras
+        if ((spell->SpellFamilyName ==  15/*SPELLFAMILY_DEATHKNIGHT*/) && (spell->EffectApplyAuraName[0] == 226) &&
+           ((spell->SpellFamilyFlags & UI64LIT(0x0000000000004000)) || (spell->SpellIconID == 22) || (spell->SpellIconID == 3041)))
+            spell->EffectAmplitude[0] = 8*IN_MILLISECONDS;
+
+        //megai2: set 0 index to Shattering throw triggered spell
+        if (spell->Id == 64380)
+            spell->CastingTimeIndex = 0;
     }
 
     for (uint32 j = 0; j < sSkillLineAbilityStore.GetNumRows(); ++j)
