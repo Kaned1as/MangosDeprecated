@@ -1970,6 +1970,56 @@ CreatureAI* GetAI_npc_rune_blade(Creature* pCreature)
     return new npc_rune_blade(pCreature);
 }
 
+bool GossipHello_npc_event(Player *player, Creature *creature)
+{
+
+    char const *_accept, *_decline;
+
+    switch (LocaleConstant currentlocale = player->GetSession()->GetSessionDbcLocale())
+    {
+     case LOCALE_enUS:
+     case LOCALE_koKR:
+     case LOCALE_frFR:
+     case LOCALE_deDE:
+     case LOCALE_zhCN:
+     case LOCALE_zhTW:
+     case LOCALE_esES:
+     case LOCALE_esMX:
+                      _accept = "Take me to the event!";
+                      _decline = "Sorry, can't stay. I should leave.";
+                      break;
+     case LOCALE_ruRU:
+                      _accept = "Отправиться на эвент.";
+                      _decline = "Простите, у меня неотложные дела. Мне нужно уйти.";
+                      break;
+     default:
+                      _accept = "Take me to the event!";
+                      _decline = "Sorry, can't stay. I should leave.";
+                      break;
+    };
+
+
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, _accept, GOSSIP_SENDER_MAIN, 1);
+    player->ADD_GOSSIP_ITEM(GOSSIP_ICON_TAXI, _decline, GOSSIP_SENDER_MAIN, 2);
+
+    player->PlayerTalkClass->SendGossipMenu(888000, creature->GetGUID());
+    return true;
+}
+
+bool GossipSelect_npc_event(Player *player, Creature *creature, uint32 sender, uint32 action)
+{
+    if(sender != GOSSIP_SENDER_MAIN) return true;
+    if(!player->getAttackers().empty()) return true;
+
+    if(action == 1)
+        player->SetPhaseMask(128, true);
+    else 
+        player->SetPhaseMask(1, true);
+
+    player->CLOSE_GOSSIP_MENU();
+    return true;
+}
+
 void AddSC_npcs_special()
 {
     Script* newscript;
@@ -2073,6 +2123,12 @@ void AddSC_npcs_special()
     newscript = new Script;
     newscript->Name = "npc_runeblade";
     newscript->GetAI = &GetAI_npc_rune_blade;
+    newscript->RegisterSelf();
+
+    newscript = new Script;
+    newscript->Name = "npc_event";
+    newscript->pGossipHello = &GossipHello_npc_event;
+    newscript->pGossipSelect = &GossipSelect_npc_event;
     newscript->RegisterSelf();
 
 }
