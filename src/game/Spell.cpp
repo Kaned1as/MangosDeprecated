@@ -2809,6 +2809,10 @@ void Spell::cast(bool skipCheck)
         {
             if (m_spellInfo->Mechanic == MECHANIC_BANDAGE)  // Bandages
                 AddPrecastSpell(11196);                     // Recently Bandaged
+            else if(m_spellInfo->Id == 7744)                // Will of the Forsaken
+                AddTriggeredSpell(72757);                   // PvP trinket Cooldown
+            else if(m_spellInfo->Id == 42292)               // PvP trinket
+                AddTriggeredSpell(72752);                   // Will of the Forsaken Cooldown
             else if(m_spellInfo->Id == 20594)               // Stoneskin
                 AddTriggeredSpell(65116);                   // Stoneskin - armor 10% for 8 sec
             else if(m_spellInfo->Id == 71904)               // Chaos Bane strength buff
