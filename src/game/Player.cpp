@@ -10075,7 +10075,8 @@ uint8 Player::CanStoreItems( Item **pItems,int count) const
     int inv_tokens[CURRENCYTOKEN_SLOT_END-CURRENCYTOKEN_SLOT_START];
 
     memset(inv_slot_items,0,sizeof(int)*(INVENTORY_SLOT_ITEM_END-INVENTORY_SLOT_ITEM_START));
-    memset(inv_bags,0,sizeof(int)*(INVENTORY_SLOT_BAG_END-INVENTORY_SLOT_BAG_START)*MAX_BAG_SIZE);
+    // еебанууутые!
+    for(int i = 0; i < (INVENTORY_SLOT_BAG_END-INVENTORY_SLOT_BAG_START); i++) { memset(inv_bags[i],0,sizeof(int)* MAX_BAG_SIZE); }
     memset(inv_keys,0,sizeof(int)*(KEYRING_SLOT_END-KEYRING_SLOT_START));
     memset(inv_tokens,0,sizeof(int)*(CURRENCYTOKEN_SLOT_END-CURRENCYTOKEN_SLOT_START));
 

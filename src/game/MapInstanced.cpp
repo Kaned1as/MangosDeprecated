@@ -29,7 +29,9 @@ MapInstanced::MapInstanced(uint32 id, time_t expiry) : Map(id, expiry, 0, DUNGEO
     // initialize instanced maps list
     m_InstancedMaps.clear();
     // fill with zero
-    memset(&GridMapReference, 0, MAX_NUMBER_OF_GRIDS*MAX_NUMBER_OF_GRIDS*sizeof(uint16));
+    // скажем дружно - нахуй нужно!
+    for(int i = 0; i < MAX_NUMBER_OF_GRIDS; ++i)
+        memset(GridMapReference[i], 0, MAX_NUMBER_OF_GRIDS*sizeof(uint16));
 }
 
 void MapInstanced::InitVisibilityDistance()
