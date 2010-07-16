@@ -161,6 +161,9 @@ struct MANGOS_DLL_DECL boss_xevozzAI : public ScriptedAI
 
     void UpdateAI(const uint32 uiDiff)
     {
+        if (!m_pInstance)
+            return;
+
         if (m_pInstance->GetData(TYPE_XEVOZZ) == SPECIAL && !MovementStarted)
             StartMovement(0);
 
