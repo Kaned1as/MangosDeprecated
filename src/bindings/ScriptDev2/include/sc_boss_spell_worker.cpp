@@ -24,8 +24,8 @@ BossSpellWorker::~BossSpellWorker()
 
 void BossSpellWorker::Reset()
 {
-     memset(&m_uiSpell_Timer, 0, sizeof(m_uiSpell_Timer));
-     memset(&m_BossSpell,0,sizeof(m_BossSpell));
+     memset(m_uiSpell_Timer, 0, sizeof(m_uiSpell_Timer));
+     memset(m_BossSpell,0,sizeof(m_BossSpell));
      _bossSpellCount = 0;
      LoadSpellTable();
      resetTimers();
@@ -659,7 +659,7 @@ Unit* BossSpellWorker::_doSelect(uint32 SpellID, bool spellsearchtype, float ran
 #endif 
     uint8 _count = 0;
 
-    memset(&_list, 0, sizeof(_list));
+    memset(_list, 0, sizeof(_list));
 
           for(Map::PlayerList::const_iterator i = pList.begin(); i != pList.end(); ++i)
           {
