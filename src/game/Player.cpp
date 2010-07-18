@@ -21077,7 +21077,9 @@ void Player::ConvertRune(uint8 index, RuneType newType)
 
 void Player::ResyncRunes(uint8 count)
 {
-    WorldPacket data(SMSG_RESYNC_RUNES, count * 2);
+    WorldPacket data(SMSG_RESYNC_RUNES, 4 + count * 2);
+    data << uint32(count + 1);
+
     for(uint32 i = 0; i < count; ++i)
     {
         data << uint8(GetCurrentRune(i));                   // rune type
@@ -21115,7 +21117,7 @@ void Player::InitRunes()
     {
         SetBaseRune(i, runeSlotTypes[i]);                   // init base types
         SetCurrentRune(i, runeSlotTypes[i]);                // init current types
-        SetRuneCooldown(i, 0, 0);                              // reset cooldowns
+        SetRuneCooldown(i, 0);                              // reset cooldowns
         m_runes->SetRuneState(i);
     }
 

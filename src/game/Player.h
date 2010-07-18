@@ -2365,7 +2365,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         bool IsBaseRuneSlotsOnCooldown(RuneType runeType) const;
         void SetBaseRune(uint8 index, RuneType baseRune) { m_runes->runes[index].BaseRune = baseRune; }
         void SetCurrentRune(uint8 index, RuneType currentRune) { m_runes->runes[index].CurrentRune = currentRune; }
-        void SetRuneCooldown(uint8 index, uint16 cooldown, uint32 bySpell)
+        void SetRuneCooldown(uint8 index, uint16 cooldown, uint32 bySpell = 0)
         { 
             m_runes->runes[index].Cooldown = cooldown; 
             if (bySpell != -1)

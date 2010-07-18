@@ -78,7 +78,7 @@ void Pet::RemoveFromWorld()
     Unit::RemoveFromWorld();
 }
 
-bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool current )
+bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool current, uint32 true_summon_spellid )
 {
     m_loading = true;
 
@@ -177,7 +177,10 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
 
     setPetType(pet_type);
     setFaction(owner->getFaction());
-    SetUInt32Value(UNIT_CREATED_BY_SPELL, summon_spell_id);
+    if(true_summon_spellid)
+        SetUInt32Value(UNIT_CREATED_BY_SPELL, true_summon_spellid);
+    else
+        SetUInt32Value(UNIT_CREATED_BY_SPELL, summon_spell_id);
 
     CreatureInfo const *cinfo = GetCreatureInfo();
     if (cinfo->type == CREATURE_TYPE_CRITTER)
@@ -483,7 +486,7 @@ void Pet::setDeathState(DeathState s)                       // overwrite virtual
                 p_owner->SendCooldownEvent(spellInfo);
                 // Raise Dead hack
                 if (spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && spellInfo->SpellFamilyFlags & 0x1000)
-                    if (spellInfo = sSpellStore.LookupEntry(52150))                
+                    if (spellInfo = sSpellStore.LookupEntry(46584))
                         p_owner->SendCooldownEvent(spellInfo);
             }
         }

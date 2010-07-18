@@ -5082,7 +5082,7 @@ void Spell::EffectSummonPet(SpellEffectIndex eff_idx)
     Pet* NewSummon = new Pet;
 
     // petentry==0 for hunter "call pet" (current pet summoned if any)
-    if(m_caster->GetTypeId() == TYPEID_PLAYER && NewSummon->LoadPetFromDB((Player*)m_caster, petentry))
+    if(m_caster->GetTypeId() == TYPEID_PLAYER && NewSummon->LoadPetFromDB((Player*)m_caster, petentry, false, m_spellInfo->Id))
         return;
 
     // not error in case fail hunter call pet
@@ -8288,7 +8288,7 @@ void Spell::EffectActivateRune(SpellEffectIndex eff_idx)
     {
         if(plr->GetRuneCooldown(j) && plr->GetCurrentRune(j) == RuneType(m_spellInfo->EffectMiscValue[eff_idx]))
         {
-            plr->SetRuneCooldown(j, 0, 0);
+            plr->SetRuneCooldown(j, 0);
         }
     }
 }

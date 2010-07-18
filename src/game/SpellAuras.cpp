@@ -8587,7 +8587,7 @@ void Aura::PeriodicDummyTick()
                             roll_chance_i(sSpellMgr.GetSpellRank(spell->Id)*33))
                         {
                             plr->ConvertRune(i, RUNE_DEATH);
-                            plr->SetRuneCooldown(i, plr->GetRuneCooldown(i), 0); //megai2: prevent overusage..
+                            plr->SetRuneCooldown(i, plr->GetRuneCooldown(i)); //megai2: prevent overusage..
                             if (deathRuneType != RUNE_DEATH)
                                 break;
                             deathRuneType = plr->GetCurrentRune(i);
@@ -8625,7 +8625,7 @@ void Aura::PeriodicDummyTick()
                         if (((usedBy->SpellIconID == 2624) || (usedBy->Id == 50842)) && roll_chance_i(sSpellMgr.GetSpellRank(spell->Id)*33))
                         {
                             plr->ConvertRune(i, RUNE_DEATH);
-                            plr->SetRuneCooldown(i, plr->GetRuneCooldown(i), 0); //megai2: prevent overusage..
+                            plr->SetRuneCooldown(i, plr->GetRuneCooldown(i)); //megai2: prevent overusage..
                             break;
                         }
                     }
@@ -8652,7 +8652,7 @@ void Aura::PeriodicDummyTick()
                         if (((usedBy->SpellIconID == 2624) || (usedBy->Id == 50842)) && roll_chance_i(spell->CalculateSimpleValue(EFFECT_INDEX_1)*10))
                         {
                             plr->ConvertRune(i, RUNE_DEATH);
-                            plr->SetRuneCooldown(i, plr->GetRuneCooldown(i), 0); //megai2: prevent overusage..
+                            plr->SetRuneCooldown(i, plr->GetRuneCooldown(i)); //megai2: prevent overusage..
                             break;
                         }
                     }
