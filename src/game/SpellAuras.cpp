@@ -4153,16 +4153,18 @@ void Aura::HandleAuraModDisarm(bool apply, bool Real)
  
     if (apply)
         target->SetFlag(field, flag);
-    else
-        target->RemoveFlag(field, flag);
  
     if (target->GetTypeId() == TYPEID_PLAYER)
     {
-        //Amaru: buggy shit, dunno how to do it better
-        //if (Item *pItem = ((Player*)target)->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-        //    ((Player*)target)->_ApplyItemMods(pItem, slot, !apply);
+        //Amaru: эта штука должна быть точно между Set и Remove
+        if (Item *pItem = ((Player*)target)->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+            ((Player*)target)->_ApplyItemMods(pItem, slot, !apply);
     }  
-    else
+
+    if (!apply)
+        target->RemoveFlag(field, flag);
+
+    if (target->GetTypeId() != TYPEID_PLAYER)
         return;
  
     // main-hand attack speed already set to special value for feral form already and don't must change and reset at remove.
@@ -4174,8 +4176,7 @@ void Aura::HandleAuraModDisarm(bool apply, bool Real)
            ((Player*)target)->SetRegularAttackTime();
     }
 
-    if (target->GetTypeId() == TYPEID_UNIT && ((Creature*)target)->GetCurrentEquipmentId())
-        target->UpdateDamagePhysical(attType);
+    ((Player*)target)->UpdateDamagePhysical(attType);
 }
 
 void Aura::HandleAuraModStun(bool apply, bool Real)

@@ -6915,9 +6915,6 @@ void Player::_ApplyItemMods(Item *item, uint8 slot,bool apply)
 
     uint32 attacktype = Player::GetAttackBySlot(slot);
 
-    if (!CanUseAttackType(attacktype))
-        return;
-
     if(attacktype < MAX_ATTACK)
         _ApplyWeaponDependentAuraMods(item,WeaponAttackType(attacktype),apply);
 
@@ -10433,6 +10430,7 @@ uint8 Player::CanEquipItem( uint8 slot, uint16 &dest, Item *pItem, bool swap, bo
 
             uint32 type = pProto->InventoryType;
 
+
             if (eslot == EQUIPMENT_SLOT_OFFHAND)
             {
                 if (type == INVTYPE_WEAPON || type == INVTYPE_WEAPONOFFHAND)
@@ -10472,6 +10470,26 @@ uint8 Player::CanEquipItem( uint8 slot, uint16 &dest, Item *pItem, bool swap, bo
                         return swap ? EQUIP_ERR_ITEMS_CANT_BE_SWAPPED : EQUIP_ERR_INVENTORY_FULL;
                 }
             }
+
+            // Amaru: forbid equipping items while in disarm state
+            switch (eslot)
+            {
+                case EQUIPMENT_SLOT_MAINHAND:
+                    if (!CanUseAttackType(BASE_ATTACK))
+                        return EQUIP_ERR_NOT_WHILE_DISARMED;
+                    break;
+                case EQUIPMENT_SLOT_OFFHAND:
+                    if (!CanUseAttackType(OFF_ATTACK))
+                        return EQUIP_ERR_NOT_WHILE_DISARMED;
+                    break;
+                case EQUIPMENT_SLOT_RANGED:
+                    if (!CanUseAttackType(RANGED_ATTACK))
+                        return EQUIP_ERR_NOT_WHILE_DISARMED;
+                    break;
+                default:
+                    break;
+            }
+
             dest = ((INVENTORY_SLOT_BAG_0 << 8) | eslot);
             return EQUIP_ERR_OK;
         }
@@ -10515,6 +10533,26 @@ uint8 Player::CanUnequipItem( uint16 pos, bool swap ) const
                 return EQUIP_ERR_NOT_DURING_ARENA_MATCH;
     }
 
+    // Amaru: forbid unequipping items while in disarm state
+    uint8 eslot = pos & 255;
+    switch (eslot)
+    {
+        case EQUIPMENT_SLOT_MAINHAND:
+            if (!CanUseAttackType(BASE_ATTACK))
+                return EQUIP_ERR_NOT_WHILE_DISARMED;
+            break;
+        case EQUIPMENT_SLOT_OFFHAND:
+            if (!CanUseAttackType(OFF_ATTACK))
+                return EQUIP_ERR_NOT_WHILE_DISARMED;
+            break;
+        case EQUIPMENT_SLOT_RANGED:
+            if (!CanUseAttackType(RANGED_ATTACK))
+                return EQUIP_ERR_NOT_WHILE_DISARMED;
+            break;
+        default:
+            break;
+    }
+    
     if(!swap && pItem->IsBag() && !((Bag*)pItem)->IsEmpty())
         return EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS;
 
@@ -12362,9 +12400,6 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
     if (!item->IsEquipped())
         return;
 
-    if (!CanUseAttackType(Player::GetAttackBySlot(item->GetSlot())))
-        return;
-
     if (slot >= MAX_ENCHANTMENT_SLOT)
         return;
 
@@ -12412,6 +12447,10 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
                 case ITEM_ENCHANTMENT_TYPE_EQUIP_SPELL:
                     if (enchant_spell_id)
                     {
+                        //Amaru: hackfix for weapon chains (cast Disarm Duration Reduction)
+                        if (enchant_spell_id == 43588 && !CanUseAttackType(Player::GetAttackBySlot(item->GetSlot())))
+                            break;
+
                         if (apply)
                         {
                             int32 basepoints = 0;
