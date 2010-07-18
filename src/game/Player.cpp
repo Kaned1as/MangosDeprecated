@@ -6914,6 +6914,10 @@ void Player::_ApplyItemMods(Item *item, uint8 slot,bool apply)
     DETAIL_LOG("applying mods for item %u ",item->GetGUIDLow());
 
     uint32 attacktype = Player::GetAttackBySlot(slot);
+
+    if (!CanUseAttackType(attacktype))
+        return;
+
     if(attacktype < MAX_ATTACK)
         _ApplyWeaponDependentAuraMods(item,WeaponAttackType(attacktype),apply);
 
@@ -12356,6 +12360,9 @@ void Player::ApplyEnchantment(Item *item, EnchantmentSlot slot, bool apply, bool
         return;
 
     if (!item->IsEquipped())
+        return;
+
+    if (!CanUseAttackType(Player::GetAttackBySlot(item->GetSlot())))
         return;
 
     if (slot >= MAX_ENCHANTMENT_SLOT)

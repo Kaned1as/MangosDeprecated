@@ -4151,22 +4151,18 @@ void Aura::HandleAuraModDisarm(bool apply, bool Real)
          return;
     }
  
-    if (!apply)
+    if (apply)
+        target->SetFlag(field, flag);
+    else
         target->RemoveFlag(field, flag);
  
     if (target->GetTypeId() == TYPEID_PLAYER)
     {
-        // This is between the two because there is a check in _ApplyItemMods
-        // we must make sure that flag is always removed when call that function
-        // refer to DurabilityPointsLoss
-        if (Item *pItem = ((Player*)target)->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
-            ((Player*)target)->_ApplyItemMods(pItem, slot, !apply);
+        //Amaru: buggy shit, dunno how to do it better
+        //if (Item *pItem = ((Player*)target)->GetItemByPos(INVENTORY_SLOT_BAG_0, slot))
+        //    ((Player*)target)->_ApplyItemMods(pItem, slot, !apply);
     }  
-
-     if (apply)
-        target->SetFlag(field, flag);
-
-    if (target->GetTypeId() != TYPEID_PLAYER)
+    else
         return;
  
     // main-hand attack speed already set to special value for feral form already and don't must change and reset at remove.

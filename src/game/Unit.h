@@ -1301,14 +1301,13 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         float GetUnitCriticalChance(WeaponAttackType attackType, const Unit *pVictim) const;
         bool CanUseAttackType(uint8 attacktype) const
         {
-            bool haveweapon = true;
             switch(attacktype)
             {
-                case BASE_ATTACK: haveweapon = !HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISARMED); break;
-                case OFF_ATTACK: haveweapon = !HasFlag(UNIT_FIELD_FLAGS_2,UNIT_FLAG2_DISARM_SHIELD); break;
-                case RANGED_ATTACK: haveweapon = !HasFlag(UNIT_FIELD_FLAGS_2,UNIT_FLAG2_DISARM_RANGED); break;
+                case BASE_ATTACK: return !HasFlag(UNIT_FIELD_FLAGS,UNIT_FLAG_DISARMED); break;
+                case OFF_ATTACK: return !HasFlag(UNIT_FIELD_FLAGS_2,UNIT_FLAG2_DISARM_SHIELD); break;
+                case RANGED_ATTACK: return !HasFlag(UNIT_FIELD_FLAGS_2,UNIT_FLAG2_DISARM_RANGED); break;
             }
-            return !IsInFeralForm() && haveweapon;
+            return true;
        }
 
         virtual uint32 GetShieldBlockValue() const =0;
