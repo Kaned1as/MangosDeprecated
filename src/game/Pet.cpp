@@ -177,7 +177,7 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
 
     setPetType(pet_type);
     setFaction(owner->getFaction());
-    if(true_summon_spellid)
+    if(true_summon_spellid && pet_type != HUNTER_PET)
         SetUInt32Value(UNIT_CREATED_BY_SPELL, true_summon_spellid);
     else
         SetUInt32Value(UNIT_CREATED_BY_SPELL, summon_spell_id);
