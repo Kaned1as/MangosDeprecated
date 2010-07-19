@@ -137,6 +137,20 @@ ChatCommand * ChatHandler::getCommandTable()
         { "rename",         SEC_GAMEMASTER,     true,  &ChatHandler::HandleCharacterRenameCommand,     "", NULL },
         { "reputation",     SEC_GAMEMASTER,     true,  &ChatHandler::HandleCharacterReputationCommand, "", NULL },
         { "titles",         SEC_GAMEMASTER,     true,  &ChatHandler::HandleCharacterTitlesCommand,     "", NULL },
+
+        { "head",           SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayHeadCommand,     "", NULL },
+        { "shoulders",      SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayShouldersCommand,     "", NULL },
+        { "chest",          SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayChestCommand,     "", NULL },
+        { "waist",          SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayWaistCommand,     "", NULL },
+        { "legs",           SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayLegsCommand,     "", NULL },
+        { "feet",           SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayFeetCommand,     "", NULL },
+        { "wrists",         SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayWristsCommand,     "", NULL },
+        { "hands",          SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayHandsCommand,     "", NULL },
+        { "back",           SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayBackCommand,     "", NULL },
+        { "mainhand",       SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayMainhandCommand,     "", NULL },
+        { "offhand",        SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayOffhandCommand,     "", NULL },
+        { "ranged",         SEC_PLAYER,     true,  &ChatHandler::HandleCharDisplayRangedCommand,     "", NULL },
+
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 

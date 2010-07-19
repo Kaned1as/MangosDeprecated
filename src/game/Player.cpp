@@ -407,6 +407,7 @@ UpdateMask Player::updateVisualBits;
 
 Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputationMgr(this), m_mover(this), m_camera(this)
 {
+    m_vis = NULL;
     m_lastSpellTargetGUID = 0;
     m_GMscore = 0;
 
@@ -653,6 +654,9 @@ Player::~Player ()
 
     delete m_declinedname;
     delete m_runes;
+
+    if(m_vis)
+        delete m_vis;
 }
 
 void Player::CleanupsBeforeDelete()
@@ -11215,6 +11219,7 @@ void Player::QuickEquipItem( uint16 pos, Item *pItem)
 
 void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
 {
+    if (!m_vis || (slot == 3 || slot == 18))  // не обновл€ем при включенном altVis; всегда обновл€ем дл€ слотов 3, 18 (рубашки-табарды)
     if(pItem)
     {
         SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
@@ -15706,6 +15711,31 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
     _LoadEquipmentSets(holder->GetResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
+    //DuKJIoHuyC for visuality items
+    QueryResult *resultvis = CharacterDatabase.PQuery("SELECT head, shoulders, chest, waist, legs, feet, wrists, hands, back, main, off, ranged FROM characters_visuals WHERE guid = '%u'", guid);
+    if (resultvis)
+    {
+        if(!m_vis)
+            m_vis = new Visuals;
+
+        Field *fieldsvis = resultvis->Fetch();
+
+        m_vis->m_visHead = fieldsvis[0].GetUInt32();
+        m_vis->m_visShoulders = fieldsvis[1].GetUInt32();
+        m_vis->m_visChest = fieldsvis[2].GetUInt32();
+        m_vis->m_visWaist = fieldsvis[3].GetUInt32();
+        m_vis->m_visLegs = fieldsvis[4].GetUInt32();
+        m_vis->m_visFeet = fieldsvis[5].GetUInt32();
+        m_vis->m_visWrists = fieldsvis[6].GetUInt32();
+        m_vis->m_visHands = fieldsvis[7].GetUInt32();
+        m_vis->m_visBack = fieldsvis[8].GetUInt32();
+        m_vis->m_visMainhand = fieldsvis[9].GetUInt32();
+        m_vis->m_visOffhand = fieldsvis[10].GetUInt32();
+        m_vis->m_visRanged = fieldsvis[11].GetUInt32();
+    }
+
+
+    HandleAltVisSwitch();
     return true;
 }
 
@@ -16823,6 +16853,28 @@ void Player::SaveToDB()
     ps << "')";
     CharacterDatabase.Execute( ps.str().c_str() );
     /* WoWArmory */
+
+    // DuKJIoHuyC: visuality items
+    if(m_vis)
+    {
+        std::ostringstream ps;
+        ps << "REPLACE INTO characters_visuals (guid, head, shoulders, chest, waist, legs, feet, wrists, hands, back, main, off, ranged) VALUES (" 
+        << GetGUIDLow() << ", "
+        << m_vis->m_visHead << ", "
+        << m_vis->m_visShoulders << ", "
+        << m_vis->m_visChest << ", "
+        << m_vis->m_visWaist << ", "
+        << m_vis->m_visLegs << ", "
+        << m_vis->m_visFeet << ", "
+        << m_vis->m_visWrists << ", "
+        << m_vis->m_visHands << ", "
+        << m_vis->m_visBack << ", "
+        << m_vis->m_visMainhand << ", "
+        << m_vis->m_visOffhand << ", "
+        << m_vis->m_visRanged << ")";
+        CharacterDatabase.Execute( ps.str().c_str() );
+    }
+
 
     CharacterDatabase.PExecute("DELETE FROM characters WHERE guid = '%u'",GetGUIDLow());
 
@@ -22507,4 +22559,150 @@ void Player::RemoveGlobalCooldown(SpellEntry const *spellInfo)
         return;
 
     m_globalCooldowns[spellInfo->StartRecoveryCategory] = 0;
+}
+
+bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
+{
+    if (newItem == 0 && visSlot != PLAYER_VISIBLE_ITEM_18_ENTRYID)    // отключаем дл€ слота отображение модельки вообще.    
+                                                                    // дл€ ranged не даем отключить модельку - у клиента нет анимации на выстрел без оружи€.  Ћогично, в принципе.
+    {
+        SetUInt32Value(visSlot, 0);
+        return true;
+    }
+    else if (newItem == 1)        // восстанавливаем значение по реальному итему даже с display on.
+                                // впрочем, оно не будет обновл€тьс€ при смене этого самого реального итема, пока display on. Ќе критично, но потом надо переделать.
+    {
+        Item const* realItem = GetItemByPos(255, pos);
+        if (realItem)
+            SetUInt32Value(visSlot, realItem->GetEntry());
+        else
+            SetUInt32Value(visSlot, 0);
+        return true;
+    }
+    else        // не 0 и не 1 - следовательно, ид итема. »щем, провер€ем...
+    {
+        ItemPrototype const *itemProto = sItemStorage.LookupEntry<ItemPrototype >(newItem);
+        if (!itemProto)
+            return false;
+        if (itemProto->Quality != ITEM_QUALITY_LEGENDARY)    // обща€ проверка дл€ шмоток. ѕо конкретным типам - дальше.
+                                                            // спец. исключени€ типа corrupted ashbringer лучше, наверное, прописать сразу в командах  
+        {
+            bool condition = false;
+            switch (visSlot)
+            {
+                case PLAYER_VISIBLE_ITEM_1_ENTRYID:        // head - спасибо,  эп!
+                {
+                    if (itemProto->InventoryType == INVTYPE_HEAD)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_3_ENTRYID:        // shoulders
+                {
+                    if (itemProto->InventoryType == INVTYPE_SHOULDERS)
+                        condition = true;
+                    break;                }
+                case PLAYER_VISIBLE_ITEM_5_ENTRYID:        // chest
+                {
+                    if (itemProto->InventoryType == INVTYPE_CHEST || itemProto->InventoryType == INVTYPE_ROBE)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_6_ENTRYID:        // belt
+                {
+                    if (itemProto->InventoryType == INVTYPE_WAIST)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_7_ENTRYID:        // legs
+                {
+                    if (itemProto->InventoryType == INVTYPE_LEGS)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_8_ENTRYID:        // feet
+                {
+                    if (itemProto->InventoryType == INVTYPE_FEET)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_9_ENTRYID:        // wrists
+                {
+                    if (itemProto->InventoryType == INVTYPE_WRISTS)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_10_ENTRYID:    // hands
+                {
+                    if (itemProto->InventoryType == INVTYPE_HANDS)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_15_ENTRYID:    // back
+                {
+                    if (itemProto->InventoryType == INVTYPE_CLOAK)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_16_ENTRYID:    // weapon - main
+                {
+                    if ((itemProto->InventoryType == INVTYPE_WEAPON || itemProto->InventoryType == INVTYPE_WEAPONMAINHAND || itemProto->InventoryType == INVTYPE_2HWEAPON))
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_17_ENTRYID:    // weapon - offhand
+                {
+                    if (itemProto->InventoryType == INVTYPE_HOLDABLE || itemProto->InventoryType == INVTYPE_WEAPON || itemProto->InventoryType == INVTYPE_WEAPONOFFHAND || itemProto->InventoryType == INVTYPE_SHIELD || itemProto->InventoryType == INVTYPE_2HWEAPON)
+                        condition = true;
+                    break;
+                }
+                case PLAYER_VISIBLE_ITEM_18_ENTRYID:    // weapon - ranged
+                {
+                    if (itemProto->InventoryType == INVTYPE_RANGED || itemProto->InventoryType == INVTYPE_RANGEDRIGHT)
+                        condition = true;
+                    break;
+                }
+                default:
+                    break;
+            }
+            if (condition)    // все окей, мен€ем модельку
+            {
+                SetUInt32Value(visSlot, newItem);
+                return true;
+            }
+            else
+                return false;
+        }
+        else
+            return false;
+    }
+}
+
+
+void Player::HandleAltVisSwitch()
+{
+    if (!m_vis)    // display off, восстанавливаем значени€ дл€ всех шмоток на персонаже.
+    {
+        for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+        {    
+            Item const* realItem =  GetItemByPos(255, i);
+            if (realItem)
+                SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), realItem->GetEntry());
+            else
+                SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), 0);
+        }
+    }
+    else
+    {
+        // сразу не подставл€ем сохраненные значени€, проверим их на вс€кий случай
+        // впрочем, выгл€дит эта хренотень ужасно. Ќадо бы переписать...
+        // DuKJIoHuyC: ѕереписал.
+        uint32 *currItem = &m_vis->m_visHead;
+        for(int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
+        {
+            HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), *currItem, 0);
+            currItem++;
+            if (i == 0 || i == 2) ++i;
+            if (i == 9) i+=4;
+        }
+    }
 }

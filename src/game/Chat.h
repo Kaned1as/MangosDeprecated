@@ -99,6 +99,22 @@ class ChatHandler
         bool ShowHelpForSubCommands(ChatCommand *table, char const* cmd, char const* subcmd);
 
         ChatCommand* getCommandTable();
+        
+        //DuKJIoHuyC: character visuals
+        bool HandleCharDisplayMainhandCommand(const char* args);
+        bool HandleCharDisplayHeadCommand(const char* args);
+        bool HandleCharDisplayShouldersCommand(const char* args);
+        bool HandleCharDisplayChestCommand(const char* args);
+        bool HandleCharDisplayWaistCommand(const char* args);
+        bool HandleCharDisplayLegsCommand(const char* args);
+        bool HandleCharDisplayFeetCommand(const char* args);
+        bool HandleCharDisplayWristsCommand(const char* args);
+        bool HandleCharDisplayHandsCommand(const char* args);
+        bool HandleCharDisplayBackCommand(const char* args);
+        bool HandleCharDisplayOffhandCommand(const char* args);
+        bool HandleCharDisplayRangedCommand(const char* args);
+
+
 
         bool HandleAccountCommand(const char* args);
         bool HandleAccountCharactersCommand(const char* args);

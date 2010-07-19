@@ -289,3 +289,291 @@ bool ChatHandler::HandleServerMotdCommand(const char* /*args*/)
     PSendSysMessage(LANG_MOTD_CURRENT, sWorld.GetMotd());
     return true;
 }
+
+bool ChatHandler::HandleCharDisplayMainhandCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_16_ENTRYID, newItem, 15))
+    {
+        pl->m_vis->m_visMainhand = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayHeadCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_1_ENTRYID, newItem, 0))
+    {
+        pl->m_vis->m_visHead = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayShouldersCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_3_ENTRYID, newItem, 2))
+    {
+        pl->m_vis->m_visShoulders = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayChestCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_5_ENTRYID, newItem, 4))
+    {
+        pl->m_vis->m_visChest = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayWaistCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_6_ENTRYID, newItem, 5))
+    {
+        pl->m_vis->m_visWaist = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayLegsCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_7_ENTRYID, newItem, 6))
+    {
+        pl->m_vis->m_visLegs = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayFeetCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_8_ENTRYID, newItem, 7))
+    {
+        pl->m_vis->m_visFeet = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayWristsCommand(const char* args)
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_9_ENTRYID, newItem, 8))
+    {
+        pl->m_vis->m_visWrists = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayHandsCommand(const char* args) //Суки, покажите свои руки!
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_10_ENTRYID, newItem, 9))
+    {
+        pl->m_vis->m_visHands = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayBackCommand(const char* args) //Суки, покажите свои руки!
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_15_ENTRYID, newItem, 14))
+    {
+        pl->m_vis->m_visBack = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayOffhandCommand(const char* args) //Суки, покажите свои руки!
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_17_ENTRYID, newItem, 16))
+    {
+        pl->m_vis->m_visOffhand = newItem;
+        return true;
+    }
+    else
+        return false;
+}
+
+bool ChatHandler::HandleCharDisplayRangedCommand(const char* args) //Суки, покажите свои руки!
+{
+    if(!*args)
+        return false;
+    char* cId = extractKeyFromLink((char*)args,"Hitem");
+    if(!cId)
+        return false;
+            
+    uint32 newItem = (uint32)atol(cId);
+
+    Player* pl = m_session->GetPlayer();
+
+    if(!pl->m_vis)
+        pl->m_vis = new Visuals;
+
+    if (pl->HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_18_ENTRYID, newItem, 17))
+    {
+        pl->m_vis->m_visRanged = newItem;
+        return true;
+    }
+    else
+        return false;
+}

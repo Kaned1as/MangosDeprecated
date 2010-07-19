@@ -1074,6 +1074,29 @@ class TradeData
         ObjectGuid m_items[TRADE_SLOT_COUNT];               // traded itmes from m_player side including non-traded slot
 };
 
+
+struct Visuals
+{
+    Visuals() : m_visHead(1), m_visShoulders(1), m_visChest(1), m_visWaist(1), m_visLegs(1), m_visFeet(1),
+         m_visWrists(1), m_visHands(1), m_visBack(1), m_visMainhand(1), m_visOffhand(1), m_visRanged(1), m_altVis(0) {}
+
+    uint32 m_visHead;
+    uint32 m_visShoulders;
+    uint32 m_visChest;
+    uint32 m_visWaist;
+    uint32 m_visLegs;
+    uint32 m_visFeet;
+    uint32 m_visWrists;
+    uint32 m_visHands;
+    uint32 m_visBack;
+    uint32 m_visMainhand;
+    uint32 m_visOffhand;
+    uint32 m_visRanged;
+
+    uint8 m_altVis;
+
+};
+
 class MANGOS_DLL_SPEC Player : public Unit
 {
     friend class WorldSession;
@@ -1136,6 +1159,7 @@ class MANGOS_DLL_SPEC Player : public Unit
         uint8 chatTag() const;
         std::string afkMsg;
         std::string dndMsg;
+        Visuals *m_vis;
 
         uint32 GetBarberShopCost(uint8 newhairstyle, uint8 newhaircolor, uint8 newfacialhair, BarberShopStyleEntry const* newSkin=NULL);
 
@@ -1715,6 +1739,10 @@ class MANGOS_DLL_SPEC Player : public Unit
         void AddGlobalCooldown(SpellEntry const *spellInfo, Spell const *spell);
         bool HasGlobalCooldown(SpellEntry const *spellInfo) const;
         void RemoveGlobalCooldown(SpellEntry const *spellInfo);
+
+        // visible items
+        bool HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos);
+        void HandleAltVisSwitch();
 
         void setResurrectRequestData(uint64 guid, uint32 mapId, float X, float Y, float Z, uint32 health, uint32 mana)
         {
@@ -2779,5 +2807,4 @@ bool Player::CheckAllControlledUnits(Func const& func, bool withTotems, bool wit
 
     return Unit::CheckAllControlledUnits(func,withTotems,withGuardians,withCharms);
 }
-
 #endif
