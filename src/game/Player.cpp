@@ -11193,6 +11193,23 @@ Item* Player::EquipItem( uint16 pos, Item *pItem, bool update )
         }
     }
 
+    // Amaru: fix melee damage and attack speed for Druids on equipping weapons
+    if (getClass() == CLASS_DRUID && pProto->Class == ITEM_CLASS_WEAPON && IsInFeralForm())
+    {
+        SpellShapeshiftEntry const* ssEntry = sSpellShapeshiftStore.LookupEntry(m_form);
+        if(ssEntry && ssEntry->attackSpeed)
+        {
+            SetAttackTime(BASE_ATTACK, ssEntry->attackSpeed);
+            SetAttackTime(OFF_ATTACK, ssEntry->attackSpeed);
+            SetAttackTime(RANGED_ATTACK, BASE_ATTACK_TIME);
+        }
+        else
+            SetRegularAttackTime();
+
+        // Amaru: Only BASE_ATTACK for ferals
+        UpdateDamagePhysical(BASE_ATTACK);
+    }
+
     return pItem;
 }
 
@@ -11305,6 +11322,23 @@ void Player::RemoveItem( uint8 bag, uint8 slot, bool update )
 
                         UpdateExpertise(BASE_ATTACK);
                         UpdateArmorPenetration();
+
+                        // Amaru: fix melee damage and attack speed for Druids on unequipping weapons
+                        if (getClass() == CLASS_DRUID && IsInFeralForm())
+                        {
+                            SpellShapeshiftEntry const* ssEntry = sSpellShapeshiftStore.LookupEntry(m_form);
+                            if(ssEntry && ssEntry->attackSpeed)
+                            {
+                                SetAttackTime(BASE_ATTACK, ssEntry->attackSpeed);
+                                SetAttackTime(OFF_ATTACK, ssEntry->attackSpeed);
+                                SetAttackTime(RANGED_ATTACK, BASE_ATTACK_TIME);
+                            }
+                            else
+                                SetRegularAttackTime();
+
+                            // Amaru: Only BASE_ATTACK for ferals
+                            UpdateDamagePhysical(BASE_ATTACK);
+                        }
                     }
                     else if( slot == EQUIPMENT_SLOT_OFFHAND )
                     {
