@@ -5183,9 +5183,9 @@ void Spell::EffectSummonPet(SpellEffectIndex eff_idx)
     NewSummon->SetHealth(NewSummon->GetMaxHealth());
     NewSummon->SetPower(POWER_MANA, NewSummon->GetMaxPower(POWER_MANA));
 
+    m_caster->SetPet(NewSummon);
     map->Add((Creature*)NewSummon);
 
-    m_caster->SetPet(NewSummon);
     DEBUG_LOG("New Pet has guid %u", NewSummon->GetGUIDLow());
 
     if(m_caster->GetTypeId() == TYPEID_PLAYER)
