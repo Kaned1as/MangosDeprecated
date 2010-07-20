@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -199,7 +199,7 @@ bool ChatHandler::HandleGMAnnounceCommand(const char* args)
         return false;
 
     std::stringstream argstr;
-    argstr << "|c0000FF00[Ñîîáùåíèå êîìàíäû]|r<" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ">: " << args;
+    argstr << "|c0000FF00[Ð¡Ð¾Ð¾Ð±Ñ‰ÐµÐ½Ð¸Ðµ ÐºÐ¾Ð¼Ð°Ð½Ð´Ñ‹]|r<" << "|cffffffff|Hplayer:" << Player << "|h[" << Player << "]|h|r" << ">: " << args;
 
     SendGMSysMessage(argstr.str().c_str(), SEC_MODERATOR);
     return true;
