@@ -17866,10 +17866,16 @@ void Player::RemovePet(Pet* pet, PetSaveMode mode, bool returnreagent)
             if (spellInfo->Attributes & SPELL_ATTR_DISABLED_WHILE_ACTIVE && pet->getDeathState() != CORPSE)
             {
                 SendCooldownEvent(spellInfo);
-                // Raise Dead hack
+                // Raise Dead ugly hack
                 if (spellInfo->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT && spellInfo->SpellFamilyFlags & 0x1000)
+                {
                     if (spellInfo = sSpellStore.LookupEntry(46584))
                         SendCooldownEvent(spellInfo);
+                    if (spellInfo = sSpellStore.LookupEntry(46585))
+                        SendCooldownEvent(spellInfo);
+                    if (spellInfo = sSpellStore.LookupEntry(52150))
+                        SendCooldownEvent(spellInfo);
+                }
             }
         }
     }
