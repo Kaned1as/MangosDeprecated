@@ -22733,7 +22733,8 @@ void Player::HandleAltVisSwitch()
         uint32 *currItem = &m_vis->m_visHead;
         for(int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
         {
-            HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), *currItem, 0);
+            if(*currItem != 1)
+                HandleChangeSlotModel(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), *currItem, 0);
             currItem++;
             if (i == 0 || i == 2) ++i;
             if (i == 9) i+=4;
