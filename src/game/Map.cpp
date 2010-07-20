@@ -1838,7 +1838,8 @@ bool InstanceMap::Add(Player *player)
                             sLog.outError("InstanceMap::Add: the group is bound to instance %d,%d,%d,%d,%d,%d",
                                 groupBind->save->GetMapId(), groupBind->save->GetInstanceId(), groupBind->save->GetDifficulty(),
                                 groupBind->save->GetPlayerCount(), groupBind->save->GetGroupCount(), groupBind->save->CanReset());
-                        ASSERT(false);
+                        player->TeleportToHomebind();
+                        //ASSERT(false);
                     }
                     // bind to the group or keep using the group save
                     if (!groupBind)
