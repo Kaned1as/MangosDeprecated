@@ -2036,12 +2036,12 @@ void InstanceMap::PermBindAllPlayers(Player *player)
             WorldPacket data(SMSG_INSTANCE_SAVE_CREATED, 4);
             data << uint32(0);
             plr->GetSession()->SendPacket(&data);
-        } 
-    }
+        }
 
-    // if the leader is not in the instance the group will not get a perm bind
-    if(group && group->GetLeaderGUID() == plr->GetGUID())
-        group->BindToInstance(GetInstanceSave(), true);
+        // if the leader is not in the instance the group will not get a perm bind
+        if(group && group->GetLeaderGUID() == plr->GetGUID())
+            group->BindToInstance(GetInstanceSave(), true);
+    }
 }
 
 void InstanceMap::UnloadAll(bool pForce)
