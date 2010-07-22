@@ -389,7 +389,7 @@ struct MANGOS_DLL_DECL boss_aranAI : public ScriptedAI
                     m_uiFlameWreath_Timer = 20000;
                     m_uiFlameWreathCheck_Timer = 500;
 
-                    memset(&m_uiFlameWreathTarget, 0, sizeof(m_uiFlameWreathTarget));
+                    memset(m_uiFlameWreathTarget, 0, sizeof(m_uiFlameWreathTarget));
 
                     FlameWreathEffect();
                     break;

@@ -297,7 +297,7 @@ struct MANGOS_DLL_DECL boss_kaelthasAI : public ScriptedAI
     boss_kaelthasAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        memset(&m_auiAdvisorGuid, 0, sizeof(m_auiAdvisorGuid));
+        memset(m_auiAdvisorGuid, 0, sizeof(m_auiAdvisorGuid));
         Reset();
     }
 

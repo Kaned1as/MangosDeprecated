@@ -91,7 +91,7 @@ struct MANGOS_DLL_DECL boss_priestess_delrissaAI : public ScriptedAI
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
-        memset(&m_auiLackeyGUID, 0, sizeof(m_auiLackeyGUID));
+        memset(m_auiLackeyGUID, 0, sizeof(m_auiLackeyGUID));
         LackeyEntryList.clear();
         Reset();
     }
@@ -339,7 +339,7 @@ struct MANGOS_DLL_DECL boss_priestess_lackey_commonAI : public ScriptedAI
     boss_priestess_lackey_commonAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        memset(&m_auiLackeyGUIDs, 0, sizeof(m_auiLackeyGUIDs));
+        memset(m_auiLackeyGUIDs, 0, sizeof(m_auiLackeyGUIDs));
         Reset();
         AcquireGUIDs();
     }

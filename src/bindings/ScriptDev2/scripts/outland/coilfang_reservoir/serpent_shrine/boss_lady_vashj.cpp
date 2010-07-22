@@ -120,7 +120,7 @@ struct MANGOS_DLL_DECL boss_lady_vashjAI : public ScriptedAI
     boss_lady_vashjAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        memset(&m_auiShieldGeneratorChannel, 0, sizeof(m_auiShieldGeneratorChannel));
+        memset(m_auiShieldGeneratorChannel, 0, sizeof(m_auiShieldGeneratorChannel));
         Reset();
     }
 

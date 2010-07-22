@@ -57,7 +57,7 @@ struct MANGOS_DLL_DECL instance_zulaman : public ScriptedInstance
     void Initialize()
     {
         memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
-        memset(&m_auiRandVendor, 0, sizeof(m_auiRandVendor));
+        memset(m_auiRandVendor, 0, sizeof(m_auiRandVendor));
 
         m_uiEventTimer = MINUTE*IN_MILLISECONDS;
         m_uiEventMinuteStep = MINUTE/3;

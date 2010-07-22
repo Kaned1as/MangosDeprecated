@@ -222,7 +222,7 @@ struct MANGOS_DLL_DECL boss_emalonAI : public ScriptedAI
     void Reset()
     {
         m_uiEvadeCheckCooldown = 2000;
-        memset(&m_auiTempestMinionGUID, 0, sizeof(m_auiTempestMinionGUID));
+        memset(m_auiTempestMinionGUID, 0, sizeof(m_auiTempestMinionGUID));
         m_uiChainLightningTimer = 15000;
         m_uiChainLightningCount = 0;
         m_uiLightningNovaTimer = 20000;

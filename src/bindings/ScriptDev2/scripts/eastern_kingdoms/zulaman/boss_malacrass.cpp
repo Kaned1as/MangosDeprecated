@@ -128,7 +128,7 @@ struct MANGOS_DLL_DECL boss_malacrassAI : public ScriptedAI
     boss_malacrassAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        memset(&m_auiAddGUIDs, 0, sizeof(m_auiAddGUIDs));
+        memset(m_auiAddGUIDs, 0, sizeof(m_auiAddGUIDs));
         m_lAddsEntryList.clear();
         Reset();
     }
@@ -256,7 +256,7 @@ struct MANGOS_DLL_DECL boss_malacrassAI : public ScriptedAI
             }
         }
 
-        memset(&m_auiAddGUIDs, 0, sizeof(m_auiAddGUIDs));
+        memset(m_auiAddGUIDs, 0, sizeof(m_auiAddGUIDs));
         m_lAddsEntryList.clear();
     }
 

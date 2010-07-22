@@ -331,7 +331,7 @@ struct MANGOS_DLL_DECL boss_moroes_guestAI : public ScriptedAI
 
     boss_moroes_guestAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        memset(&m_auiGuestGUID, 0, sizeof(m_auiGuestGUID));
+        memset(m_auiGuestGUID, 0, sizeof(m_auiGuestGUID));
 
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         AcquireGUID();

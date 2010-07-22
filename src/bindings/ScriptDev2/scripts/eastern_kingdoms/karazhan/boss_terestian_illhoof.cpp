@@ -88,7 +88,7 @@ struct MANGOS_DLL_DECL boss_terestianAI : public ScriptedAI
 {
     boss_terestianAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
-        memset(&m_uiPortalGUID, 0, sizeof(m_uiPortalGUID));
+        memset(m_uiPortalGUID, 0, sizeof(m_uiPortalGUID));
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         m_bSummonKilrek = true;
         Reset();

@@ -644,7 +644,7 @@ struct MANGOS_DLL_DECL npc_tirion_tocAI : public ScriptedAI
     void Reset()
     {
     crusaderscount = 0;
-    memset(&crusader, 0, sizeof(crusader));
+    memset(crusader, 0, sizeof(crusader));
     }
 
     void AttackStart(Unit *who)

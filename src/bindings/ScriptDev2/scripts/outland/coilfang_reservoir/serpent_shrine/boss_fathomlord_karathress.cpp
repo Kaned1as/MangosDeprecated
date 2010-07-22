@@ -80,7 +80,7 @@ struct MANGOS_DLL_DECL boss_fathomlord_karathressAI : public ScriptedAI
     boss_fathomlord_karathressAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        memset(&m_auiAdvisorsGUID, 0, sizeof(m_auiAdvisorsGUID));
+        memset(m_auiAdvisorsGUID, 0, sizeof(m_auiAdvisorsGUID));
         Reset();
     }
 

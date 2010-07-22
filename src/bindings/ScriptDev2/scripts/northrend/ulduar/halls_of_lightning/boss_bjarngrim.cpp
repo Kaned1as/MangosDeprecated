@@ -86,7 +86,7 @@ struct MANGOS_DLL_DECL boss_bjarngrimAI : public ScriptedAI
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
         m_bIsRegularMode = pCreature->GetMap()->IsRegularDifficulty();
         m_uiStance = STANCE_DEFENSIVE;
-        memset(&m_auiStormforgedLieutenantGUID, 0, sizeof(m_auiStormforgedLieutenantGUID));
+        memset(m_auiStormforgedLieutenantGUID, 0, sizeof(m_auiStormforgedLieutenantGUID));
         Reset();
     }
 

@@ -78,7 +78,7 @@ struct MANGOS_DLL_DECL boss_high_king_maulgarAI : public ScriptedAI
     boss_high_king_maulgarAI(Creature* pCreature) : ScriptedAI(pCreature)
     {
         m_pInstance = (ScriptedInstance*)pCreature->GetInstanceData();
-        memset(&m_auiCouncil, 0, sizeof(m_auiCouncil));
+        memset(m_auiCouncil, 0, sizeof(m_auiCouncil));
         Reset();
     }
 

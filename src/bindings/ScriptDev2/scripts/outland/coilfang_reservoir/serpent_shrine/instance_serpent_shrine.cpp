@@ -53,7 +53,7 @@ struct MANGOS_DLL_DECL instance_serpentshrine_cavern : public ScriptedInstance
     void Initialize()
     {
         memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
-        memset(&m_auiShieldGenerator, 0, sizeof(m_auiShieldGenerator));
+        memset(m_auiShieldGenerator, 0, sizeof(m_auiShieldGenerator));
 
         m_uiSharkkis = 0;
         m_uiTidalvess = 0;
@@ -131,7 +131,7 @@ struct MANGOS_DLL_DECL instance_serpentshrine_cavern : public ScriptedInstance
                 break;
             case TYPE_LADYVASHJ_EVENT:
                 if (uiData == NOT_STARTED)
-                    memset(&m_auiShieldGenerator, 0, sizeof(m_auiShieldGenerator));
+                    memset(m_auiShieldGenerator, 0, sizeof(m_auiShieldGenerator));
                 m_auiEncounter[5] = uiData;
                 break;
             case TYPE_SHIELDGENERATOR1:

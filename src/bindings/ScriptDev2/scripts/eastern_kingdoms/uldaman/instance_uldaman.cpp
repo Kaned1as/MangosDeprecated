@@ -39,7 +39,7 @@ struct MANGOS_DLL_DECL instance_uldaman : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_uiEncounter, 0, sizeof(m_uiEncounter));
+        memset(m_uiEncounter, 0, sizeof(m_uiEncounter));
         
         m_uiStoneKeepersFallen = 0;
         m_uiTempleDoor1GUID    = 0;
