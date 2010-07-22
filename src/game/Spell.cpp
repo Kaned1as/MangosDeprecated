@@ -987,14 +987,50 @@ void Spell::DoAllEffectOnTarget(TargetInfo *target)
 
         // maybe used in effects that are handled on hit
         m_damage += target->damage;
-    }
 
+        // Amaru: recheck for delayed spells ignore not visible explicit target
+        if (unit && !unit->isVisibleForOrDetect(m_caster, m_caster, false))
+        {
+            caster->SendSpellMiss(unit, m_spellInfo->Id, SPELL_MISS_EVADE);
+            return;
+        }
+
+        // Amaru: do recheck for delayed spells on players only
+        if (unit && unit->GetTypeId() == TYPEID_PLAYER && missInfo == SPELL_MISS_NONE)
+        {
+            missInfo = m_caster->SpellHitResult(unit, m_spellInfo, m_canReflect);
+
+            switch (missInfo)
+            {
+                //Ice Block, Divine Shield, etc
+                case SPELL_MISS_IMMUNE:
+                //Deterrence
+                case SPELL_MISS_DEFLECT:
+                //Cloak of Shadows, etc
+                case SPELL_MISS_MISS:
+                    caster->SendSpellMiss(unit, m_spellInfo->Id, missInfo);
+                    return;
+                case SPELL_MISS_REFLECT:
+                    caster->SendSpellMiss(unit, m_spellInfo->Id, missInfo);
+                    break;
+                default:
+                    missInfo = target->missCondition;
+                    break;     
+            }
+        }        
+    }
+    
     if (missInfo==SPELL_MISS_NONE)                          // In case spell hit target, do all effect on that target
         DoSpellHitOnUnit(unit, mask);
     else if (missInfo == SPELL_MISS_REFLECT)                // In case spell reflect from target, do all effect on caster (if hit)
     {
         if (target->reflectResult == SPELL_MISS_NONE)       // If reflected spell hit caster -> do all effect on him
+        {
             DoSpellHitOnUnit(m_caster, mask);
+            
+            // Amaru: перенаправляет дамаг в кастера при перерасчете во время полета
+            unitTarget = m_caster;
+        }
     }
 
     //megai2: remove all invulnerabilites on Shattering Throw
@@ -1126,7 +1162,7 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
     Unit* realCaster = GetAffectiveCaster();
 
     // Recheck immune (only for delayed spells)
-    if (m_spellInfo->speed && (
+    if (m_spellInfo->speed > 0.0f && (
         unit->IsImmunedToDamage(GetSpellSchoolMask(m_spellInfo)) ||
         unit->IsImmunedToSpell(m_spellInfo)) && 
         !(m_spellInfo->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY))                      // Ranger: KAPATEJIb changes
@@ -1175,8 +1211,10 @@ void Spell::DoSpellHitOnUnit(Unit *unit, const uint32 effectMask)
             if (!(m_spellInfo->AttributesEx & SPELL_ATTR_EX_NOT_BREAK_STEALTH) 
                 || (m_spellInfo->SpellFamilyName == SPELLFAMILY_ROGUE && m_spellInfo->SpellFamilyFlags & SPELLFAMILYFLAG_ROGUE_SAP))
             {
-                //Amaru: Mass Dispell never breaks stealth
-                if (m_spellInfo->Id != 32375 && m_spellInfo->Id != 32592 && m_spellInfo->Id != 72734)
+                //Amaru: check for spells that never break stealth
+                if (m_spellInfo->Id != 32375 && m_spellInfo->Id != 32592 && m_spellInfo->Id != 72734 && m_spellInfo->Id != 39897 //Mass Dispels
+                    && m_spellInfo->Id != 3600 //Earthbind
+                    )
                     unit->RemoveSpellsCausingAura(SPELL_AURA_MOD_STEALTH);
             }
 
