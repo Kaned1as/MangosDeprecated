@@ -63,7 +63,7 @@ instance_blackrock_spire::instance_blackrock_spire(Map* pMap) : ScriptedInstance
 
 void instance_blackrock_spire::Initialize()
 {
-    memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+    memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
     memset(&m_auiRoomRuneGUID, 0, sizeof(m_auiRoomRuneGUID));
 }
 

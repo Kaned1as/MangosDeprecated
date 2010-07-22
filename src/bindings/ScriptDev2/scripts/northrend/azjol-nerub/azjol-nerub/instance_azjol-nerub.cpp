@@ -38,7 +38,7 @@ struct MANGOS_DLL_DECL instance_azjol_nerub : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiDoor_KrikthirGUID = 0;
         m_uiDoor_Anubarak_1GUID = 0;

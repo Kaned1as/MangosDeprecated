@@ -32,7 +32,7 @@ instance_wailing_caverns::instance_wailing_caverns(Map* pMap) : ScriptedInstance
 
 void instance_wailing_caverns::Initialize()
 {
-    memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+    memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 }
 
 void instance_wailing_caverns::OnCreatureCreate(Creature* pCreature)

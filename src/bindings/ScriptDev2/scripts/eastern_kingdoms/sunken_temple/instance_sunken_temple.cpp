@@ -33,7 +33,7 @@ instance_sunken_temple::instance_sunken_temple(Map* pMap) : ScriptedInstance(pMa
 
 void instance_sunken_temple::Initialize()
 {
-    memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+    memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 }
 
 void instance_sunken_temple::OnObjectCreate(GameObject* pGo)

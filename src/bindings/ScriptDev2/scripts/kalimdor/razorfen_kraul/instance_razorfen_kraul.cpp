@@ -33,7 +33,7 @@ instance_razorfen_kraul::instance_razorfen_kraul(Map* pMap) : ScriptedInstance(p
 
 void instance_razorfen_kraul::Initialize()
 {
-    memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+    memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 }
 
 void instance_razorfen_kraul::OnObjectCreate(GameObject* pGo)

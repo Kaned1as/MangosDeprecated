@@ -74,7 +74,7 @@ struct MANGOS_DLL_DECL instance_dark_portal : public ScriptedInstance
 
     void Clear()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiRiftPortalCount  = 0;
         m_uiShieldPercent    = 100;

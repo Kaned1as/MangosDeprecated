@@ -48,7 +48,7 @@ struct MANGOS_DLL_DECL instance_the_eye : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiThaladredGUID = 0;
         m_uiSanguinarGUID = 0;

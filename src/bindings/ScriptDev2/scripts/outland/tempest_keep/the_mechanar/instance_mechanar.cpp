@@ -32,7 +32,7 @@ struct MANGOS_DLL_DECL instance_mechanar : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
     }
 
     void SetData(uint32 uiType, uint32 uiData)

@@ -47,7 +47,7 @@ struct MANGOS_DLL_DECL instance_ruins_of_ahnqiraj : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiOssirianGUID  = 0;
         m_uiBuruGUID      = 0;

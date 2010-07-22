@@ -44,7 +44,7 @@ struct MANGOS_DLL_DECL instance_utgarde_keep : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiKelesethGUID = 0;
         m_uiSkarvaldGUID = 0;

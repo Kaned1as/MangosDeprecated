@@ -67,7 +67,7 @@ struct MANGOS_DLL_DECL instance_black_temple : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiNajentusGUID = 0;
         m_uiAkamaGUID = 0;

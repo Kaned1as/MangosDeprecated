@@ -52,7 +52,7 @@ struct MANGOS_DLL_DECL instance_serpentshrine_cavern : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
         memset(&m_auiShieldGenerator, 0, sizeof(m_auiShieldGenerator));
 
         m_uiSharkkis = 0;

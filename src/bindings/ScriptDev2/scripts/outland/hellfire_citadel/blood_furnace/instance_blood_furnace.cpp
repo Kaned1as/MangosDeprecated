@@ -55,7 +55,7 @@ struct MANGOS_DLL_DECL instance_blood_furnace : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiMakerGUID = 0;
         m_uiBroggokGUID = 0;

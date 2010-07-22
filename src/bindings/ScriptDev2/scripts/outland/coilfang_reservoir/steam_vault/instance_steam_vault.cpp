@@ -68,7 +68,7 @@ struct MANGOS_DLL_DECL instance_steam_vault : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiThespiaGUID = 0;
         m_uiMekgineerGUID = 0;

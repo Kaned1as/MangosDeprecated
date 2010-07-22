@@ -64,7 +64,7 @@ struct MANGOS_DLL_DECL instance_karazhan : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         // 1 - OZ, 2 - HOOD, 3 - RAJ, this never gets altered.
         m_uiOperaEvent          = urand(EVENT_OZ,EVENT_RAJ);

@@ -42,7 +42,7 @@ struct MANGOS_DLL_DECL instance_vault_of_archavon : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
         m_uiArchavonGUID = 0;
         m_uiEmalonGUID = 0;
         m_uiKoralonGUID = 0;

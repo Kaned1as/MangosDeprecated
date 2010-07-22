@@ -74,7 +74,7 @@ struct MANGOS_DLL_DECL instance_violet_hold : public ScriptedInstance
 
     void Initialize()
     {
-//        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+//        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 	    for (uint8 i = 0; i < MAX_ENCOUNTER; ++i)
             m_auiEncounter[i] = NOT_STARTED;
 

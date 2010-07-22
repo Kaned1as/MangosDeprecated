@@ -66,7 +66,7 @@ struct MANGOS_DLL_DECL instance_gundrak : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiEckDoorGUID           = 0;
         m_uiEckUnderwaterDoorGUID = 0;

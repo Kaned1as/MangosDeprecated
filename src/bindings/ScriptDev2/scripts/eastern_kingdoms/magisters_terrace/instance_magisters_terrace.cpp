@@ -57,7 +57,7 @@ struct MANGOS_DLL_DECL instance_magisters_terrace : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
         memset(&m_auiKaelStatue, 0, sizeof(m_auiKaelStatue));
 
         FelCrystals.clear();

@@ -60,7 +60,7 @@ struct MANGOS_DLL_DECL instance_sunwell_plateau : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         // Creatures
         m_uiKalecgos_DragonGUID         = 0;

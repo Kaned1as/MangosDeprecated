@@ -37,7 +37,7 @@ struct MANGOS_DLL_DECL instance_scarlet_monastery : public ScriptedInstance
 
     void Initialize()
     {
-        memset(&m_auiEncounter, 0, sizeof(m_auiEncounter));
+        memset(m_auiEncounter, 0, sizeof(m_auiEncounter));
 
         m_uiMograineGUID = 0;
         m_uiWhitemaneGUID = 0;
