@@ -1880,6 +1880,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                     (spellInfo_2->SpellFamilyFlags & UI64LIT(0x2000000000000)) && (spellInfo_1->SpellFamilyFlags & UI64LIT(0x8000000)) )
                     return false;
 
+                // Impact && Impact passive
+                if( (spellInfo_1->SpellIconID == 45) && (spellInfo_2->SpellIconID == 45) ||
+                    (spellInfo_2->SpellIconID == 45) && (spellInfo_1->SpellIconID == 45) )
+                    return false;
+
                 // Fireball & Pyroblast (Dots)
                 if( (spellInfo_1->SpellFamilyFlags & UI64LIT(0x1)) && (spellInfo_2->SpellFamilyFlags & UI64LIT(0x400000)) ||
                     (spellInfo_2->SpellFamilyFlags & UI64LIT(0x1)) && (spellInfo_1->SpellFamilyFlags & UI64LIT(0x400000)) )
