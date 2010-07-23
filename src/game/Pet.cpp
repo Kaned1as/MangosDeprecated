@@ -296,7 +296,6 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
 
     AIM_Initialize();
 
-    owner->SetPet(this);                                    // in DB stored only full controlled creature
     map->Add((Creature*)this);
 
     // Spells should be loaded after pet is added to map, because in CheckCast is check on it
@@ -307,6 +306,7 @@ bool Pet::LoadPetFromDB( Player* owner, uint32 petentry, uint32 petnumber, bool 
 
     _LoadSpellCooldowns();
 
+    owner->SetPet(this);                                    // in DB stored only full controlled creature
     DEBUG_LOG("New Pet has guid %u", GetGUIDLow());
 
     if (owner->GetTypeId() == TYPEID_PLAYER)
