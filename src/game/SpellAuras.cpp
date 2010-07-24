@@ -547,8 +547,8 @@ Unit *caster, Item* castItem) : Aura(spellproto, eff, currentBasePoints, target,
                 m_modifier.m_auraname = SPELL_AURA_NONE;
             break;
         default:
-            sLog.outError("Wrong spell effect in AreaAura constructor");
-            ASSERT(false);
+            sLog.outError("Wrong spell effect in AreaAura constructor: %u", spellproto->Effect[eff]);
+            //ASSERT(false);
             break;
     }
 }
