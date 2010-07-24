@@ -1889,6 +1889,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if( (spellInfo_1->SpellFamilyFlags & UI64LIT(0x1)) && (spellInfo_2->SpellFamilyFlags & UI64LIT(0x400000)) ||
                     (spellInfo_2->SpellFamilyFlags & UI64LIT(0x1)) && (spellInfo_1->SpellFamilyFlags & UI64LIT(0x400000)) )
                     return false;
+
+				// Amaru: Improved Scorch & Winter's Chill
+				if (spellInfo_1->SpellIconID == 187 && spellInfo_2->SpellIconID == 816 ||
+					spellInfo_2->SpellIconID == 187 && spellInfo_1->SpellIconID == 816)
+					return false;
             }
             // Detect Invisibility and Mana Shield (multi-family check)
             if( spellInfo_2->Id == 132 && spellInfo_1->SpellIconID == 209 && spellInfo_1->SpellVisual[0] == 968 )
@@ -1983,6 +1988,11 @@ bool SpellMgr::IsNoStackSpellDueToSpell(uint32 spellId_1, uint32 spellId_2) cons
                 if ((spellInfo_1->Id == 47753 && spellInfo_2->SpellFamilyFlags & UI64LIT(0x0000000000000001)) ||
                     (spellInfo_2->Id == 47753 && spellInfo_1->SpellFamilyFlags & UI64LIT(0x0000000000000001)))
                     return false;
+
+				// Amaru: Blessed Recovery & Renew
+				if (spellInfo_1->SpellIconID == 1875 && spellInfo_2->SpellIconID == 321 ||
+					spellInfo_2->SpellIconID == 1875 && spellInfo_1->SpellIconID == 321)
+					return false;
             }
             break;
         case SPELLFAMILY_DRUID:
