@@ -880,7 +880,7 @@ void BattleGround::EndBattleGround(uint32 winner)
 uint32 BattleGround::GetBonusHonorFromKill(uint32 kills) const
 {
     //variable kills means how many honorable kills you scored (so we need kills * honor_for_one_kill)
-    return (uint32)MaNGOS::Honor::hk_honor_at_level(GetMaxLevel(), kills);
+    return (uint32)(MaNGOS::Honor::hk_honor_at_level(GetMaxLevel(), kills) * sWorld.getConfig(CONFIG_FLOAT_RATE_HONOR) / m_MaxPlayers);
 }
 
 uint32 BattleGround::GetBattlemasterEntry() const
