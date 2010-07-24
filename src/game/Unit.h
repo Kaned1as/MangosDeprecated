@@ -740,6 +740,14 @@ enum SplineType
     SPLINETYPE_FACINGANGLE  = 4
 };
 
+enum PlayerTotemType
+{
+    SUMMON_TYPE_TOTEM_FIRE  = 63,
+    SUMMON_TYPE_TOTEM_EARTH = 81,
+    SUMMON_TYPE_TOTEM_WATER = 82,
+    SUMMON_TYPE_TOTEM_AIR   = 83,
+};
+
 struct Position
 {
     Position() : x(0.0f), y(0.0f), z(0.0f), o(0.0f) {}
@@ -1372,6 +1380,7 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
 
         bool isFrozen() const;
         bool isIgnoreUnitState(SpellEntry const *spell);
+        uint32 GetModelForTotem(PlayerTotemType totemType);
 
         void RemoveSpellbyDamageTaken(AuraType auraType, uint32 damage);
 

@@ -7239,9 +7239,21 @@ void Spell::DoSummonTotem(SpellEffectIndex eff_idx, uint8 slot_dbc)
 
     if (slot < MAX_TOTEM_SLOT && m_caster->GetTypeId() == TYPEID_PLAYER)
     {
+        // set display id depending on race
+        SummonPropertiesEntry const *properties = sSummonPropertiesStore.LookupEntry(m_spellInfo->EffectMiscValueB[eff_idx]);
+        if(properties)
+        {
+            uint32 displayId = m_caster->GetModelForTotem(PlayerTotemType(properties->Id));
+            if(displayId)
+            {
+                pTotem->SetNativeDisplayId(displayId);
+                pTotem->SetDisplayId(displayId);
+            }
+        }
+
         WorldPacket data(SMSG_TOTEM_CREATED, 1 + 8 + 4 + 4);
-        data << uint8(slot);
-        data << uint64(pTotem->GetGUID());
+        data << uint8(slot - 1);
+        data << uint64(m_caster->GetGUID());
         data << uint32(duration);
         data << uint32(m_spellInfo->Id);
         ((Player*)m_caster)->SendDirectMessage(&data);
