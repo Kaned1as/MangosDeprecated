@@ -4949,6 +4949,7 @@ void Aura::HandleAuraModSchoolImmunity(bool apply, bool Real)
             if((GetSpellSchoolMask(spell) & school_mask)//Check for school mask
                 && !( spell->Attributes & SPELL_ATTR_UNAFFECTED_BY_INVULNERABILITY)   //Spells unaffected by invulnerability
                 && !iter->second->IsPositive()          //Don't remove positive spells
+                && !iter->second->IsPassive()           //Don't remove own talents!
                 && spell->Id != GetId() )               //Don't remove self
             {
                 target->RemoveAurasDueToSpell(spell->Id);
