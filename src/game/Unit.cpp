@@ -9303,7 +9303,14 @@ Unit* Unit::SelectMagnetTarget(Unit *victim, SpellEntry const *spellInfo)
             if(Unit* magnet = (*i)->GetCaster())
                 if(magnet->isAlive() && magnet->IsWithinLOSInMap(this))
                     if(roll_chance_i((*i)->GetModifier()->m_amount))
+                    {
+                        // Amaru: remove aura charge(s) (Intervene, etc)
+                        if ((*i)->GetAuraCharges())
+                            if((*i)->DropAuraCharge())
+                                victim->RemoveAura(*i);
+
                         return magnet;
+                    }
     }
 
     return victim;
