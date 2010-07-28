@@ -203,7 +203,7 @@ struct MANGOS_DLL_DECL boss_sindragosaAI : public ScriptedAI
                     float fPosX, fPosY, fPosZ;
                 marked[i]->GetPosition(fPosX, fPosY, fPosZ);
                 Unit* pTemp1 = bsw->doSummon(NPC_ICE_TOMB,fPosX, fPosY, fPosZ);
-                if (pTemp1)
+                if (pTemp1 && pTemp1->IsInWater())
                     pTemp1->AddThreat(marked[i], 100.0f);
             };
 
