@@ -202,7 +202,8 @@ struct MANGOS_DLL_DECL boss_sindragosaAI : public ScriptedAI
                 marked[i]->RemoveAurasDueToSpell(SPELL_FROST_BEACON);
                     float fPosX, fPosY, fPosZ;
                 marked[i]->GetPosition(fPosX, fPosY, fPosZ);
-                if (Unit* pTemp1 = bsw->doSummon(NPC_ICE_TOMB,fPosX, fPosY, fPosZ))
+                Unit* pTemp1 = bsw->doSummon(NPC_ICE_TOMB,fPosX, fPosY, fPosZ);
+                if (pTemp1)
                     pTemp1->AddThreat(marked[i], 100.0f);
             };
 
