@@ -4394,6 +4394,14 @@ SpellCastResult Spell::CheckCast(bool strict)
         sSpellStore.LookupEntry(m_spellInfo->casterAuraSpell) &&
         !m_caster->HasAura(m_spellInfo->casterAuraSpell))
         return SPELL_FAILED_CASTER_AURASTATE;
+    else if(m_spellInfo->casterAuraSpell)
+    {
+        // Special cases of non existing auras handling
+        if(m_spellInfo->casterAuraSpell == 56817)
+            // Rune Strike fake aura remove
+            if(m_caster->GetAura(56816, EFFECT_INDEX_0))
+                m_caster->GetAura(56816, EFFECT_INDEX_0)->SendFakeAuraUpdate(m_spellInfo->casterAuraSpell, true);
+    }
     if(m_spellInfo->excludeCasterAuraSpell)
     {
         // Special cases of non existing auras handling

@@ -8171,9 +8171,13 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
     SpellEntry const* triggerEntry = sSpellStore.LookupEntry(trigger_spell_id);
     if (!triggerEntry)
     {
+        //ofc it's a hack =/
+        if(trigger_spell_id == 56817) // Rune Strike fake aura
+            triggeredByAura->SendFakeAuraUpdate(trigger_spell_id, false);
+        else
         // Not cast unknown spell
         // sLog.outError("Unit::HandleProcTriggerSpell: Spell %u have 0 in EffectTriggered[%d], not handled custom case?",auraSpellInfo->Id,triggeredByAura->GetEffIndex());
-        return false;
+            return false;
     }
 
     // not allow proc extra attack spell at extra attack
