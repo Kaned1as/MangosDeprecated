@@ -4424,6 +4424,10 @@ void Spell::EffectDispel(SpellEffectIndex eff_idx)
             {
                 if ( Player* modOwner = caster->GetSpellModOwner() )
                     modOwner->ApplySpellMod(spellInfo->Id, SPELLMOD_RESIST_DISPEL_CHANCE, miss_chance, this);
+
+                //Unholy Blight
+                if(spellInfo->Dispel == DISPEL_DISEASE && unitTarget->HasAura(50536))
+                    miss_chance = 100;
             }
             // Try dispel
             if (roll_chance_i(miss_chance))
