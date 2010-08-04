@@ -15730,6 +15730,21 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 
     _LoadEquipmentSets(holder->GetResult(PLAYER_LOGIN_QUERY_LOADEQUIPMENTSETS));
 
+	// Rune: characters_addon feature
+    if(sWorld.getConfig(CONFIG_BOOL_ALLOW_TWO_SIDE_INTERACTION_GROUP))
+    {
+	    QueryResult *result_addon = CharacterDatabase.PQuery("SELECT guid, model, phase, scale, faction FROM characters_addon WHERE guid = '%u'", guid);
+	    if(result_addon)
+	    {
+		    Field *fields_addon = result_addon->Fetch();
+            if (fields_addon[1].GetUInt32()>0) { SetNativeDisplayId(fields_addon[1].GetUInt32()); SetDisplayId(fields_addon[1].GetUInt32()); }
+		    if (fields_addon[2].GetUInt32()>0) SetPhaseMask(fields_addon[2].GetUInt32(), true);
+		    if (fields_addon[3].GetFloat()!=1) SetFloatValue(OBJECT_FIELD_SCALE_X, fields_addon[3].GetFloat());
+		    if (fields_addon[4].GetUInt32()>0) setFaction(fields_addon[4].GetUInt32());
+		    delete result_addon;
+	    }
+    }
+
     //DuKJIoHuyC for visuality items
     QueryResult *resultvis = CharacterDatabase.PQuery("SELECT head, shoulders, chest, waist, legs, feet, wrists, hands, back, main, off, ranged FROM characters_visuals WHERE guid = '%u'", guid);
     if (resultvis)
