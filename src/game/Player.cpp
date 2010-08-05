@@ -15737,7 +15737,7 @@ bool Player::LoadFromDB( uint32 guid, SqlQueryHolder *holder )
 		    Field *fields_addon = result_addon->Fetch();
             if (fields_addon[1].GetUInt32()>0) { SetNativeDisplayId(fields_addon[1].GetUInt32()); SetDisplayId(fields_addon[1].GetUInt32()); }
 		    if (fields_addon[2].GetUInt32()>0) SetPhaseMask(fields_addon[2].GetUInt32(), true);
-		    if (fields_addon[3].GetFloat()!=1) SetFloatValue(OBJECT_FIELD_SCALE_X, fields_addon[3].GetFloat());
+            if (fields_addon[3].GetFloat()!=1) { SetFloatValue(OBJECT_FIELD_SCALE_X, fields_addon[3].GetFloat()); SetFloatValue(UNIT_FIELD_BOUNDINGRADIUS, DEFAULT_WORLD_OBJECT_SIZE ); }
 		    if (fields_addon[4].GetUInt32()>0) setFaction(fields_addon[4].GetUInt32());
 		    delete result_addon;
 	    }
