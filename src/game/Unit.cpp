@@ -181,6 +181,8 @@ Unit::Unit()
 
     m_extraAttacks = 0;
     m_follow_angle = 0;
+    m_ThreatRedirectionPercent = 0;
+    m_misdirectionTargetGUID = 0;
 
     m_state = 0;
     m_form = FORM_NONE;

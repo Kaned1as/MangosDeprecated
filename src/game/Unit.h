@@ -1857,6 +1857,14 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         void RemovePetAura(PetAura const* petSpell);
         uint32 GetModelForForm(ShapeshiftForm form);
 
+        void SetThreatRedirectionTarget(uint64 guid, uint32 pct)
+        {
+            m_misdirectionTargetGUID = guid;
+            m_ThreatRedirectionPercent = pct;
+        }
+        uint32 GetThreatRedirectionPercent() { return m_ThreatRedirectionPercent; }
+        Unit* GetMisdirectionTarget() { return m_misdirectionTargetGUID ? GetUnit(*this, m_misdirectionTargetGUID) : NULL; }
+
         // Movement info
         MovementInfo m_movementInfo;
         float GetFollowAngle() { return m_follow_angle; }
@@ -1948,6 +1956,8 @@ class MANGOS_DLL_SPEC Unit : public WorldObject
         ComboPointHolderSet m_ComboPointHolders;
 
         GuardianPetList m_guardianPets;
+        uint32 m_ThreatRedirectionPercent;
+        uint64 m_misdirectionTargetGUID;
 
         uint64 m_TotemSlot[MAX_TOTEM_SLOT];
 };
