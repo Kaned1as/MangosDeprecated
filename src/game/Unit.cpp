@@ -9099,7 +9099,7 @@ Player* Unit::GetCharmerOrOwnerPlayerOrPlayerItself()
 
 Pet* Unit::GetPet() const
 {
-    if(uint64 pet_guid = GetPetGUID())
+    if(uint64 pet_guid = GetPetGUID() && GetMap())
     {
         if(Pet* pet = GetMap()->GetPet(pet_guid))
             return pet;
