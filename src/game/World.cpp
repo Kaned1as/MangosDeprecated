@@ -1540,6 +1540,37 @@ void World::SendGMGlobalMessage(WorldPacket *packet, AccountTypes sec, WorldSess
     }
 }
 
+void World::MurlocStartEvent()
+{
+    SessionMap::const_iterator itr;
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    {
+        if (itr->second &&
+            itr->second->GetPlayer() &&
+            itr->second->GetPlayer()->IsInWorld())
+        {
+            uint32 murlocs[] = { 441, 983, 1995, 1305, 617, 506, 486, 757, 1994, 1079, 5243, 5293, 391, 527, 652, 4920, 346, 21723, 25149 };
+            uint32 selected = murlocs[urand(0, 19)];
+            itr->second->GetPlayer()->SetNativeDisplayId(selected);
+            itr->second->GetPlayer()->SetDisplayId(selected);
+        }
+    }
+}
+
+void World::MurlocEndEvent()
+{
+    SessionMap::const_iterator itr;
+    for (itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    {
+        if (itr->second &&
+            itr->second->GetPlayer() &&
+            itr->second->GetPlayer()->IsInWorld())
+        {
+            itr->second->GetPlayer()->InitDisplayIds();
+        }
+    }
+}
+
 namespace MaNGOS
 {
     class WorldWorldTextBuilder

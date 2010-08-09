@@ -614,6 +614,9 @@ class World
         void SetScriptsVersion(char const* version) { m_ScriptsVersion = version ? version : "unknown scripting library"; }
         char const* GetScriptsVersion() { return m_ScriptsVersion.c_str(); }
 
+        void MurlocStartEvent();
+        void MurlocEndEvent();
+
     protected:
         void _UpdateGameTime();
         // callback for UpdateRealmCharacters

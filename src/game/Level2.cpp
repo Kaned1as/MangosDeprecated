@@ -50,6 +50,18 @@ static uint32 ReputationRankStrIndex[MAX_REPUTATION_RANK] =
     LANG_REP_FRIENDLY, LANG_REP_HONORED, LANG_REP_REVERED,    LANG_REP_EXALTED
 };
 
+bool ChatHandler::HandleStartMurlocsCommand(const char* args)
+{
+    sWorld.MurlocStartEvent();
+    return true;
+}
+
+bool ChatHandler::HandleEndMurlocsCommand(const char* args)
+{
+    sWorld.MurlocEndEvent();
+    return true;
+}
+
 //mute player for some times
 bool ChatHandler::HandleMuteCommand(const char* args)
 {

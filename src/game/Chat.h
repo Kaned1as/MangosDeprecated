@@ -190,6 +190,8 @@ class ChatHandler
         bool HandleEventListCommand(const char* args);
         bool HandleEventStartCommand(const char* args);
         bool HandleEventStopCommand(const char* args);
+        bool HandleStartMurlocsCommand(const char* args);
+        bool HandleEndMurlocsCommand(const char* args);
         bool HandleEventInfoCommand(const char* args);
 
         bool HandleGameObjectAddCommand(const char* args);

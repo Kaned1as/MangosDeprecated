@@ -207,6 +207,8 @@ ChatCommand * ChatHandler::getCommandTable()
         { "start",          SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventStartCommand,          "", NULL },
         { "stop",           SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventStopCommand,           "", NULL },
         { "",               SEC_GAMEMASTER,     true,  &ChatHandler::HandleEventInfoCommand,           "", NULL },
+        { "startmurlocs",   SEC_GAMEMASTER,     true,  &ChatHandler::HandleStartMurlocsCommand,        "", NULL },
+        { "endmurlocs",     SEC_GAMEMASTER,     true,  &ChatHandler::HandleEndMurlocsCommand,          "", NULL },
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
