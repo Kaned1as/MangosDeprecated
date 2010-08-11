@@ -1547,7 +1547,8 @@ void World::MurlocStartEvent()
     {
         if (itr->second &&
             itr->second->GetPlayer() &&
-            itr->second->GetPlayer()->IsInWorld())
+            itr->second->GetPlayer()->IsInWorld() &&
+            itr->second->GetPlayer()->isAlive())
         {
             uint32 murlocs[] = { 441, 983, 1995, 1305, 617, 506, 486, 757, 1994, 1079, 5243, 5293, 391, 527, 652, 4920, 346, 21723, 25149 };
             uint32 selected = murlocs[urand(0, 19)];
@@ -1851,17 +1852,17 @@ void World::_UpdateGameTime()
             do
             {
 		Field *fields = result->Fetch();
-		uint32 qIdx = fields[0].GetUInt32();         //èíäåêñ î÷åðåäè     KEY
-		uint32 charGuid = fields[1].GetUInt32();     //ãóèä ÷àðà              
-		uint32 itemId = fields[2].GetUInt32();       //àéäè âåùè ñ âîâõåäà    
+		uint32 qIdx = fields[0].GetUInt32();         //Ã¨Ã­Ã¤Ã¥ÃªÃ± Ã®Ã·Ã¥Ã°Ã¥Ã¤Ã¨     KEY
+		uint32 charGuid = fields[1].GetUInt32();     //Ã£Ã³Ã¨Ã¤ Ã·Ã Ã°Ã 
+		uint32 itemId = fields[2].GetUInt32();       //Ã Ã©Ã¤Ã¨ Ã¢Ã¥Ã¹Ã¨ Ã± Ã¢Ã®Ã¢ÃµÃ¥Ã¤Ã 
 		uint16 itemStackCnt = fields[3].GetUInt32(); //
-		//uint32 itemGuid = fields[4].GetUInt32();     //ãóèä âåùè        
-		//uint8 sentFlag;         //áûëà ëè ïðîèçâåäåíà ïîñûëêà
+		//uint32 itemGuid = fields[4].GetUInt32();     //Ã£Ã³Ã¨Ã¤ Ã¢Ã¥Ã¹Ã¨
+		//uint8 sentFlag;         //Ã¡Ã»Ã«Ã  Ã«Ã¨ Ã¯Ã°Ã®Ã¨Ã§Ã¢Ã¥Ã¤Ã¥Ã­Ã  Ã¯Ã®Ã±Ã»Ã«ÃªÃ 
 
 		Player* pl = sObjectMgr.GetPlayer(charGuid);
 		if (!pl)
 		    continue;
-		
+
                 Item* item = Item::CreateItem(itemId, itemStackCnt, pl);
 
                 if (!item)
@@ -1876,7 +1877,7 @@ void World::_UpdateGameTime()
                 MailDraft("You received a gift!", "Use them well!")                              // item list preparing
                     .AddItem(item)
                     .SendMailTo(pl, MailSender(pl, MAIL_STATIONERY_GM));
-		
+
 		CharacterDatabase.PExecute("UPDATE queuedGifts SET sentFlag = 1, itemGuid = %u WHERE qIdx = %u", item->GetGUIDLow(), qIdx);
             } while (result->NextRow());
 
