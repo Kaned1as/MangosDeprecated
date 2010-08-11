@@ -2587,7 +2587,8 @@ MeleeHitOutcome Unit::RollMeleeOutcomeAgainst (const Unit *pVictim, WeaponAttack
     // parry & block chances
 
     // check if attack comes from behind, nobody can parry or block if attacker is behind
-    if (!pVictim->HasInArc(M_PI_F,this))
+    // Amaru: Deterrence excluding
+    if (!pVictim->HasInArc(M_PI_F,this) && !pVictim->HasAura(19263))
     {
         DEBUG_FILTER_LOG(LOG_FILTER_COMBAT, "RollMeleeOutcomeAgainst: attack came from behind.");
     }
@@ -2912,8 +2913,9 @@ SpellMissInfo Unit::MeleeSpellHitResult(Unit *pVictim, SpellEntry const *spell, 
         // Can`t dodge from behind in PvP (but its possible in PvE)
         if (GetTypeId() == TYPEID_PLAYER && pVictim->GetTypeId() == TYPEID_PLAYER)
             canDodge = false;
-        // Can`t parry
-        canParry = false;
+        // Can`t parry (Deterrence - can parry from behind)
+        if (!pVictim->HasAura(19263))
+            canParry = false;
     }
     // Check creatures flags_extra for disable parry
     if(pVictim->GetTypeId()==TYPEID_UNIT)
@@ -3048,7 +3050,8 @@ SpellMissInfo Unit::MagicSpellHitResult(Unit *pVictim, SpellEntry const *spell)
         return SPELL_MISS_MISS;
 
     // cast by caster in front of victim
-    if (pVictim->HasInArc(M_PI_F,this))
+    // Amaru: Deterrence - no position check
+    if (pVictim->HasInArc(M_PI_F,this) || pVictim->HasAura(19263))
     {
         int32 deflect_chance = pVictim->GetTotalAuraModifier(SPELL_AURA_DEFLECT_SPELLS)*100;
         tmp+=deflect_chance;
