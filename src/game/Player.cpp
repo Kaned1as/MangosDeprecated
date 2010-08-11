@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2005-2010 MaNGOS <http://getmangos.com/>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -552,7 +552,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
     m_anti_TeleTime = 0;
     m_CanFly=false;
     /////////////////////////////////
-
+ 
     m_mailsUpdated = false;
     unReadMails = 0;
     m_nextMailDelivereTime = 0;
@@ -2179,7 +2179,7 @@ void Player::Regenerate(Powers power, uint32 diff)
                     AuraList const& ModPowerRegenPCTAuras = GetAurasByType(SPELL_AURA_MOD_POWER_REGEN_PERCENT);
                     for(AuraList::const_iterator i = ModPowerRegenPCTAuras.begin(); i != ModPowerRegenPCTAuras.end(); ++i)
                         if ((*i)->GetModifier()->m_miscvalue == power && (*i)->GetMiscBValue()==GetCurrentRune(rune))
-                            cd_diff = cd_diff * ((*i)->GetModifier()->m_amount + 100) / 100;
+                            cd_diff = cd_diff * ((*i)->GetModifier()->m_amount + 100) / 100;                   
                     SetRuneCooldown(rune, (cd < cd_diff) ? 0 : cd - cd_diff, -1);
                 }
             }
@@ -4448,7 +4448,7 @@ void Player::BuildPlayerRepop()
     {
         sLog.outError("BuildPlayerRepop: player %s(%d) already has a corpse", GetName(), GetGUIDLow());
         //ASSERT(false);
-        return; // Åáàíóëèñü ÷òî ëè? À åñëè îí ñïàìèò êíîïêó Resurrect?
+        return; // Ебанулись что ли? А если он спамит кнопку Resurrect?
     }
 
     // create a corpse and place it at the player's location
@@ -10117,7 +10117,6 @@ uint8 Player::CanStoreItems( Item **pItems,int count) const
     int inv_tokens[CURRENCYTOKEN_SLOT_END-CURRENCYTOKEN_SLOT_START];
 
     memset(inv_slot_items,0,sizeof(int)*(INVENTORY_SLOT_ITEM_END-INVENTORY_SLOT_ITEM_START));
-    // ååáàíóóóòûå!
     for(int i = 0; i < (INVENTORY_SLOT_BAG_END-INVENTORY_SLOT_BAG_START); i++) { memset(inv_bags[i],0,sizeof(int)* MAX_BAG_SIZE); }
     memset(inv_keys,0,sizeof(int)*(KEYRING_SLOT_END-KEYRING_SLOT_START));
     memset(inv_tokens,0,sizeof(int)*(CURRENCYTOKEN_SLOT_END-CURRENCYTOKEN_SLOT_START));
@@ -11240,7 +11239,7 @@ void Player::QuickEquipItem( uint16 pos, Item *pItem)
 
 void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
 {
-    if (!m_vis || (slot == 3 || slot == 18))  // íå îáíîâëÿåì ïðè âêëþ÷åííîì altVis; âñåãäà îáíîâëÿåì äëÿ ñëîòîâ 3, 18 (ðóáàøêè-òàáàðäû)
+    if (!m_vis || (slot == 3 || slot == 18))  // не обновляем при включенном altVis; всегда обновляем для слотов 3, 18 (рубашки-табарды)
     if(pItem)
     {
         SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
@@ -22605,14 +22604,14 @@ void Player::RemoveGlobalCooldown(SpellEntry const *spellInfo)
 
 bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
 {
-    if (newItem == 0 && visSlot != PLAYER_VISIBLE_ITEM_18_ENTRYID)    // îòêëþ÷àåì äëÿ ñëîòà îòîáðàæåíèå ìîäåëüêè âîîáùå.
-                                                                    // äëÿ ranged íå äàåì îòêëþ÷èòü ìîäåëüêó - ó êëèåíòà íåò àíèìàöèè íà âûñòðåë áåç îðóæèÿ.  Ëîãè÷íî, â ïðèíöèïå.
+    if (newItem == 0 && visSlot != PLAYER_VISIBLE_ITEM_18_ENTRYID)    // отключаем для слота отображение модельки вообще.    
+                                                                    // для ranged не даем отключить модельку - у клиента нет анимации на выстрел без оружия.  Логично, в принципе.
     {
         SetUInt32Value(visSlot, 0);
         return true;
     }
-    else if (newItem == 1)        // âîññòàíàâëèâàåì çíà÷åíèå ïî ðåàëüíîìó èòåìó äàæå ñ display on.
-                                // âïðî÷åì, îíî íå áóäåò îáíîâëÿòüñÿ ïðè ñìåíå ýòîãî ñàìîãî ðåàëüíîãî èòåìà, ïîêà display on. Íå êðèòè÷íî, íî ïîòîì íàäî ïåðåäåëàòü.
+    else if (newItem == 1)        // восстанавливаем значение по реальному итему даже с display on.
+                                // впрочем, оно не будет обновляться при смене этого самого реального итема, пока display on. Не критично, но потом надо переделать.
     {
         Item const* realItem = GetItemByPos(255, pos);
         if (realItem)
@@ -22621,18 +22620,18 @@ bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
             SetUInt32Value(visSlot, 0);
         return true;
     }
-    else        // íå 0 è íå 1 - ñëåäîâàòåëüíî, èä èòåìà. Èùåì, ïðîâåðÿåì...
+    else        // не 0 и не 1 - следовательно, ид итема. Ищем, проверяем...
     {
         ItemPrototype const *itemProto = sItemStorage.LookupEntry<ItemPrototype >(newItem);
         if (!itemProto)
             return false;
-        if (itemProto->Quality != ITEM_QUALITY_LEGENDARY)    // îáùàÿ ïðîâåðêà äëÿ øìîòîê. Ïî êîíêðåòíûì òèïàì - äàëüøå.
-                                                            // ñïåö. èñêëþ÷åíèÿ òèïà corrupted ashbringer ëó÷øå, íàâåðíîå, ïðîïèñàòü ñðàçó â êîìàíäàõ
+        if (itemProto->Quality != ITEM_QUALITY_LEGENDARY)    // общая проверка для шмоток. По конкретным типам - дальше.
+                                                            // спец. исключения типа corrupted ashbringer лучше, наверное, прописать сразу в командах  
         {
             bool condition = false;
             switch (visSlot)
             {
-                case PLAYER_VISIBLE_ITEM_1_ENTRYID:        // head - ñïàñèáî, Êýï!
+                case PLAYER_VISIBLE_ITEM_1_ENTRYID:        // head - спасибо, Кэп!
                 {
                     if (itemProto->InventoryType == INVTYPE_HEAD)
                         condition = true;
@@ -22706,7 +22705,7 @@ bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
                 default:
                     break;
             }
-            if (condition)    // âñå îêåé, ìåíÿåì ìîäåëüêó
+            if (condition)    // все окей, меняем модельку
             {
                 SetUInt32Value(visSlot, newItem);
                 return true;
@@ -22722,10 +22721,10 @@ bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
 
 void Player::HandleAltVisSwitch()
 {
-    if (!m_vis)    // display off, âîññòàíàâëèâàåì çíà÷åíèÿ äëÿ âñåõ øìîòîê íà ïåðñîíàæå.
+    if (!m_vis)    // display off, восстанавливаем значения для всех шмоток на персонаже.
     {
         for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-        {
+        {    
             Item const* realItem =  GetItemByPos(255, i);
             if (realItem)
                 SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), realItem->GetEntry());
@@ -22735,9 +22734,9 @@ void Player::HandleAltVisSwitch()
     }
     else
     {
-        // ñðàçó íå ïîäñòàâëÿåì ñîõðàíåííûå çíà÷åíèÿ, ïðîâåðèì èõ íà âñÿêèé ñëó÷àé
-        // âïðî÷åì, âûãëÿäèò ýòà õðåíîòåíü óæàñíî. Íàäî áû ïåðåïèñàòü...
-        // DuKJIoHuyC: Ïåðåïèñàë.
+        // сразу не подставляем сохраненные значения, проверим их на всякий случай
+        // впрочем, выглядит эта хренотень ужасно. Надо бы переписать...
+        // DuKJIoHuyC: Переписал.
         uint32 *currItem = &m_vis->m_visHead;
         for(int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
         {
