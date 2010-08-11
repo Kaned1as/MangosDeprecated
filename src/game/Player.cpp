@@ -552,7 +552,7 @@ Player::Player (WorldSession *session): Unit(), m_achievementMgr(this), m_reputa
     m_anti_TeleTime = 0;
     m_CanFly=false;
     /////////////////////////////////
- 
+
     m_mailsUpdated = false;
     unReadMails = 0;
     m_nextMailDelivereTime = 0;
@@ -2179,7 +2179,7 @@ void Player::Regenerate(Powers power, uint32 diff)
                     AuraList const& ModPowerRegenPCTAuras = GetAurasByType(SPELL_AURA_MOD_POWER_REGEN_PERCENT);
                     for(AuraList::const_iterator i = ModPowerRegenPCTAuras.begin(); i != ModPowerRegenPCTAuras.end(); ++i)
                         if ((*i)->GetModifier()->m_miscvalue == power && (*i)->GetMiscBValue()==GetCurrentRune(rune))
-                            cd_diff = cd_diff * ((*i)->GetModifier()->m_amount + 100) / 100;                   
+                            cd_diff = cd_diff * ((*i)->GetModifier()->m_amount + 100) / 100;
                     SetRuneCooldown(rune, (cd < cd_diff) ? 0 : cd - cd_diff, -1);
                 }
             }
@@ -4448,7 +4448,7 @@ void Player::BuildPlayerRepop()
     {
         sLog.outError("BuildPlayerRepop: player %s(%d) already has a corpse", GetName(), GetGUIDLow());
         //ASSERT(false);
-        return; // Ебанулись что ли? А если он спамит кнопку Resurrect?
+        return; // Г…ГЎГ Г­ГіГ«ГЁГ±Гј Г·ГІГ® Г«ГЁ? ГЂ ГҐГ±Г«ГЁ Г®Г­ Г±ГЇГ Г¬ГЁГІ ГЄГ­Г®ГЇГЄГі Resurrect?
     }
 
     // create a corpse and place it at the player's location
@@ -6772,7 +6772,7 @@ void Player::UpdateZone(uint32 newZone, uint32 newArea)
 
     if (!HasAura(49152) && IsTwoHandUsedInDualWield() && CanTitanGrip())
     {
-        CastSpell(this, 49152, true);	
+        CastSpell(this, 49152, true);
     }
 
     // recent client version not send leave/join channel packets for built-in local channels
@@ -10117,7 +10117,7 @@ uint8 Player::CanStoreItems( Item **pItems,int count) const
     int inv_tokens[CURRENCYTOKEN_SLOT_END-CURRENCYTOKEN_SLOT_START];
 
     memset(inv_slot_items,0,sizeof(int)*(INVENTORY_SLOT_ITEM_END-INVENTORY_SLOT_ITEM_START));
-    // еебанууутые!
+    // ГҐГҐГЎГ Г­ГіГіГіГІГ»ГҐ!
     for(int i = 0; i < (INVENTORY_SLOT_BAG_END-INVENTORY_SLOT_BAG_START); i++) { memset(inv_bags[i],0,sizeof(int)* MAX_BAG_SIZE); }
     memset(inv_keys,0,sizeof(int)*(KEYRING_SLOT_END-KEYRING_SLOT_START));
     memset(inv_tokens,0,sizeof(int)*(CURRENCYTOKEN_SLOT_END-CURRENCYTOKEN_SLOT_START));
@@ -10574,26 +10574,10 @@ uint8 Player::CanUnequipItem( uint16 pos, bool swap ) const
                 return EQUIP_ERR_NOT_DURING_ARENA_MATCH;
     }
 
-    // Amaru: forbid unequipping items while in disarm state
-    uint8 eslot = pos & 255;
-    switch (eslot)
-    {
-        case EQUIPMENT_SLOT_MAINHAND:
-            if (!CanUseAttackType(BASE_ATTACK))
-                return EQUIP_ERR_NOT_WHILE_DISARMED;
-            break;
-        case EQUIPMENT_SLOT_OFFHAND:
-            if (!CanUseAttackType(OFF_ATTACK))
-                return EQUIP_ERR_NOT_WHILE_DISARMED;
-            break;
-        case EQUIPMENT_SLOT_RANGED:
-            if (!CanUseAttackType(RANGED_ATTACK))
-                return EQUIP_ERR_NOT_WHILE_DISARMED;
-            break;
-        default:
-            break;
-    }
-    
+    // temporary fix
+    if(HasAuraType(SPELL_AURA_MOD_DISARM) || HasAuraType(SPELL_AURA_MOD_DISARM_SHIELD) || HasAuraType(SPELL_AURA_MOD_DISARM_RANGED))
+        return EQUIP_ERR_NOT_WHILE_DISARMED;
+
     if(!swap && pItem->IsBag() && !((Bag*)pItem)->IsEmpty())
         return EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS;
 
@@ -11256,7 +11240,7 @@ void Player::QuickEquipItem( uint16 pos, Item *pItem)
 
 void Player::SetVisibleItemSlot(uint8 slot, Item *pItem)
 {
-    if (!m_vis || (slot == 3 || slot == 18))  // не обновляем при включенном altVis; всегда обновляем для слотов 3, 18 (рубашки-табарды)
+    if (!m_vis || (slot == 3 || slot == 18))  // Г­ГҐ Г®ГЎГ­Г®ГўГ«ГїГҐГ¬ ГЇГ°ГЁ ГўГЄГ«ГѕГ·ГҐГ­Г­Г®Г¬ altVis; ГўГ±ГҐГЈГ¤Г  Г®ГЎГ­Г®ГўГ«ГїГҐГ¬ Г¤Г«Гї Г±Г«Г®ГІГ®Гў 3, 18 (Г°ГіГЎГ ГёГЄГЁ-ГІГ ГЎГ Г°Г¤Г»)
     if(pItem)
     {
         SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (slot * 2), pItem->GetEntry());
@@ -11379,7 +11363,7 @@ void Player::RemoveItem( uint8 bag, uint8 slot, bool update )
     if (HasAura(49152))
     {
 
-        if (type == INVTYPE_2HWEAPON) 	
+        if (type == INVTYPE_2HWEAPON)
         {
             if (!IsTwoHandUsedInDualWield())
             {
@@ -14184,7 +14168,7 @@ bool Player::SatisfyQuestExclusiveGroup( Quest const* qInfo, bool msg ) const
         if (i_exstatus != mQuestStatus.end()
             && (i_exstatus->second.m_status == QUEST_STATUS_COMPLETE || i_exstatus->second.m_status == QUEST_STATUS_INCOMPLETE))
         {
-            if (msg) 
+            if (msg)
                 SendCanTakeQuestResponse( INVALIDREASON_DONT_HAVE_REQ );
             return false;
         }
@@ -16910,7 +16894,7 @@ void Player::SaveToDB()
     if(m_vis)
     {
         std::ostringstream ps;
-        ps << "REPLACE INTO characters_visuals (guid, head, shoulders, chest, waist, legs, feet, wrists, hands, back, main, off, ranged) VALUES (" 
+        ps << "REPLACE INTO characters_visuals (guid, head, shoulders, chest, waist, legs, feet, wrists, hands, back, main, off, ranged) VALUES ("
         << GetGUIDLow() << ", "
         << m_vis->m_visHead << ", "
         << m_vis->m_visShoulders << ", "
@@ -21324,9 +21308,9 @@ uint32 Player::CalculateTalentsPoints() const
     uint32 talentPointsForLevel = getLevel() < 56 ? 0 : getLevel() - 55;
     talentPointsForLevel += m_questRewardTalentCount;
 
-    //megai2: tmpfix for death knights who are not finished some quests	
+    //megai2: tmpfix for death knights who are not finished some quests
     if ((talentPointsForLevel > base_talent) || ((talentPointsForLevel < base_talent) && (getLevel() >= 70)))
-        talentPointsForLevel = base_talent;	
+        talentPointsForLevel = base_talent;
 
     return uint32(talentPointsForLevel * sWorld.getConfig(CONFIG_FLOAT_RATE_TALENT));
 }
@@ -21540,7 +21524,7 @@ void Player::HandleFall(MovementInfo const& movementInfo)
     // calculate total z distance of the fall
     //float z_diff = m_lastFallZ - movementInfo.z;
     float z_diff = (m_lastFallZ >= m_anti_BeginFallZ ? m_lastFallZ : m_anti_BeginFallZ) - movementInfo.GetPos()->z;
-     
+
     m_anti_BeginFallZ=INVALID_HEIGHT;
     //float z_diff = m_lastFallZ - movementInfo.GetPos()->z;
     DEBUG_LOG("zDiff = %f", z_diff);
@@ -22547,7 +22531,7 @@ void Player::RemoveBuggedPrimarySkills()
 
     for( int k = 0; k < 11; k++ )
         {
-            if( HasSkill(proffarray[k]) ) 
+            if( HasSkill(proffarray[k]) )
             {
                 numproff++;
                 myskillarray[k][0] = proffarray[k];
@@ -22621,14 +22605,14 @@ void Player::RemoveGlobalCooldown(SpellEntry const *spellInfo)
 
 bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
 {
-    if (newItem == 0 && visSlot != PLAYER_VISIBLE_ITEM_18_ENTRYID)    // отключаем для слота отображение модельки вообще.    
-                                                                    // для ranged не даем отключить модельку - у клиента нет анимации на выстрел без оружия.  Логично, в принципе.
+    if (newItem == 0 && visSlot != PLAYER_VISIBLE_ITEM_18_ENTRYID)    // Г®ГІГЄГ«ГѕГ·Г ГҐГ¬ Г¤Г«Гї Г±Г«Г®ГІГ  Г®ГІГ®ГЎГ°Г Г¦ГҐГ­ГЁГҐ Г¬Г®Г¤ГҐГ«ГјГЄГЁ ГўГ®Г®ГЎГ№ГҐ.
+                                                                    // Г¤Г«Гї ranged Г­ГҐ Г¤Г ГҐГ¬ Г®ГІГЄГ«ГѕГ·ГЁГІГј Г¬Г®Г¤ГҐГ«ГјГЄГі - Гі ГЄГ«ГЁГҐГ­ГІГ  Г­ГҐГІ Г Г­ГЁГ¬Г Г¶ГЁГЁ Г­Г  ГўГ»Г±ГІГ°ГҐГ« ГЎГҐГ§ Г®Г°ГіГ¦ГЁГї.  Г‹Г®ГЈГЁГ·Г­Г®, Гў ГЇГ°ГЁГ­Г¶ГЁГЇГҐ.
     {
         SetUInt32Value(visSlot, 0);
         return true;
     }
-    else if (newItem == 1)        // восстанавливаем значение по реальному итему даже с display on.
-                                // впрочем, оно не будет обновляться при смене этого самого реального итема, пока display on. Не критично, но потом надо переделать.
+    else if (newItem == 1)        // ГўГ®Г±Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ Г§Г­Г Г·ГҐГ­ГЁГҐ ГЇГ® Г°ГҐГ Г«ГјГ­Г®Г¬Гі ГЁГІГҐГ¬Гі Г¤Г Г¦ГҐ Г± display on.
+                                // ГўГЇГ°Г®Г·ГҐГ¬, Г®Г­Г® Г­ГҐ ГЎГіГ¤ГҐГІ Г®ГЎГ­Г®ГўГ«ГїГІГјГ±Гї ГЇГ°ГЁ Г±Г¬ГҐГ­ГҐ ГЅГІГ®ГЈГ® Г±Г Г¬Г®ГЈГ® Г°ГҐГ Г«ГјГ­Г®ГЈГ® ГЁГІГҐГ¬Г , ГЇГ®ГЄГ  display on. ГЌГҐ ГЄГ°ГЁГІГЁГ·Г­Г®, Г­Г® ГЇГ®ГІГ®Г¬ Г­Г Г¤Г® ГЇГҐГ°ГҐГ¤ГҐГ«Г ГІГј.
     {
         Item const* realItem = GetItemByPos(255, pos);
         if (realItem)
@@ -22637,18 +22621,18 @@ bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
             SetUInt32Value(visSlot, 0);
         return true;
     }
-    else        // не 0 и не 1 - следовательно, ид итема. Ищем, проверяем...
+    else        // Г­ГҐ 0 ГЁ Г­ГҐ 1 - Г±Г«ГҐГ¤Г®ГўГ ГІГҐГ«ГјГ­Г®, ГЁГ¤ ГЁГІГҐГ¬Г . Г€Г№ГҐГ¬, ГЇГ°Г®ГўГҐГ°ГїГҐГ¬...
     {
         ItemPrototype const *itemProto = sItemStorage.LookupEntry<ItemPrototype >(newItem);
         if (!itemProto)
             return false;
-        if (itemProto->Quality != ITEM_QUALITY_LEGENDARY)    // общая проверка для шмоток. По конкретным типам - дальше.
-                                                            // спец. исключения типа corrupted ashbringer лучше, наверное, прописать сразу в командах  
+        if (itemProto->Quality != ITEM_QUALITY_LEGENDARY)    // Г®ГЎГ№Г Гї ГЇГ°Г®ГўГҐГ°ГЄГ  Г¤Г«Гї ГёГ¬Г®ГІГ®ГЄ. ГЏГ® ГЄГ®Г­ГЄГ°ГҐГІГ­Г»Г¬ ГІГЁГЇГ Г¬ - Г¤Г Г«ГјГёГҐ.
+                                                            // Г±ГЇГҐГ¶. ГЁГ±ГЄГ«ГѕГ·ГҐГ­ГЁГї ГІГЁГЇГ  corrupted ashbringer Г«ГіГ·ГёГҐ, Г­Г ГўГҐГ°Г­Г®ГҐ, ГЇГ°Г®ГЇГЁГ±Г ГІГј Г±Г°Г Г§Гі Гў ГЄГ®Г¬Г Г­Г¤Г Гµ
         {
             bool condition = false;
             switch (visSlot)
             {
-                case PLAYER_VISIBLE_ITEM_1_ENTRYID:        // head - спасибо, Кэп!
+                case PLAYER_VISIBLE_ITEM_1_ENTRYID:        // head - Г±ГЇГ Г±ГЁГЎГ®, ГЉГЅГЇ!
                 {
                     if (itemProto->InventoryType == INVTYPE_HEAD)
                         condition = true;
@@ -22722,7 +22706,7 @@ bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
                 default:
                     break;
             }
-            if (condition)    // все окей, меняем модельку
+            if (condition)    // ГўГ±ГҐ Г®ГЄГҐГ©, Г¬ГҐГ­ГїГҐГ¬ Г¬Г®Г¤ГҐГ«ГјГЄГі
             {
                 SetUInt32Value(visSlot, newItem);
                 return true;
@@ -22738,10 +22722,10 @@ bool Player::HandleChangeSlotModel(uint16 visSlot, uint32 newItem, uint16 pos)
 
 void Player::HandleAltVisSwitch()
 {
-    if (!m_vis)    // display off, восстанавливаем значения для всех шмоток на персонаже.
+    if (!m_vis)    // display off, ГўГ®Г±Г±ГІГ Г­Г ГўГ«ГЁГўГ ГҐГ¬ Г§Г­Г Г·ГҐГ­ГЁГї Г¤Г«Гї ГўГ±ГҐГµ ГёГ¬Г®ГІГ®ГЄ Г­Г  ГЇГҐГ°Г±Г®Г­Г Г¦ГҐ.
     {
         for (int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
-        {    
+        {
             Item const* realItem =  GetItemByPos(255, i);
             if (realItem)
                 SetUInt32Value(PLAYER_VISIBLE_ITEM_1_ENTRYID + (i * 2), realItem->GetEntry());
@@ -22751,9 +22735,9 @@ void Player::HandleAltVisSwitch()
     }
     else
     {
-        // сразу не подставляем сохраненные значения, проверим их на всякий случай
-        // впрочем, выглядит эта хренотень ужасно. Надо бы переписать...
-        // DuKJIoHuyC: Переписал.
+        // Г±Г°Г Г§Гі Г­ГҐ ГЇГ®Г¤Г±ГІГ ГўГ«ГїГҐГ¬ Г±Г®ГµГ°Г Г­ГҐГ­Г­Г»ГҐ Г§Г­Г Г·ГҐГ­ГЁГї, ГЇГ°Г®ГўГҐГ°ГЁГ¬ ГЁГµ Г­Г  ГўГ±ГїГЄГЁГ© Г±Г«ГіГ·Г Г©
+        // ГўГЇГ°Г®Г·ГҐГ¬, ГўГ»ГЈГ«ГїГ¤ГЁГІ ГЅГІГ  ГµГ°ГҐГ­Г®ГІГҐГ­Гј ГіГ¦Г Г±Г­Г®. ГЌГ Г¤Г® ГЎГ» ГЇГҐГ°ГҐГЇГЁГ±Г ГІГј...
+        // DuKJIoHuyC: ГЏГҐГ°ГҐГЇГЁГ±Г Г«.
         uint32 *currItem = &m_vis->m_visHead;
         for(int i = EQUIPMENT_SLOT_START; i < EQUIPMENT_SLOT_END; ++i)
         {
