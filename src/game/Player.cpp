@@ -10573,9 +10573,25 @@ uint8 Player::CanUnequipItem( uint16 pos, bool swap ) const
                 return EQUIP_ERR_NOT_DURING_ARENA_MATCH;
     }
 
-    // temporary fix
-    if(HasAuraType(SPELL_AURA_MOD_DISARM) || HasAuraType(SPELL_AURA_MOD_DISARM_SHIELD) || HasAuraType(SPELL_AURA_MOD_DISARM_RANGED))
-        return EQUIP_ERR_NOT_WHILE_DISARMED;
+    // Amaru: forbid unequipping items while in disarm state
+    uint8 eslot = pos & 255;
+    switch (eslot)
+    {
+        case EQUIPMENT_SLOT_MAINHAND:
+            if (!CanUseAttackType(BASE_ATTACK))
+                return EQUIP_ERR_NOT_WHILE_DISARMED;
+            break;
+        case EQUIPMENT_SLOT_OFFHAND:
+            if (!CanUseAttackType(OFF_ATTACK))
+                return EQUIP_ERR_NOT_WHILE_DISARMED;
+            break;
+        case EQUIPMENT_SLOT_RANGED:
+            if (!CanUseAttackType(RANGED_ATTACK))
+                return EQUIP_ERR_NOT_WHILE_DISARMED;
+            break;
+        default:
+            break;
+    }
 
     if(!swap && pItem->IsBag() && !((Bag*)pItem)->IsEmpty())
         return EQUIP_ERR_CAN_ONLY_DO_WITH_EMPTY_BAGS;

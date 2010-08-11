@@ -1318,8 +1318,15 @@ void WorldSession::HandleEquipmentSetUse(WorldPacket &recv_data)
             if(!uItem)
                 continue;
 
+            uint8 msg = _player->CanUnequipItem(uItem->GetPos(), false);
+            if (msg != EQUIP_ERR_OK)
+            {
+                _player->SendEquipError(msg, uItem, NULL);
+                continue;
+            }
+
             ItemPosCountVec sDest;
-            uint8 msg = _player->CanStoreItem( NULL_BAG, NULL_SLOT, sDest, uItem, false );
+            msg = _player->CanStoreItem( NULL_BAG, NULL_SLOT, sDest, uItem, false );
             if(msg == EQUIP_ERR_OK)
             {
                 _player->RemoveItem(INVENTORY_SLOT_BAG_0, i, true);
