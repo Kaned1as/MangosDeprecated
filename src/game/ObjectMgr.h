@@ -473,6 +473,7 @@ class MANGOS_DLL_DECL StatMgr
                 to_mute_GUID = 0;
                 mute_votes.clear();
                 mute_counter = 0;
+                sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, "Voting failed due to low vote count");
             }
         }
         // spell statistics
