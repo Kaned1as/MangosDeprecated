@@ -640,7 +640,7 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
 
     WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
     data << argstr.str();
-    sWorld.SendGlobalMessage(&data);
+    sWorld.SendGlobalMessage(&data, NULL, sStatMgr.mute_chat_team);
 
     if(sStatMgr.mute_votes.size() >= 10)
     {
@@ -693,7 +693,7 @@ bool ChatHandler::HandleVoteNoCommand(const char* args)
 
     WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
     data << argstr.str();
-    sWorld.SendGlobalMessage(&data);
+    sWorld.SendGlobalMessage(&data, NULL, sStatMgr.mute_chat_team);
 
     if(sStatMgr.mute_votes.size() >= 10)
     {
