@@ -582,7 +582,10 @@ bool ChatHandler::HandleCharDisplayRangedCommand(const char* args)
 bool ChatHandler::HandleVoteMuteCommand(const char* args)
 {
     if(sStatMgr.to_mute_GUID)
+    {
+        SendSysMessage("Voting player is already in progress...");
         return true;
+    }
 
     if(!*args)
         return false;
