@@ -28,7 +28,6 @@
 #include "Corpse.h"
 #include "QuestDef.h"
 #include "ItemPrototype.h"
-#include "World.h"
 #include "NPCHandler.h"
 #include "Database/DatabaseEnv.h"
 #include "Map.h"
@@ -467,16 +466,8 @@ class MANGOS_DLL_DECL StatMgr
             return *_gestalt;
         }
 
-        void Update()
-        {
-            if(mute_counter && (time(NULL) > mute_counter))
-            {
-                to_mute_GUID = 0;
-                mute_votes.clear();
-                mute_counter = 0;
-                sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, "Voting failed due to low vote count");
-            }
-        }
+        void Update();
+
         // spell statistics
         std::pair<uint32, uint32> spell_work;
 

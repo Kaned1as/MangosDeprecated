@@ -53,6 +53,17 @@
 INSTANTIATE_SINGLETON_1(ObjectMgr);
 StatMgr* StatMgr::_gestalt = NULL;
 
+void StatMgr::Update()
+{
+        if(mute_counter && (time(NULL) > mute_counter))
+        {
+            to_mute_GUID = 0;
+            mute_votes.clear();
+            mute_counter = 0;
+            sWorld.SendTeamText(mute_chat_team, LANG_SYSTEMMESSAGE, "Voting failed due to low vote count");
+        }
+}
+
 ScriptMapMap sQuestEndScripts;
 ScriptMapMap sQuestStartScripts;
 ScriptMapMap sSpellScripts;
@@ -8713,7 +8724,7 @@ uint32 ObjectMgr::GetMemoryUsage()
 	sLog.outString("m_LocalForIndex: %u", temp = m_LocalForIndex.size() * sizeof(*m_LocalForIndex.begin()) / 1024);
 	total_mem += temp;
 	sLog.outString("Total Memory Used: %u", total_mem);
-	
+
 	return total_mem;
 }
 
@@ -8781,7 +8792,7 @@ bool FindCreatureData::operator()( CreatureDataPair const& dataPair )
         i_mapDist = new_dist;
     }
 
-    // skip not spawned (in any state), 
+    // skip not spawned (in any state),
     uint16 pool_id = sPoolMgr.IsPartOfAPool<Creature>(dataPair.first);
     if (pool_id && !sPoolMgr.IsSpawnedObject<Creature>(dataPair.first))
         return false;
