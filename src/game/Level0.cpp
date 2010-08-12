@@ -584,7 +584,8 @@ bool ChatHandler::HandleVoteMuteCommand(const char* args)
     if(sStatMgr.to_mute_GUID)
     {
         SendSysMessage("Voting player is already in progress...");
-        return true;
+        SetSentErrorMessage(true);
+        return false;
     }
 
     if(!*args)
@@ -598,7 +599,15 @@ bool ChatHandler::HandleVoteMuteCommand(const char* args)
     if(!pl)
     {
         SendSysMessage(LANG_PLAYER_NOT_FOUND);
-        return true;
+        SetSentErrorMessage(true);
+        return false;
+    }
+
+    if(pl->GetSession()->GetSecurity() > SEC_PLAYER)
+    {
+        SendSysMessage(LANG_YOURS_SECURITY_IS_LOW);
+        SetSentErrorMessage(true);
+        return false;
     }
 
     sStatMgr.to_mute_GUID = pl->GetGUID();
@@ -615,7 +624,11 @@ bool ChatHandler::HandleVoteMuteCommand(const char* args)
 bool ChatHandler::HandleVoteYesCommand(const char* args)
 {
     if(!sStatMgr.to_mute_GUID)
+    {
+        SendSysMessage("Voting is not in progress...");
+        SetSentErrorMessage(true);
         return false;
+    }
 
     if(sStatMgr.mute_votes.find(m_session->GetPlayer()->GetGUIDLow()) != sStatMgr.mute_votes.end())
         return true;
@@ -624,7 +637,10 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
 
     std::stringstream argstr;
     argstr << m_session->GetPlayer()->GetName() << " voted yes. \n";
-    sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+
+    WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
+    data << argstr.str();
+    sWorld.SendGlobalMessage(&data);
 
     if(sStatMgr.mute_votes.size() >= 10)
     {
@@ -653,7 +669,7 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
             argstr << pl->GetName();
         else
             argstr << (uint32)account_id;
-        argstr << " was muted for " << (uint32)votes << " minutes.";
+        argstr << " was muted for " << (uint32)votes << " minutes. \n";
         sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
     }
 }
@@ -661,7 +677,11 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
 bool ChatHandler::HandleVoteNoCommand(const char* args)
 {
     if(!sStatMgr.to_mute_GUID)
+    {
+        SendSysMessage("Voting is not in progress...");
+        SetSentErrorMessage(true);
         return false;
+    }
 
     if(sStatMgr.mute_votes.find(m_session->GetPlayer()->GetGUIDLow()) != sStatMgr.mute_votes.end())
         return true;
@@ -669,8 +689,11 @@ bool ChatHandler::HandleVoteNoCommand(const char* args)
     sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = false;
 
     std::stringstream argstr;
-    argstr << m_session->GetPlayer()->GetName() << " voted no.";
-    sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+    argstr << m_session->GetPlayer()->GetName() << " voted no. \n";
+
+    WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
+    data << argstr.str();
+    sWorld.SendGlobalMessage(&data);
 
     if(sStatMgr.mute_votes.size() >= 10)
     {
