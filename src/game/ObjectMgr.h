@@ -28,6 +28,7 @@
 #include "Corpse.h"
 #include "QuestDef.h"
 #include "ItemPrototype.h"
+#include "World.h"
 #include "NPCHandler.h"
 #include "Database/DatabaseEnv.h"
 #include "Map.h"
