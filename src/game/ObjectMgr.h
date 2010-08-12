@@ -443,26 +443,46 @@ class IdGenerator
         T m_nextGuid;
 };
 
-// Ñèíãëåòîí è åáèñü âñå êîí¸ì!
+// Ð¡Ð¸Ð½Ð³Ð»ÐµÑ‚Ð¾Ð½ Ð¸ ÐµÐ±Ð¸ÑÑŒ Ð²ÑÐµ ÐºÐ¾Ð½Ñ‘Ð¼!
 class MANGOS_DLL_DECL StatMgr
 {
     private:
         static StatMgr * _gestalt;
     protected:
-        StatMgr() 
+        StatMgr()
         {
             spell_work.first = 0;
             spell_work.second = 0;
+            mute_votes.clear();
+            to_mute_GUID = 0;
+            mute_counter = 0;
+            mute_chat_team = 0;
         }
     public:
-        // Åäèíñòâåííîñòü
+        // Ð•Ð´Ð¸Ð½ÑÑ‚Ð²ÐµÐ½Ð½Ð¾ÑÑ‚ÑŒ
         static StatMgr& Instance()
         {
             if(!_gestalt) _gestalt = new StatMgr();
             return *_gestalt;
         }
 
+        void Update()
+        {
+            if(mute_counter && (time(NULL) > mute_counter))
+            {
+                to_mute_GUID = 0;
+                mute_votes.clear();
+                mute_counter = 0;
+            }
+        }
+        // spell statistics
         std::pair<uint32, uint32> spell_work;
+
+        // vote mute statistics
+        std::map<uint32, bool> mute_votes;
+        uint64 to_mute_GUID;
+        uint32 mute_chat_team;
+        time_t mute_counter;
 };
 
 #define sStatMgr StatMgr::Instance()

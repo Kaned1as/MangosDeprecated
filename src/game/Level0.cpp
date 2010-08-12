@@ -23,6 +23,7 @@
 #include "Opcodes.h"
 #include "Chat.h"
 #include "ObjectAccessor.h"
+#include "ObjectMgr.h"
 #include "Language.h"
 #include "AccountMgr.h"
 #include "SystemConfig.h"
@@ -297,7 +298,7 @@ bool ChatHandler::HandleCharDisplayMainhandCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -321,7 +322,7 @@ bool ChatHandler::HandleCharDisplayHeadCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -345,7 +346,7 @@ bool ChatHandler::HandleCharDisplayShouldersCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -369,7 +370,7 @@ bool ChatHandler::HandleCharDisplayChestCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -393,7 +394,7 @@ bool ChatHandler::HandleCharDisplayWaistCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -417,7 +418,7 @@ bool ChatHandler::HandleCharDisplayLegsCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -441,7 +442,7 @@ bool ChatHandler::HandleCharDisplayFeetCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -465,7 +466,7 @@ bool ChatHandler::HandleCharDisplayWristsCommand(const char* args)
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -482,14 +483,14 @@ bool ChatHandler::HandleCharDisplayWristsCommand(const char* args)
         return false;
 }
 
-bool ChatHandler::HandleCharDisplayHandsCommand(const char* args) //Суки, покажите свои руки!
+bool ChatHandler::HandleCharDisplayHandsCommand(const char* args) //РЎСѓРєРё, РїРѕРєР°Р¶РёС‚Рµ СЃРІРѕРё СЂСѓРєРё!
 {
     if(!*args)
         return false;
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -506,14 +507,14 @@ bool ChatHandler::HandleCharDisplayHandsCommand(const char* args) //Суки, покажи
         return false;
 }
 
-bool ChatHandler::HandleCharDisplayBackCommand(const char* args) //Суки, покажите свои руки!
+bool ChatHandler::HandleCharDisplayBackCommand(const char* args)
 {
     if(!*args)
         return false;
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -530,14 +531,14 @@ bool ChatHandler::HandleCharDisplayBackCommand(const char* args) //Суки, покажит
         return false;
 }
 
-bool ChatHandler::HandleCharDisplayOffhandCommand(const char* args) //Суки, покажите свои руки!
+bool ChatHandler::HandleCharDisplayOffhandCommand(const char* args)
 {
     if(!*args)
         return false;
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -554,14 +555,14 @@ bool ChatHandler::HandleCharDisplayOffhandCommand(const char* args) //Суки, пока
         return false;
 }
 
-bool ChatHandler::HandleCharDisplayRangedCommand(const char* args) //Суки, покажите свои руки!
+bool ChatHandler::HandleCharDisplayRangedCommand(const char* args)
 {
     if(!*args)
         return false;
     char* cId = extractKeyFromLink((char*)args,"Hitem");
     if(!cId)
         return false;
-            
+
     uint32 newItem = (uint32)atol(cId);
 
     Player* pl = m_session->GetPlayer();
@@ -576,4 +577,126 @@ bool ChatHandler::HandleCharDisplayRangedCommand(const char* args) //Суки, покаж
     }
     else
         return false;
+}
+
+bool ChatHandler::HandleVoteMuteCommand(const char* args)
+{
+    if(sStatMgr.to_mute_GUID)
+        return true;
+
+    if(!*args)
+        return false;
+
+    std::string name = extractPlayerNameFromLink((char*)args);
+    if (name.empty())
+        return false;
+
+    Player* pl = sObjectMgr.GetPlayer(name.c_str());
+    if(!pl)
+    {
+        SendSysMessage(LANG_PLAYER_NOT_FOUND);
+        return true;
+    }
+
+    sStatMgr.to_mute_GUID = pl->GetGUID();
+    sStatMgr.mute_counter = time(NULL) + 60;
+    sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = true;
+    sStatMgr.mute_chat_team = pl->GetTeam();
+
+    std::stringstream argstr;
+    argstr << m_session->GetPlayer()->GetName() << " called a vote to mute player " << pl->GetName() << "\r";
+    argstr << "Print \".vote yes\" to agree, \".vote no\" to disagree in next 60 seconds. Limited to max 10 votes.";
+    sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+}
+
+bool ChatHandler::HandleVoteYesCommand(const char* args)
+{
+    if(!sStatMgr.to_mute_GUID)
+        return false;
+
+    if(sStatMgr.mute_votes.find(m_session->GetPlayer()->GetGUIDLow()) != sStatMgr.mute_votes.end())
+        return true;
+
+    sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = true;
+
+    std::stringstream argstr;
+    argstr << m_session->GetPlayer()->GetName() << " voted yes.";
+    sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+
+    if(sStatMgr.mute_votes.size() >= 10)
+    {
+        uint8 votes = 0;
+        for(std::map<uint32, bool>::const_iterator itr = sStatMgr.mute_votes.begin(); itr != sStatMgr.mute_votes.end(); ++itr)
+            if((*itr).second)
+                ++votes;
+
+        Player *pl = sObjectMgr.GetPlayer(sStatMgr.to_mute_GUID);
+        uint32 account_id = sObjectMgr.GetPlayerAccountIdByGUID(sStatMgr.to_mute_GUID);
+        time_t mutetime = time(NULL) + votes*60;
+
+        if(pl)
+        {
+            pl->GetSession()->m_muteTime = mutetime;
+            ChatHandler(pl).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, votes);
+        }
+
+        LoginDatabase.PExecute("UPDATE account SET mutetime = " UI64FMTD " WHERE id = '%u'", uint64(mutetime), account_id);
+        sStatMgr.to_mute_GUID = 0;
+        sStatMgr.mute_counter = 0;
+        sStatMgr.mute_votes.clear();
+
+        argstr.clear();
+        if(pl)
+            argstr << pl->GetName();
+        else
+            argstr << account_id;
+        argstr << " was muted for " << votes << " minutes.";
+        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+    }
+}
+
+bool ChatHandler::HandleVoteNoCommand(const char* args)
+{
+    if(!sStatMgr.to_mute_GUID)
+        return false;
+
+    if(sStatMgr.mute_votes.find(m_session->GetPlayer()->GetGUIDLow()) != sStatMgr.mute_votes.end())
+        return true;
+
+    sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = false;
+
+    std::stringstream argstr;
+    argstr << m_session->GetPlayer()->GetName() << " voted no.";
+    sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+
+    if(sStatMgr.mute_votes.size() >= 10)
+    {
+        uint8 votes = 0;
+        for(std::map<uint32, bool>::const_iterator itr = sStatMgr.mute_votes.begin(); itr != sStatMgr.mute_votes.end(); ++itr)
+            if((*itr).second)
+                ++votes;
+
+        Player *pl = sObjectMgr.GetPlayer(sStatMgr.to_mute_GUID);
+        uint32 account_id = sObjectMgr.GetPlayerAccountIdByGUID(sStatMgr.to_mute_GUID);
+        time_t mutetime = time(NULL) + votes*60;
+
+        if(pl)
+        {
+            pl->GetSession()->m_muteTime = mutetime;
+            ChatHandler(pl).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, votes);
+        }
+
+        LoginDatabase.PExecute("UPDATE account SET mutetime = " UI64FMTD " WHERE id = '%u'", uint64(mutetime), account_id);
+        sStatMgr.to_mute_GUID = 0;
+        sStatMgr.mute_counter = 0;
+        sStatMgr.mute_votes.clear();
+
+        argstr.clear();
+        if(pl)
+            argstr << pl->GetName();
+        else
+            argstr << account_id;
+        argstr << " was muted for " << votes << " minutes.";
+        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+    }
 }

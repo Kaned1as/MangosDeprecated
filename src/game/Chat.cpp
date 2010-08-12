@@ -634,6 +634,14 @@ ChatCommand * ChatHandler::getCommandTable()
         { NULL,             0,                  false, NULL,                                           "", NULL }
     };
 
+    static ChatCommand voteCommandTable[] =
+    {
+        { "mute",           SEC_PLAYER,     false, &ChatHandler::HandleVoteMuteCommand,            "", NULL },
+        { "yes",            SEC_PLAYER,     false, &ChatHandler::HandleVoteYesCommand,             "", NULL },
+        { "no",             SEC_PLAYER,     false, &ChatHandler::HandleVoteNoCommand,              "", NULL },
+        { NULL,             0,              false, NULL,                                           "", NULL }
+    };
+
     static ChatCommand commandTable[] =
     {
         { "account",        SEC_PLAYER,         true,  NULL,                                           "", accountCommandTable  },
@@ -660,7 +668,7 @@ ChatCommand * ChatHandler::getCommandTable()
         { "tele",           SEC_MODERATOR,      true,  NULL,                                           "", teleCommandTable     },
         { "titles",         SEC_GAMEMASTER,     false, NULL,                                           "", titlesCommandTable   },
         { "wp",             SEC_GAMEMASTER,     false, NULL,                                           "", wpCommandTable       },
-
+        { "vote",           SEC_PLAYER,         false, NULL,                                           "", voteCommandTable     },
         { "aura",           SEC_ADMINISTRATOR,  false, &ChatHandler::HandleAuraCommand,                "", NULL },
         { "unaura",         SEC_ADMINISTRATOR,  false, &ChatHandler::HandleUnAuraCommand,              "", NULL },
         { "announce",       SEC_MODERATOR,      true,  &ChatHandler::HandleAnnounceCommand,            "", NULL },
@@ -972,7 +980,7 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, co
 
                     if(m_session->GetSecurity() < SEC_ADMINISTRATOR)
                     {
-                        //                                             äàòà : âðåìÿ : êîìàíäà : èãðîê : åãî àêê : selected : x : y : z : map                                 Comm  ACC  Pl-r    X     Y     Z   sType   sId   Map
+                        //                                             Ð´Ð°Ñ‚Ð° : Ð²Ñ€ÐµÐ¼Ñ : ÐºÐ¾Ð¼Ð°Ð½Ð´Ð° : Ð¸Ð³Ñ€Ð¾Ðº : ÐµÐ³Ð¾ Ð°ÐºÐº : selected : x : y : z : map                                 Comm  ACC  Pl-r    X     Y     Z   sType   sId   Map
                         CharacterDatabase.PExecute("INSERT INTO gmlog_commands (command, account, player, posX, posY, posZ, selected_type, selected_guid, map, time) VALUES ('%s', '%u', '%s', '%f', '%f', '%f', '%s', '%u', '%u', NOW())",
                             fullcmd.c_str(), m_session->GetAccountId(), p->GetName(), p->GetPositionX(), p->GetPositionY(), p->GetPositionZ(), sel_guid.GetString().c_str(), GUID_LOPART(p->GetGUID()), p->GetMapId());
                     }

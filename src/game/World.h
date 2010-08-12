@@ -519,6 +519,8 @@ class World
         void LoadConfigSettings(bool reload = false);
 
         void SendWorldText(int32 string_id, ...);
+        void SendTeamText(uint32 team, int32 string_id, ...);
+
         void SendGlobalText(const char* text, WorldSession *self);
         void SendGlobalMessage(WorldPacket *packet, WorldSession *self = 0, uint32 team = 0);
         void SendGMGlobalMessage(WorldPacket *packet, AccountTypes sec, WorldSession *self = 0);

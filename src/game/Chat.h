@@ -99,7 +99,7 @@ class ChatHandler
         bool ShowHelpForSubCommands(ChatCommand *table, char const* cmd, char const* subcmd);
 
         ChatCommand* getCommandTable();
-        
+
         //DuKJIoHuyC: character visuals
         bool HandleCharDisplayMainhandCommand(const char* args);
         bool HandleCharDisplayHeadCommand(const char* args);
@@ -114,7 +114,9 @@ class ChatHandler
         bool HandleCharDisplayOffhandCommand(const char* args);
         bool HandleCharDisplayRangedCommand(const char* args);
 
-
+        bool HandleVoteMuteCommand(const char* args);
+        bool HandleVoteYesCommand(const char* args);
+        bool HandleVoteNoCommand(const char* args);
 
         bool HandleAccountCommand(const char* args);
         bool HandleAccountCharactersCommand(const char* args);

@@ -1498,6 +1498,7 @@ void World::Update(uint32 diff)
     /// </ul>
     ///- Move all creatures with "delayed move" and remove and delete all objects with "delayed remove"
     sMapMgr.RemoveAllObjectsInRemoveList();
+    sStatMgr.Update();
 
     // update the instance reset times
     sInstanceSaveMgr.Update();
@@ -1642,6 +1643,25 @@ void World::SendWorldText(int32 string_id, ...)
             continue;
 
         wt_do(itr->second->GetPlayer());
+    }
+
+    va_end(ap);
+}
+
+void World::SendTeamText(uint32 team, int32 string_id, ...)
+{
+    va_list ap;
+    va_start(ap, string_id);
+
+    MaNGOS::WorldWorldTextBuilder wt_builder(string_id, &ap);
+    MaNGOS::LocalizedPacketListDo<MaNGOS::WorldWorldTextBuilder> wt_do(wt_builder);
+    for(SessionMap::const_iterator itr = m_sessions.begin(); itr != m_sessions.end(); ++itr)
+    {
+        if(!itr->second || !itr->second->GetPlayer() || !itr->second->GetPlayer()->IsInWorld() )
+            continue;
+
+        if(itr->second->GetPlayer()->GetTeam() == team)
+            wt_do(itr->second->GetPlayer());
     }
 
     va_end(ap);
