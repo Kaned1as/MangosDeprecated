@@ -8733,7 +8733,7 @@ uint32 ObjectMgr::GetMemoryUsage()
 	total_mem	+= (temp = mGraveYardMap.size()				* sizeof(mGraveYardMap.begin()->second));
 	//sLog.outString("mGraveYardMap: %u", temp);
 	
-	total_mem	+= (temp = m_GameTeleMap.size()				* sizeof(m_GameTeleMap.begin()->second) / 1024);
+	total_mem	+= (temp = m_GameTeleMap.size()				* sizeof(m_GameTeleMap.begin()->second));
 	//sLog.outString("m_GameTeleMap: %u", temp);
 	
 	total_mem	+= (temp = m_scriptNames.size()				* sizeof(m_scriptNames.begin()));
