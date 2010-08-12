@@ -7393,7 +7393,7 @@ bool Unit::HandleDummyAuraProc(Unit *pVictim, uint32 damage, Aura* triggeredByAu
             // Unholy Blight
             if (dummySpell->Id == 49194)
             {
-                basepoints[0] = triggerAmount * damage / 100;
+                basepoints[0] = triggerAmount * damage / 1000;
                 triggered_spell_id = 50536;
                 break;
             }
