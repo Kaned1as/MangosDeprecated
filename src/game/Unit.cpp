@@ -8166,6 +8166,12 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                 basepoints[0] = triggerAmount * damage / 100;
                 trigger_spell_id = 50475;
             }
+            // Glyph of Death's Embrace - proc only on "heal" Coil
+            else if (auraSpellInfo->Id == 58677)
+            {
+                if (procSpell && procSpell->Id != 47633)
+                    return false;
+            }
             break;
         }
         default:
