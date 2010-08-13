@@ -128,13 +128,13 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
         if (m_auiEncounter[1] == DONE) {
                                         OpenDoor(m_uiIcewall1GUID);
                                         OpenDoor(m_uiIcewall2GUID);
-                                        };
-        if (m_auiEncounter[2] == DONE) {
-                        if (GameObject* pGO = instance->GetGameObject(m_uiDeathWhisperElevatorGUID))
+                            if (GameObject* pGO = instance->GetGameObject(m_uiDeathWhisperElevatorGUID))
                             {
                               pGO->SetUInt32Value(GAMEOBJECT_LEVEL, 0);
                               pGO->SetGoState(GO_STATE_READY);
                             }
+                                        };
+        if (m_auiEncounter[2] == DONE) {
                                        };
         if (m_auiEncounter[5] == DONE) OpenDoor(m_uiSDoorOrangeGUID);
         if (m_auiEncounter[6] == DONE) OpenDoor(m_uiSDoorGreenGUID);
