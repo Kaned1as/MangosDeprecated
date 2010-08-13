@@ -974,8 +974,8 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand *table, const char* text, co
                 {
                     Player* p = m_session->GetPlayer();
                     ObjectGuid sel_guid = p->GetSelection();
-                    sLog.outCommand(GetAccountId(),"Command: %s [Player: %s (Account: %u) X: %f Y: %f Z: %f Map: %u Selected: %s]",
-                        fullcmd.c_str(),p->GetName(),GetAccountId(),p->GetPositionX(),p->GetPositionY(),p->GetPositionZ(),p->GetMapId(),
+                    sLog.outCommand(GetAccountId(),"Command: %s [Player: %s (Account: %u IP: %s) X: %f Y: %f Z: %f Map: %u Selected: %s]",
+                        fullcmd.c_str(),p->GetName(),GetAccountId(), m_session->GetRemoteAddress().c_str(),p->GetPositionX(),p->GetPositionY(),p->GetPositionZ(),p->GetMapId(),
                         sel_guid.GetString().c_str());
 
                     if(m_session->GetSecurity() < SEC_ADMINISTRATOR)
