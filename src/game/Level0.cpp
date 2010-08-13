@@ -610,6 +610,13 @@ bool ChatHandler::HandleVoteMuteCommand(const char* args)
         return false;
     }
 
+    if(pl->GetSession()->m_muteTime)
+    {
+        SendSysMessage("Already muted.");
+        SetSentErrorMessage(true);
+        return false;
+    }
+
     sStatMgr.to_mute_GUID = pl->GetGUID();
     sStatMgr.mute_counter = time(NULL) + 60;
     sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = true;
