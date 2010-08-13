@@ -664,13 +664,13 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
         sStatMgr.mute_counter = 0;
         sStatMgr.mute_votes.clear();
 
-        argstr.clear();
+        std::stringstream mutestr;
         if(pl)
-            argstr << pl->GetName();
+            mutestr << pl->GetName();
         else
-            argstr << (uint32)account_id;
-        argstr << " was muted for " << (uint32)votes << " minutes. \n";
-        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+            mutestr << (uint32)account_id;
+        mutestr << " was muted for " << (uint32)votes << " minutes.";
+        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, mutestr.str().c_str());
     }
 }
 
@@ -717,12 +717,12 @@ bool ChatHandler::HandleVoteNoCommand(const char* args)
         sStatMgr.mute_counter = 0;
         sStatMgr.mute_votes.clear();
 
-        argstr.clear();
+        std::stringstream mutestr;
         if(pl)
-            argstr << pl->GetName();
+            mutestr << pl->GetName();
         else
-            argstr << (uint32)account_id;
-        argstr << " was muted for " << (uint32)votes << " minutes. \n";
-        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
+            mutestr << (uint32)account_id;
+        mutestr << " was muted for " << (uint32)votes << " minutes.";
+        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, mutestr.str().c_str());
     }
 }
