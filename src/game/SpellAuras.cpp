@@ -2657,10 +2657,14 @@ void Aura::HandleAuraDummy(bool apply, bool Real)
             }
             case 58600:                                     // Restricted Flight Area
             {
-                // Remove Flight Auras
-                target->CastSpell(target, 58601, true);
-                // Parachute
-                target->CastSpell(target, 45472, true);
+                // Amaru: check we are still in Dalaran!
+                if (target->GetAreaId() == 4395)
+                {
+                    // Remove Flight Auras
+                    target->CastSpell(target, 58601, true);
+                    // Parachute
+                    target->CastSpell(target, 45472, true);
+                }
                 return;
             }
         }
