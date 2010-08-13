@@ -25,7 +25,7 @@ static Locations SpawnLoc[]=
 
 struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
 {
-    instance_icecrown_spire(Map* pMap) : ScriptedInstance(pMap) 
+    instance_icecrown_spire(Map* pMap) : ScriptedInstance(pMap)
     {
         Difficulty = pMap->GetDifficulty();
         Initialize();
@@ -215,13 +215,13 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
     {
         switch(pCreature->GetEntry())
         {
-            case NPC_LORD_MARROWGAR: 
+            case NPC_LORD_MARROWGAR:
                          m_uiMarrogwarGUID = pCreature->GetGUID();
                          break;
-            case NPC_LADY_DEATHWHISPER: 
+            case NPC_LADY_DEATHWHISPER:
                           m_uiDeathWhisperGUID = pCreature->GetGUID();
                           break;
-            case NPC_DEATHBRINGER_SAURFANG: 
+            case NPC_DEATHBRINGER_SAURFANG:
                           m_uiSaurfangGUID = pCreature->GetGUID();
                           break;
             case NPC_FESTERGUT:
@@ -277,81 +277,81 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
     {
         switch(pGo->GetEntry())
         {
-            case GO_ICEWALL_1: 
+            case GO_ICEWALL_1:
                          m_uiIcewall1GUID = pGo->GetGUID();
                          break;
-            case GO_ICEWALL_2: 
+            case GO_ICEWALL_2:
                          m_uiIcewall2GUID = pGo->GetGUID();
                          break;
-            case GO_ORATORY_DOOR: 
+            case GO_ORATORY_DOOR:
                          m_uiOratoryDoorGUID = pGo->GetGUID();
                          break;
             case GO_DEATHWHISPER_ELEVATOR:
                          m_uiDeathWhisperElevatorGUID = pGo->GetGUID();
                          break;
-            case GO_SAURFANG_DOOR: 
+            case GO_SAURFANG_DOOR:
                          m_uiSaurfangDoorGUID = pGo->GetGUID();
                          break;
-            case GO_ORANGE_PLAGUE: 
+            case GO_ORANGE_PLAGUE:
                          m_uiOrangePlagueGUID = pGo->GetGUID();
                          break;
-            case GO_GREEN_PLAGUE: 
+            case GO_GREEN_PLAGUE:
                          m_uiGreenPlagueGUID = pGo->GetGUID();
                          break;
-            case GO_SCIENTIST_DOOR_GREEN: 
+            case GO_SCIENTIST_DOOR_GREEN:
                          m_uiSDoorGreenGUID = pGo->GetGUID();
                          break;
-            case GO_SCIENTIST_DOOR_ORANGE: 
+            case GO_SCIENTIST_DOOR_ORANGE:
                          m_uiSDoorOrangeGUID = pGo->GetGUID();
                          break;
-            case GO_SCIENTIST_DOOR_COLLISION: 
+            case GO_SCIENTIST_DOOR_COLLISION:
                          m_uiSDoorCollisionGUID = pGo->GetGUID();
                          break;
             case GO_SCIENTIST_DOOR:
                          m_uiScientistDoorGUID = pGo->GetGUID();
                          break;
-            case GO_CRIMSON_HALL_DOOR: 
+            case GO_CRIMSON_HALL_DOOR:
                          m_uiCrimsonDoorGUID = pGo->GetGUID();
                          break;
-            case GO_BLOODWING_DOOR: 
+            case GO_BLOODWING_DOOR:
                          m_uiBloodwingDoorGUID = pGo->GetGUID();
                          break;
-            case GO_COUNCIL_DOOR_1: 
+            case GO_COUNCIL_DOOR_1:
                          m_uiCounsilDoor1GUID = pGo->GetGUID();
                          break;
-            case GO_COUNCIL_DOOR_2: 
+            case GO_COUNCIL_DOOR_2:
                          m_uiCounsilDoor2GUID = pGo->GetGUID();
                          break;
-            case GO_FROSTWING_DOOR: 
+            case GO_FROSTWING_DOOR:
                          m_uiFrostwingDoorGUID = pGo->GetGUID();
                          break;
-            case GO_GREEN_DRAGON_DOOR_1: 
+            case GO_GREEN_DRAGON_DOOR_1:
                          m_uiGreenDragonDoor1GUID = pGo->GetGUID();
                          break;
-            case GO_GREEN_DRAGON_DOOR_2: 
+            case GO_GREEN_DRAGON_DOOR_2:
                          m_uiGreenDragonDoor2GUID = pGo->GetGUID();
                          break;
-            case GO_VALITHRIA_DOOR_1: 
+            case GO_VALITHRIA_DOOR_1:
                          m_uiValithriaDoor1GUID = pGo->GetGUID();
                          break;
-            case GO_VALITHRIA_DOOR_2: 
+            case GO_VALITHRIA_DOOR_2:
                          m_uiValithriaDoor2GUID = pGo->GetGUID();
                          break;
-            case GO_VALITHRIA_DOOR_3: 
+            case GO_VALITHRIA_DOOR_3:
                          m_uiValithriaDoor3GUID = pGo->GetGUID();
                          break;
-            case GO_VALITHRIA_DOOR_4: 
+            case GO_VALITHRIA_DOOR_4:
                          m_uiValithriaDoor4GUID = pGo->GetGUID();
                          break;
-            case GO_SINDRAGOSA_DOOR_1: 
+            case GO_SINDRAGOSA_DOOR_1:
                          m_uiSindragosaDoor1GUID = pGo->GetGUID();
                          break;
-            case GO_SINDRAGOSA_DOOR_2: 
+            case GO_SINDRAGOSA_DOOR_2:
                          m_uiSindragosaDoor2GUID = pGo->GetGUID();
                          break;
             case GO_SAURFANG_CACHE_10:
                                   if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                                  m_uiSaurfangCacheGUID = pGo->GetGUID(); 
+                                  m_uiSaurfangCacheGUID = pGo->GetGUID();
                                   break;
             case GO_SAURFANG_CACHE_25:
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
@@ -367,39 +367,39 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
                                   break;
             case GO_GUNSHIP_ARMORY_A_10:
                                   if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                                  m_uiGunshipArmoryAGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryAGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_A_25:
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
-                                  m_uiGunshipArmoryAGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryAGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_A_10H:
                                   if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
-                                  m_uiGunshipArmoryAGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryAGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_A_25H:
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
-                                  m_uiGunshipArmoryAGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryAGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_H_10:
                                   if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                                  m_uiGunshipArmoryHGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryHGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_H_25:
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
-                                  m_uiGunshipArmoryHGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryHGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_H_10H:
                                   if(Difficulty == RAID_DIFFICULTY_10MAN_HEROIC)
-                                  m_uiGunshipArmoryHGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryHGUID = pGo->GetGUID();
                                   break;
             case GO_GUNSHIP_ARMORY_H_25H:
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
-                                  m_uiGunshipArmoryHGUID = pGo->GetGUID(); 
+                                  m_uiGunshipArmoryHGUID = pGo->GetGUID();
                                   break;
             case GO_DREAMWALKER_CACHE_10:
                                   if(Difficulty == RAID_DIFFICULTY_10MAN_NORMAL)
-                                  m_uiValitriaCacheGUID = pGo->GetGUID(); 
+                                  m_uiValitriaCacheGUID = pGo->GetGUID();
                                   break;
             case GO_DREAMWALKER_CACHE_25:
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_NORMAL)
@@ -413,22 +413,22 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
                                   if(Difficulty == RAID_DIFFICULTY_25MAN_HEROIC)
                                   m_uiValitriaCacheGUID = pGo->GetGUID();
                                   break;
-            case GO_ICESHARD_1: 
+            case GO_ICESHARD_1:
                                   m_uiIceShard1GUID = pGo->GetGUID();
                                   break;
-            case GO_ICESHARD_2: 
+            case GO_ICESHARD_2:
                                   m_uiIceShard2GUID = pGo->GetGUID();
                                   break;
-            case GO_ICESHARD_3: 
+            case GO_ICESHARD_3:
                                   m_uiIceShard3GUID = pGo->GetGUID();
                                   break;
-            case GO_ICESHARD_4: 
+            case GO_ICESHARD_4:
                                   m_uiIceShard4GUID = pGo->GetGUID();
                                   break;
-            case GO_FROSTY_WIND: 
+            case GO_FROSTY_WIND:
                                   m_uiFrostyWindGUID = pGo->GetGUID();
                                   break;
-            case GO_FROSTY_EDGE: 
+            case GO_FROSTY_EDGE:
                                   m_uiFrostyEdgeGUID = pGo->GetGUID();
                                   break;
         }
@@ -443,21 +443,21 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
             case TYPE_TELEPORT:
                 break;
             case TYPE_MARROWGAR:
-                m_auiEncounter[1] = uiData; 
-                if (uiData == DONE) {
-                                     OpenDoor(m_uiIcewall1GUID);
-                                     OpenDoor(m_uiIcewall2GUID);
-                                    }
+                m_auiEncounter[1] = uiData;
+                if (uiData == DONE)
+                {
+                    OpenDoor(m_uiIcewall1GUID);
+                    OpenDoor(m_uiIcewall2GUID);
+                    if (GameObject* pGO = instance->GetGameObject(m_uiDeathWhisperElevatorGUID))
+                    {
+                        pGO->SetUInt32Value(GAMEOBJECT_LEVEL, 0);
+                        pGO->SetGoState(GO_STATE_READY);
+                    }
+                }
                 break;
              case TYPE_DEATHWHISPER:
-                m_auiEncounter[2] = uiData; 
-                if (uiData == DONE) {
-                    if (GameObject* pGO = instance->GetGameObject(m_uiDeathWhisperElevatorGUID))
-                        {
-                              pGO->SetUInt32Value(GAMEOBJECT_LEVEL, 0);
-                              pGO->SetGoState(GO_STATE_READY);
-                        }
-                }
+                m_auiEncounter[2] = uiData;
+                if (uiData == DONE) {}
                 break;
              case TYPE_FLIGHT_WAR:
                 if (uiData == DONE && m_auiEncounter[3] != DONE  ) {
@@ -471,10 +471,10 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
                                           pChest->SetRespawnTime(7*DAY);
                                       };
                                 };
-                m_auiEncounter[3] = uiData; 
+                m_auiEncounter[3] = uiData;
                 break;
              case TYPE_SAURFANG:
-                m_auiEncounter[4] = uiData; 
+                m_auiEncounter[4] = uiData;
                 if (uiData == DONE) {
                 OpenDoor(m_uiSaurfangDoorGUID);
                                  if (GameObject* pChest = instance->GetGameObject(m_uiSaurfangCacheGUID))
@@ -545,8 +545,8 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
                 m_auiEncounter[14] = uiData;
                 uiData = NOT_STARTED;
                 break;
-             case DATA_BLOOD_COUNCIL_HEALTH:     m_uiDataCouncilHealth = uiData; 
-                                                 uiData = NOT_STARTED; 
+             case DATA_BLOOD_COUNCIL_HEALTH:     m_uiDataCouncilHealth = uiData;
+                                                 uiData = NOT_STARTED;
                                                  break;
              case TYPE_EVENT:            m_auiEvent = uiData; uiData = NOT_STARTED; break;
              case TYPE_EVENT_TIMER:      m_auiEventTimer = uiData; uiData = NOT_STARTED; break;
@@ -593,10 +593,10 @@ struct MANGOS_DLL_DECL instance_icecrown_spire : public ScriptedInstance
              case TYPE_LICH_KING:     return m_auiEncounter[12];
              case TYPE_ICECROWN_QUESTS:  return m_auiEncounter[13];
              case TYPE_COUNT:         return m_auiEncounter[14];
-             case DATA_BLOOD_COUNCIL_HEALTH:     return m_uiDataCouncilHealth; 
+             case DATA_BLOOD_COUNCIL_HEALTH:     return m_uiDataCouncilHealth;
              case TYPE_EVENT:         return m_auiEvent;
              case TYPE_EVENT_TIMER:   return m_auiEventTimer;
-             case TYPE_EVENT_NPC:     switch (m_auiEvent) 
+             case TYPE_EVENT_NPC:     switch (m_auiEvent)
                                          {
                                           case 12030:
                                           case 12050:
