@@ -617,7 +617,7 @@ bool ChatHandler::HandleVoteMuteCommand(const char* args)
 
     std::stringstream argstr;
     argstr << m_session->GetPlayer()->GetName() << " called a vote to mute player " << pl->GetName() << "\n";
-    argstr << "Print \".vote yes\" to agree, \".vote no\" to disagree in next 60 seconds. Limited to max 10 votes.";
+    argstr << "Print \".vote yes\" to agree, \".vote no\" to disagree in next 60 seconds.";
     sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, argstr.str().c_str());
 }
 
@@ -636,7 +636,7 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
     sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = true;
 
     std::stringstream argstr;
-    argstr << m_session->GetPlayer()->GetName() << " voted yes. \n";
+    argstr << m_session->GetPlayer()->GetName() << " voted yes.";
 
     WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
     data << argstr.str();
@@ -689,7 +689,7 @@ bool ChatHandler::HandleVoteNoCommand(const char* args)
     sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = false;
 
     std::stringstream argstr;
-    argstr << m_session->GetPlayer()->GetName() << " voted no. \n";
+    argstr << m_session->GetPlayer()->GetName() << " voted no.";
 
     WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
     data << argstr.str();
