@@ -690,7 +690,8 @@ bool ChatHandler::HandleVoteNoCommand(const char* args)
         return false;
     }
 
-    if(sStatMgr.mute_votes.find(m_session->GetPlayer()->GetGUIDLow()) != sStatMgr.mute_votes.end())
+    if(m_session->GetPlayer()->GetGUID() == sStatMgr.to_mute_GUID ||  //do not allow called player to vote himself
+        sStatMgr.mute_votes.find(m_session->GetPlayer()->GetGUIDLow()) != sStatMgr.mute_votes.end() || )
         return true;
 
     sStatMgr.mute_votes[m_session->GetPlayer()->GetGUIDLow()] = false;
