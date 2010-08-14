@@ -9393,9 +9393,10 @@ int32 Unit::SpellBonusWithCoeffs(SpellEntry const *spellProto, int32 total, int3
             // Impurity
             if (GetTypeId() == TYPEID_PLAYER && spellProto->SpellFamilyName == SPELLFAMILY_DEATHKNIGHT)
             {
-                //megai2: wtf was? pct2 = pct1 * 100 * pct2 / 100 = pct2 * pct 1 = (for expl) 0.20 * 0.20 = 0.04 = 4% but needed 0.2 + 0.2 = 0.4 = 40%
+                // megai2: wtf was? pct2 = pct1 * 100 * pct2 / 100 = pct2 * pct 1 = (for expl) 0.20 * 0.20 = 0.04 = 4% but needed 0.2 + 0.2 = 0.4 = 40%
+                // Amaru: it's correct http://www.wowhead.com/spell=49638#comments
                 if (SpellEntry const* spell = ((Player*)this)->GetKnownTalentRankById(2005))
-                    ap_bonus += (spell->CalculateSimpleValue(EFFECT_INDEX_0)) / 100.0f;
+                    ap_bonus += (spell->CalculateSimpleValue(EFFECT_INDEX_0) * ap_bonus) / 100.0f;
             }
 
             total += int32(ap_bonus * (GetTotalAttackPowerValue(BASE_ATTACK) + ap_benefit));
