@@ -610,7 +610,7 @@ bool ChatHandler::HandleVoteMuteCommand(const char* args)
         return false;
     }
 
-    if(pl->GetSession()->m_muteTime)
+    if(!pl->CanSpeak())
     {
         SendSysMessage("Already muted.");
         SetSentErrorMessage(true);
