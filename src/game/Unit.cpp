@@ -7750,6 +7750,14 @@ bool Unit::HandleProcTriggerSpell(Unit *pVictim, uint32 damage, Aura* triggeredB
                     target = this;
                     break;
                 }
+                case 71634: //Corpse Tongue Coin
+                case 71640: //Heroic
+                {
+                    // reduce you below $s1% health
+                    if (GetHealth() - damage > GetMaxHealth() * triggerAmount / 100)
+                        return false;
+                    break;
+                }
             }
             break;
         case SPELLFAMILY_MAGE:
