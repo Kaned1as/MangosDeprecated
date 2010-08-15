@@ -55,13 +55,47 @@ StatMgr* StatMgr::_gestalt = NULL;
 
 void StatMgr::Update()
 {
-        if(mute_counter && (time(NULL) > mute_counter))
+    if(mute_counter && (time(NULL) > mute_counter))
+    {
+        // count our votes
+        uint8 votes = 0;
+        for(std::map<uint32, bool>::const_iterator itr = mute_votes.begin(); itr != mute_votes.end(); ++itr)
+            if((*itr).second) // == true in this case
+                ++votes;
+
+        votes = 2 * votes - mute_votes.size();
+        if(votes < 3)
         {
-            to_mute_GUID = 0;
-            mute_votes.clear();
-            mute_counter = 0;
-            sWorld.SendTeamText(mute_chat_team, LANG_SYSTEMMESSAGE, "Voting failed due to low vote count");
+            sWorld.SendTeamText(mute_chat_team, LANG_SYSTEMMESSAGE, "Vote failed due to insufficient voting difference.");
+            return;
         }
+
+        Player *pl = sObjectMgr.GetPlayer(to_mute_GUID);
+        uint32 account_id = sObjectMgr.GetPlayerAccountIdByGUID(to_mute_GUID);
+        time_t mutetime = time(NULL) + votes*60;
+
+        if(pl)
+        {
+            pl->GetSession()->m_muteTime = mutetime;
+            ChatHandler(pl).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, votes);
+        }
+
+        LoginDatabase.PExecute("UPDATE account SET mutetime = " UI64FMTD " WHERE id = '%u'", uint64(mutetime), account_id);
+
+        // cleanup after expire
+        to_mute_GUID = 0;
+        mute_counter = 0;
+        mute_votes.clear();
+
+        // announce
+        std::stringstream mutestr;
+        if(pl)
+            mutestr << pl->GetName();
+        else
+            mutestr << (uint32)account_id;
+        mutestr << " was muted for " << (uint32)votes << " minutes.";
+        sWorld.SendTeamText(mute_chat_team, LANG_SYSTEMMESSAGE, mutestr.str().c_str());
+    }
 }
 
 ScriptMapMap sQuestEndScripts;
@@ -8677,71 +8711,71 @@ uint32 ObjectMgr::GetMemoryUsage()
 	//sLog.outString("mGroupMap: %u", temp);
 	total_mem	+= (temp = mGuildMap.size()			* sizeof(mGuildMap.begin()->second));
 	//sLog.outString("mGuildMap: %u", temp);
-	
+
 	total_mem	+= (temp = mArenaTeamMap.size()		* sizeof(mArenaTeamMap.begin()->second));
 	//sLog.outString("mArenaTeamMap: %u", temp);
-	
+
 	total_mem	+= (temp = m_mCacheVendorItemMap.size()		* sizeof(m_mCacheVendorItemMap.begin()->second));
 	//sLog.outString("m_mCacheVendorItemMap: %u", temp);
-	
+
 	total_mem	+= (temp = m_mCacheTrainerSpellMap.size()	* sizeof(m_mCacheTrainerSpellMap.begin()->second));
 	//sLog.outString("m_mCacheTrainerSpellMap: %u", temp);
 
 	total_mem	+= (temp = mGossipText.size()				* sizeof(mGossipText.begin()->second));
 	//sLog.outString("mGossipText: %u", temp);
-	
+
 	total_mem	+= (temp = mQuestAreaTriggerMap.size()		* sizeof(mQuestAreaTriggerMap.begin()->second));
 	//sLog.outString("mQuestAreaTriggerMap: %u", temp);
-	
+
 	total_mem	+= (temp = mTavernAreaTriggerSet.size()		* sizeof(*mTavernAreaTriggerSet.begin()));
 	//sLog.outString("mTavernAreaTriggerSet: %u", temp);
-	
+
 	total_mem	+= (temp = mGameObjectForQuestSet.size()	* sizeof(mGameObjectForQuestSet.begin()));
 	//sLog.outString("mGameObjectForQuestSet: %u", temp);
-	
-	
+
+
 	total_mem	+= (temp = mQuestAreaTriggerMap.size()		* sizeof(mQuestAreaTriggerMap.begin()->second));
 	//sLog.outString("mQuestAreaTriggerMap: %u", temp);
-	
+
 	total_mem	+= (temp = mAreaTriggers.size()				* sizeof(mAreaTriggers.begin()->second));
 	//sLog.outString("mAreaTriggers: %u", temp);
-	
+
 	total_mem	+= (temp = mAreaTriggerScripts.size()		* sizeof(mAreaTriggerScripts.begin()->second));
 	//sLog.outString("mAreaTriggerScripts: %u", temp);
-	
+
 	total_mem	+= (temp = mRepOnKill.size()				* sizeof(mRepOnKill.begin()->second));
 	//sLog.outString("mRepOnKill: %u", temp);
-	
+
 	total_mem	+= (temp = m_mGossipMenusMap.size()			* sizeof(m_mGossipMenusMap.begin()->second));
 	//sLog.outString("m_mGossipMenusMap: %u", temp);
-	
+
 	total_mem	+= (temp = m_mGossipMenuItemsMap.size()		* sizeof(m_mGossipMenuItemsMap.begin()->second));
 	//sLog.outString("m_mGossipMenuItemsMap: %u", temp);
-	
+
 	total_mem	+= (temp = mPointsOfInterest.size()			* sizeof(mPointsOfInterest.begin()->second));
 	//sLog.outString("mPointsOfInterest: %u", temp);
-	
+
 	total_mem	+= (temp = mQuestPOIMap.size()				* sizeof(mQuestPOIMap.begin()->second));
 	//sLog.outString("mQuestPOIMap: %u", temp);
-	
+
 	total_mem	+= (temp = mWeatherZoneMap.size()			* sizeof(mWeatherZoneMap.begin()->second));
 	//sLog.outString("mWeatherZoneMap: %u", temp);
-	
+
 	total_mem	+= (temp = m_ReservedNames.size()			* sizeof(m_ReservedNames.begin()));
 	//sLog.outString("m_ReservedNames: %u", temp);
-	
+
 	total_mem	+= (temp = mGraveYardMap.size()				* sizeof(mGraveYardMap.begin()->second));
 	//sLog.outString("mGraveYardMap: %u", temp);
-	
+
 	total_mem	+= (temp = m_GameTeleMap.size()				* sizeof(m_GameTeleMap.begin()->second));
 	//sLog.outString("m_GameTeleMap: %u", temp);
-	
+
 	total_mem	+= (temp = m_scriptNames.size()				* sizeof(m_scriptNames.begin()));
 	//sLog.outString("m_scriptNames: %u", temp);
-	
+
 	total_mem	+= (temp = m_ItemRequiredTarget.size()		* sizeof(m_ItemRequiredTarget.begin()->second));
 	//sLog.outString("m_ItemRequiredTarget: %u", temp);
-	
+
 	total_mem	+= (temp = m_LocalForIndex.size()			* sizeof(m_LocalForIndex.begin()));
 	//sLog.outString("m_LocalForIndex: %u", temp);
 

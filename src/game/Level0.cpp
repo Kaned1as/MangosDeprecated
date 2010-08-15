@@ -648,37 +648,6 @@ bool ChatHandler::HandleVoteYesCommand(const char* args)
     WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
     data << argstr.str();
     sWorld.SendGlobalMessage(&data, NULL, sStatMgr.mute_chat_team);
-
-    if(sStatMgr.mute_votes.size() >= 10)
-    {
-        uint8 votes = 0;
-        for(std::map<uint32, bool>::const_iterator itr = sStatMgr.mute_votes.begin(); itr != sStatMgr.mute_votes.end(); ++itr)
-            if((*itr).second)
-                ++votes;
-
-        Player *pl = sObjectMgr.GetPlayer(sStatMgr.to_mute_GUID);
-        uint32 account_id = sObjectMgr.GetPlayerAccountIdByGUID(sStatMgr.to_mute_GUID);
-        time_t mutetime = time(NULL) + votes*60;
-
-        if(pl)
-        {
-            pl->GetSession()->m_muteTime = mutetime;
-            ChatHandler(pl).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, votes);
-        }
-
-        LoginDatabase.PExecute("UPDATE account SET mutetime = " UI64FMTD " WHERE id = '%u'", uint64(mutetime), account_id);
-        sStatMgr.to_mute_GUID = 0;
-        sStatMgr.mute_counter = 0;
-        sStatMgr.mute_votes.clear();
-
-        std::stringstream mutestr;
-        if(pl)
-            mutestr << pl->GetName();
-        else
-            mutestr << (uint32)account_id;
-        mutestr << " was muted for " << (uint32)votes << " minutes.";
-        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, mutestr.str().c_str());
-    }
 }
 
 bool ChatHandler::HandleVoteNoCommand(const char* args)
@@ -702,35 +671,4 @@ bool ChatHandler::HandleVoteNoCommand(const char* args)
     WorldPacket data(SMSG_NOTIFICATION, (argstr.str().size()+1));
     data << argstr.str();
     sWorld.SendGlobalMessage(&data, NULL, sStatMgr.mute_chat_team);
-
-    if(sStatMgr.mute_votes.size() >= 10)
-    {
-        uint8 votes = 0;
-        for(std::map<uint32, bool>::const_iterator itr = sStatMgr.mute_votes.begin(); itr != sStatMgr.mute_votes.end(); ++itr)
-            if((*itr).second)
-                ++votes;
-
-        Player *pl = sObjectMgr.GetPlayer(sStatMgr.to_mute_GUID);
-        uint32 account_id = sObjectMgr.GetPlayerAccountIdByGUID(sStatMgr.to_mute_GUID);
-        time_t mutetime = time(NULL) + votes*60;
-
-        if(pl)
-        {
-            pl->GetSession()->m_muteTime = mutetime;
-            ChatHandler(pl).PSendSysMessage(LANG_YOUR_CHAT_DISABLED, votes);
-        }
-
-        LoginDatabase.PExecute("UPDATE account SET mutetime = " UI64FMTD " WHERE id = '%u'", uint64(mutetime), account_id);
-        sStatMgr.to_mute_GUID = 0;
-        sStatMgr.mute_counter = 0;
-        sStatMgr.mute_votes.clear();
-
-        std::stringstream mutestr;
-        if(pl)
-            mutestr << pl->GetName();
-        else
-            mutestr << (uint32)account_id;
-        mutestr << " was muted for " << (uint32)votes << " minutes.";
-        sWorld.SendTeamText(sStatMgr.mute_chat_team, LANG_SYSTEMMESSAGE, mutestr.str().c_str());
-    }
 }
