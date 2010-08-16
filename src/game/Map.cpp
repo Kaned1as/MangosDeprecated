@@ -384,7 +384,7 @@ Map::Add(T *obj)
     ASSERT(obj);
 
     CellPair p = MaNGOS::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::Add: Object (GUID: %u TypeId: %u) have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUIDLow(), obj->GetTypeId(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
         return;
@@ -419,7 +419,7 @@ void Map::MessageBroadcast(Player *player, WorldPacket *msg, bool to_self)
 {
     CellPair p = MaNGOS::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
 
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || !MaNGOS::IsValidMapCoord(player->GetPositionX(), player->GetPositionY()))
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || !MaNGOS::IsValidMapCoord(player->GetPositionX(), player->GetPositionY()))
     {
         sLog.outError("Map::MessageBroadcast: Player (GUID: %u) have invalid coordinates X:%f Y:%f grid cell [%u:%u]", player->GetGUIDLow(), player->GetPositionX(), player->GetPositionY(), p.x_coord, p.y_coord);
         return;
@@ -441,7 +441,7 @@ void Map::MessageBroadcast(WorldObject *obj, WorldPacket *msg)
 {
     CellPair p = MaNGOS::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
 
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::MessageBroadcast: Object (GUID: %u TypeId: %u) have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUIDLow(), obj->GetTypeId(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
         return;
@@ -465,7 +465,7 @@ void Map::MessageDistBroadcast(Player *player, WorldPacket *msg, float dist, boo
 {
     CellPair p = MaNGOS::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
 
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::MessageBroadcast: Player (GUID: %u) have invalid coordinates X:%f Y:%f grid cell [%u:%u]", player->GetGUIDLow(), player->GetPositionX(), player->GetPositionY(), p.x_coord, p.y_coord);
         return;
@@ -487,7 +487,7 @@ void Map::MessageDistBroadcast(WorldObject *obj, WorldPacket *msg, float dist)
 {
     CellPair p = MaNGOS::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
 
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::MessageBroadcast: Object (GUID: %u TypeId: %u) have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUIDLow(), obj->GetTypeId(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
         return;
@@ -659,7 +659,7 @@ void Map::Remove(Player *player, bool remove)
         m_mapRefIter = m_mapRefIter->nocheck_prev();
     player->GetMapRef().unlink();
     CellPair p = MaNGOS::ComputeCellPair(player->GetPositionX(), player->GetPositionY());
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP)
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP)
     {
         // invalid coordinates
         player->ResetMap();
@@ -697,7 +697,7 @@ void
 Map::Remove(T *obj, bool remove)
 {
     CellPair p = MaNGOS::ComputeCellPair(obj->GetPositionX(), obj->GetPositionY());
-    if(p.x_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord >= TOTAL_NUMBER_OF_CELLS_PER_MAP )
+    if(p.x_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP || p.y_coord > TOTAL_NUMBER_OF_CELLS_PER_MAP )
     {
         sLog.outError("Map::Remove: Object (GUID: %u TypeId:%u) have invalid coordinates X:%f Y:%f grid cell [%u:%u]", obj->GetGUIDLow(), obj->GetTypeId(), obj->GetPositionX(), obj->GetPositionY(), p.x_coord, p.y_coord);
         return;
@@ -1885,7 +1885,7 @@ bool InstanceMap::Add(Player *player)
                         player->BindToInstance(GetInstanceSave(), false);
                     else
                         // cannot jump to a different instance without resetting it
-                        if(!player->isGameMaster()) 
+                        if(!player->isGameMaster())
                             player->TeleportToHomebind();
                         //ASSERT(playerBind->save == GetInstanceSave());
                 }
