@@ -67,6 +67,11 @@ void StatMgr::Update()
         if(votes < 3)
         {
             sWorld.SendTeamText(mute_chat_team, LANG_SYSTEMMESSAGE, "Vote failed due to insufficient voting difference.");
+
+            // cleanup after expire
+            to_mute_GUID = 0;
+            mute_counter = 0;
+            mute_votes.clear();
             return;
         }
 
