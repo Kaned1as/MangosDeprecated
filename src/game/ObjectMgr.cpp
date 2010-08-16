@@ -58,7 +58,7 @@ void StatMgr::Update()
     if(mute_counter && (time(NULL) > mute_counter))
     {
         // count our votes
-        uint8 votes = 0;
+        int16 votes = 0;
         for(std::map<uint32, bool>::const_iterator itr = mute_votes.begin(); itr != mute_votes.end(); ++itr)
             if((*itr).second) // == true in this case
                 ++votes;
